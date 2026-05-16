@@ -26,7 +26,9 @@
       --radius: 16px;
       --radius-sm: 10px;
     }
+
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
     body {
       font-family: 'Sarabun', sans-serif;
       background: var(--cream);
@@ -36,6 +38,8 @@
       margin: 0 auto;
       padding-bottom: 40px;
     }
+
+    /* ── HEADER ── */
     .header {
       padding: 56px 24px 24px;
       background: var(--cream);
@@ -45,29 +49,488 @@
       z-index: 100;
       animation: fadeDown 0.5s ease both;
     }
-    .header-top { display: flex; align-items: baseline; justify-content: space-between; }
-    .header-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; letter-spacing: 0.04em; color: var(--ink); line-height: 1; }
-    .header-title span { color: var(--gold); }
-    .header-sub { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); margin-top: 4px; font-weight: 300; }
-    .live-badge { display: flex; align-items: center; gap: 5px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); font-weight: 500; }
-    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px 24px; animation: fadeUp 0.5s 0.1s ease both; }
-    .stat-card { border-radius: var(--radius); padding: 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .stat-card.green { background: var(--green-light); border: 1.5px solid var(--green-border); }
-    .stat-card.red { background: var(--red-light); border: 1.5px solid var(--red-border); }
-    .stat-emoji { font-size: 22px; line-height: 1; }
-    .stat-number { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 500; line-height: 1; }
+
+    .header-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .header-title span {
+      color: var(--gold);
+    }
+
+    .header-sub {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-top: 4px;
+      font-weight: 300;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    /* ── STAT BLOCKS ── */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px 24px;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    .stat-card {
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-card.green {
+      background: var(--green-light);
+      border: 1.5px solid var(--green-border);
+    }
+
+    .stat-card.red {
+      background: var(--red-light);
+      border: 1.5px solid var(--red-border);
+    }
+
+    .stat-emoji {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
     .stat-card.green .stat-number { color: var(--green); }
     .stat-card.red .stat-number { color: var(--red); }
-    .stat-label-th { font-size: 13px; font-weight: 500; color: var(--ink); }
-    .stat-label-en { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); font-weight: 300; }
-    .section-header { padding: 8px 24px 0; display: flex; align-items: center; justify-content: space-between; animation: fadeUp 0.5s 0.2s ease both; }
-    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--ink); letter-spacing: 0.02em; }
-    .section-sub { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); }
-    .car-list { padding: 12px 24px; display: flex; flex-direction: column; gap: 10px; animation: fadeUp 0.5s 0.25s ease both; }
-    .car-card { background: white; border-radius: var(--radius); border: 1px solid var(--divider); padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: box-shadow 0.2s ease, transform 0.15s ease; cursor: pointer; animation: fadeUp 0.4s ease both; }
-    .car-card:active { transform: scale(0.98); }
-    .car-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+
+    .stat-label-th {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .stat-label-en {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      font-weight: 300;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      padding: 8px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+
+    .section-sub {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    /* ── CAR LIST ── */
+    .car-list {
+      padding: 12px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+
+    .car-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--divider);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+      cursor: pointer;
+    }
+
+    .car-card:active {
+      transform: scale(0.98);
+    }
+
+    .car-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    }
+
+    .car-icon-wrap {
+      width: 52px;
+      height: 38px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .car-svg { width: 100%; height: 100%; }
+
+    .car-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .car-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .car-plate {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .car-time {
+      font-size: 11px;
+      color: var(--ink-muted);
+      margin-top: 1px;
+    }
+
+    .status-pill {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .status-pill.in {
+      background: var(--green-light);
+      border: 1.5px solid var(--green-border);
+    }
+
+    .status-pill.out {
+      background: var(--red-light);
+      border: 1.5px solid var(--red-border);
+    }
+
+    /* ── GOLD DIVIDER ── */
+    .gold-divider {
+      margin: 20px 24px 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+    }
+
+    /* ── REPORT SECTION ── */
+    .report-section {
+      padding: 20px 24px;
+      animation: fadeUp 0.5s 0.35s ease both;
+    }
+
+    .report-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 10px;
+    }
+
+    .report-btn {
+      width: 100%;
+      background: white;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      text-align: left;
+    }
+
+    .report-btn:active { transform: scale(0.98); }
+
+    .report-btn:hover {
+      border-color: var(--gold);
+      box-shadow: 0 4px 20px rgba(184,152,106,0.12);
+    }
+
+    .report-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--warm-white);
+      border: 1px solid var(--divider);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .report-text-th {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .report-text-en {
+      font-size: 11px;
+      color: var(--ink-muted);
+      margin-top: 1px;
+      letter-spacing: 0.04em;
+    }
+
+    .report-arrow {
+      margin-left: auto;
+      color: var(--gold);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,24,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--divider);
+      margin: 0 auto 24px;
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .modal-sub {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-bottom: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    .area-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .area-btn {
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius-sm);
+      padding: 12px 10px;
+      background: white;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    .area-btn:active { transform: scale(0.96); }
+
+    .area-btn.selected {
+      border-color: var(--gold);
+      background: #FBF7F0;
+    }
+
+    .area-btn-th {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .area-btn-en {
+      font-size: 10px;
+      color: var(--ink-muted);
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: white;
+      resize: none;
+      height: 90px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .modal-textarea:focus { border-color: var(--gold); }
+
+    .modal-textarea::placeholder { color: var(--ink-muted); }
+
+    .send-btn {
+      width: 100%;
+      background: var(--ink);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .send-btn:active { transform: scale(0.98); }
+    .send-btn:hover { background: #2D2D2A; }
+
+    .send-btn.sent {
+      background: var(--green);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--warm-white);
+      border: 1px solid var(--divider);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--ink-muted);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: 0 24px 8px;
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .car-card {
+      animation: fadeUp 0.4s ease both;
+    }
     .car-card:nth-child(1) { animation-delay: 0.28s; }
     .car-card:nth-child(2) { animation-delay: 0.33s; }
     .car-card:nth-child(3) { animation-delay: 0.38s; }
@@ -76,63 +539,25 @@
     .car-card:nth-child(6) { animation-delay: 0.53s; }
     .car-card:nth-child(7) { animation-delay: 0.58s; }
     .car-card:nth-child(8) { animation-delay: 0.63s; }
-    .car-icon-wrap { width: 52px; height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .car-svg { width: 100%; height: 100%; }
-    .car-info { flex: 1; min-width: 0; }
-    .car-name { font-size: 15px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .car-plate { font-size: 12px; color: var(--ink-muted); margin-top: 2px; letter-spacing: 0.05em; }
-    .car-time { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
-    .status-pill { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-    .status-pill.in { background: var(--green-light); border: 1.5px solid var(--green-border); }
-    .status-pill.out { background: var(--red-light); border: 1.5px solid var(--red-border); }
-    .gold-divider { margin: 20px 24px 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-light), transparent); }
-    .report-section { padding: 20px 24px; animation: fadeUp 0.5s 0.35s ease both; }
-    .report-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
-    .report-btn { width: 100%; background: white; border: 1.5px solid var(--divider); border-radius: var(--radius); padding: 18px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; text-align: left; }
-    .report-btn:active { transform: scale(0.98); }
-    .report-btn:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(184,152,106,0.12); }
-    .report-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--warm-white); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .report-text-th { font-size: 15px; font-weight: 500; color: var(--ink); }
-    .report-text-en { font-size: 11px; color: var(--ink-muted); margin-top: 1px; letter-spacing: 0.04em; }
-    .report-arrow { margin-left: auto; color: var(--gold); font-size: 18px; flex-shrink: 0; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,24,0.5); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal { background: white; border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; margin: 0 auto; padding: 28px 24px 48px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); }
-    .modal-overlay.open .modal { transform: translateY(0); }
-    .modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--divider); margin: 0 auto 24px; }
-    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: var(--ink); margin-bottom: 4px; }
-    .modal-sub { font-size: 12px; color: var(--ink-muted); margin-bottom: 20px; letter-spacing: 0.04em; }
-    .area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .area-btn { border: 1.5px solid var(--divider); border-radius: var(--radius-sm); padding: 12px 10px; background: white; cursor: pointer; text-align: center; transition: all 0.15s; font-family: 'Sarabun', sans-serif; }
-    .area-btn:active { transform: scale(0.96); }
-    .area-btn.selected { border-color: var(--gold); background: #FBF7F0; }
-    .area-btn-th { font-size: 14px; font-weight: 500; color: var(--ink); }
-    .area-btn-en { font-size: 10px; color: var(--ink-muted); margin-top: 2px; letter-spacing: 0.04em; }
-    .modal-textarea { width: 100%; border: 1.5px solid var(--divider); border-radius: var(--radius-sm); padding: 14px; font-family: 'Sarabun', sans-serif; font-size: 14px; color: var(--ink); background: white; resize: none; height: 90px; margin-bottom: 16px; outline: none; transition: border-color 0.2s; }
-    .modal-textarea:focus { border-color: var(--gold); }
-    .modal-textarea::placeholder { color: var(--ink-muted); }
-    .send-btn { width: 100%; background: var(--ink); color: white; border: none; border-radius: var(--radius-sm); padding: 16px; font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; letter-spacing: 0.04em; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .send-btn:active { transform: scale(0.98); }
-    .send-btn:hover { background: #2D2D2A; }
-    .send-btn.sent { background: var(--green); }
-    .modal-close { position: absolute; top: 20px; right: 20px; width: 32px; height: 32px; border-radius: 50%; background: var(--warm-white); border: 1px solid var(--divider); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--ink-muted); }
-    .footer { padding: 0 24px 8px; text-align: center; }
-    .footer-text { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); }
-    @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
   </style>
 </head>
 <body>
+
+  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
       <div>
         <div class="header-title">DC <span>House</span></div>
         <div class="header-sub">ระบบรถเข้า-ออก · Car Gate System</div>
       </div>
-      <div class="live-badge"><div class="live-dot"></div>Live</div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        Live
+      </div>
     </div>
   </div>
+
+  <!-- STAT BLOCKS -->
   <div class="stats">
     <div class="stat-card green">
       <div class="stat-emoji">🟢</div>
@@ -147,12 +572,21 @@
       <div class="stat-label-en">Cars Out</div>
     </div>
   </div>
+
+  <!-- CAR LIST -->
   <div class="section-header">
     <div class="section-title">รายการรถ · All Vehicles</div>
     <div class="section-sub" id="last-updated">อัพเดตล่าสุด —</div>
   </div>
-  <div class="car-list" id="car-list"></div>
+
+  <div class="car-list" id="car-list">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- GOLD DIVIDER -->
   <div class="gold-divider"></div>
+
+  <!-- REPORT SECTION -->
   <div class="report-section">
     <div class="report-label">บริการ · Services</div>
     <button class="report-btn" onclick="openModal()">
@@ -164,84 +598,169 @@
       <div class="report-arrow">›</div>
     </button>
   </div>
+
+  <!-- FOOTER -->
   <div class="footer">
     <div class="footer-text">DC House · Family System · ลิขสิทธิ์ครอบครัว</div>
   </div>
+
+  <!-- REPORT MODAL -->
   <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
     <div class="modal" style="position:relative;">
       <button class="modal-close" onclick="closeModal()">✕</button>
       <div class="modal-handle"></div>
       <div class="modal-title">รายงานปัญหา</div>
       <div class="modal-sub">Report a Problem · ข้อความจะส่งตรงถึงคุณพ่อ</div>
+
       <div style="font-size:12px;color:var(--ink-muted);margin-bottom:8px;letter-spacing:0.04em;">เลือกบริเวณ · Select Area</div>
-      <div class="area-grid">
-        <button class="area-btn" onclick="selectArea(this)"><div class="area-btn-th">🚗 ลานจอดรถ</div><div class="area-btn-en">Parking Area</div></button>
-        <button class="area-btn" onclick="selectArea(this)"><div class="area-btn-th">🚪 ประตูรั้ว</div><div class="area-btn-en">Gate / Fence</div></button>
-        <button class="area-btn" onclick="selectArea(this)"><div class="area-btn-th">💡 ไฟทางเดิน</div><div class="area-btn-en">Pathway Lights</div></button>
-        <button class="area-btn" onclick="selectArea(this)"><div class="area-btn-th">📷 กล้องวงจรปิด</div><div class="area-btn-en">CCTV Camera</div></button>
-        <button class="area-btn" onclick="selectArea(this)"><div class="area-btn-th">🌿 สวน</div><div class="area-btn-en">Garden</div></button>
-        <button class="area-btn" onclick="selectArea(this)"><div class="area-btn-th">⚙️ อื่นๆ</div><div class="area-btn-en">Other</div></button>
+      <div class="area-grid" id="area-grid">
+        <button class="area-btn" onclick="selectArea(this)">
+          <div class="area-btn-th">🚗 ลานจอดรถ</div>
+          <div class="area-btn-en">Parking Area</div>
+        </button>
+        <button class="area-btn" onclick="selectArea(this)">
+          <div class="area-btn-th">🚪 ประตูรั้ว</div>
+          <div class="area-btn-en">Gate / Fence</div>
+        </button>
+        <button class="area-btn" onclick="selectArea(this)">
+          <div class="area-btn-th">💡 ไฟทางเดิน</div>
+          <div class="area-btn-en">Pathway Lights</div>
+        </button>
+        <button class="area-btn" onclick="selectArea(this)">
+          <div class="area-btn-th">📷 กล้องวงจรปิด</div>
+          <div class="area-btn-en">CCTV Camera</div>
+        </button>
+        <button class="area-btn" onclick="selectArea(this)">
+          <div class="area-btn-th">🌿 สวน</div>
+          <div class="area-btn-en">Garden</div>
+        </button>
+        <button class="area-btn" onclick="selectArea(this)">
+          <div class="area-btn-th">⚙️ อื่นๆ</div>
+          <div class="area-btn-en">Other</div>
+        </button>
       </div>
-      <textarea class="modal-textarea" id="report-detail" placeholder="อธิบายปัญหาเพิ่มเติม · Describe the problem…"></textarea>
+
+      <textarea
+        class="modal-textarea"
+        id="report-detail"
+        placeholder="อธิบายปัญหาเพิ่มเติม · Describe the problem…"
+      ></textarea>
+
       <button class="send-btn" id="send-btn" onclick="sendReport()">
         <span id="send-label">📨 ส่งถึงคุณพ่อ · Send to Dad</span>
       </button>
     </div>
   </div>
+
 <script>
+  // ── MOCK DATA (replace with Google Sheets API later) ──
   const cars = [
-    { name: 'คุณพ่อ · Dad',      plate: 'กข 1234 กทม', status: 'in',  time: '08:14' },
-    { name: 'คุณแม่ · Mom',      plate: 'ขค 5678 กทม', status: 'in',  time: '08:32' },
-    { name: 'คุณปู่ · Grandpa',  plate: 'คง 9012 กทม', status: 'in',  time: '09:05' },
-    { name: 'พี่ใหญ่ · P\'Yai',  plate: 'งจ 3456 กทม', status: 'out', time: '10:20' },
-    { name: 'พี่กลาง · P\'Kang', plate: 'จฉ 7890 กทม', status: 'in',  time: '07:50' },
-    { name: 'น้องเล็ก · Nong',   plate: 'ฉช 1357 กทม', status: 'out', time: '11:15' },
-    { name: 'ป้าแดง · Pa Daeng', plate: 'ชซ 2468 กทม', status: 'in',  time: '06:45' },
-    { name: 'น้าบุ๋ม · Na Boom', plate: 'ซฌ 1122 กทม', status: 'in',  time: '07:30' },
+    { name: 'คุณพ่อ · Dad',       nameTH: 'คุณพ่อ',     plate: 'กข 1234 กทม', status: 'in',  time: '08:14' },
+    { name: 'คุณแม่ · Mom',       nameTH: 'คุณแม่',     plate: 'ขค 5678 กทม', status: 'in',  time: '08:32' },
+    { name: 'คุณปู่ · Grandpa',   nameTH: 'คุณปู่',     plate: 'คง 9012 กทม', status: 'in',  time: '09:05' },
+    { name: 'พี่ใหญ่ · P\'Yai',   nameTH: 'พี่ใหญ่',   plate: 'งจ 3456 กทม', status: 'out', time: '10:20' },
+    { name: 'พี่กลาง · P\'Kang',  nameTH: 'พี่กลาง',   plate: 'จฉ 7890 กทม', status: 'in',  time: '07:50' },
+    { name: 'น้องเล็ก · Nong',    nameTH: 'น้องเล็ก',  plate: 'ฉช 1357 กทม', status: 'out', time: '11:15' },
+    { name: 'ป้าแดง · Pa Daeng',  nameTH: 'ป้าแดง',    plate: 'ชซ 2468 กทม', status: 'in',  time: '06:45' },
+    { name: 'น้าบุ๋ม · Na Boom',  nameTH: 'น้าบุ๋ม',   plate: 'ซฌ 1122 กทม', status: 'in',  time: '07:30' },
   ];
-  function carSVG(s) {
-    const b = s==='in'?'#2D6A4F':'#B5281C', l = s==='in'?'#A8D5B8':'#E8B0AC';
-    return `<svg class="car-svg" viewBox="0 0 80 46" fill="none"><rect x="8" y="14" width="64" height="24" rx="6" fill="${b}" opacity="0.15"/><rect x="14" y="8" width="52" height="30" rx="7" fill="${b}" opacity="0.25"/><rect x="10" y="16" width="60" height="22" rx="6" fill="${b}" opacity="0.5"/><rect x="18" y="10" width="44" height="16" rx="5" fill="${b}" opacity="0.3"/><circle cx="22" cy="38" r="6" fill="${b}" opacity="0.7"/><circle cx="22" cy="38" r="3" fill="white" opacity="0.6"/><circle cx="58" cy="38" r="6" fill="${b}" opacity="0.7"/><circle cx="58" cy="38" r="3" fill="white" opacity="0.6"/><rect x="10" y="16" width="10" height="5" rx="2" fill="${l}"/><rect x="60" y="16" width="10" height="5" rx="2" fill="${l}"/></svg>`;
+
+  function carSVG(status) {
+    const body = status === 'in' ? '#2D6A4F' : '#B5281C';
+    const light = status === 'in' ? '#A8D5B8' : '#E8B0AC';
+    return `<svg class="car-svg" viewBox="0 0 80 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="14" width="64" height="24" rx="6" fill="${body}" opacity="0.15"/>
+      <rect x="14" y="8" width="52" height="30" rx="7" fill="${body}" opacity="0.25"/>
+      <rect x="10" y="16" width="60" height="22" rx="6" fill="${body}" opacity="0.5"/>
+      <rect x="18" y="10" width="44" height="16" rx="5" fill="${body}" opacity="0.3"/>
+      <circle cx="22" cy="38" r="6" fill="${body}" opacity="0.7"/>
+      <circle cx="22" cy="38" r="3" fill="white" opacity="0.6"/>
+      <circle cx="58" cy="38" r="6" fill="${body}" opacity="0.7"/>
+      <circle cx="58" cy="38" r="3" fill="white" opacity="0.6"/>
+      <rect x="10" y="16" width="10" height="5" rx="2" fill="${light}"/>
+      <rect x="60" y="16" width="10" height="5" rx="2" fill="${light}"/>
+    </svg>`;
   }
+
   function renderCars() {
-    const inCount = cars.filter(c=>c.status==='in').length;
-    const outCount = cars.filter(c=>c.status==='out').length;
-    document.getElementById('count-in').textContent = inCount;
+    const list = document.getElementById('car-list');
+    const inCount  = cars.filter(c => c.status === 'in').length;
+    const outCount = cars.filter(c => c.status === 'out').length;
+
+    document.getElementById('count-in').textContent  = inCount;
     document.getElementById('count-out').textContent = outCount;
+
     const now = new Date();
-    document.getElementById('last-updated').textContent = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} น.`;
-    document.getElementById('car-list').innerHTML = cars.map(car=>`
+    document.getElementById('last-updated').textContent =
+      `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} น.`;
+
+    list.innerHTML = cars.map(car => `
       <div class="car-card">
         <div class="car-icon-wrap">${carSVG(car.status)}</div>
         <div class="car-info">
           <div class="car-name">${car.name}</div>
           <div class="car-plate">${car.plate}</div>
-          <div class="car-time">${car.status==='in'?'เข้า':'ออก'} ${car.time} น.</div>
+          <div class="car-time">${car.status === 'in' ? 'เข้า' : 'ออก'} ${car.time} น.</div>
         </div>
-        <div class="status-pill ${car.status}">${car.status==='in'?'🟢':'🔴'}</div>
-      </div>`).join('');
+        <div class="status-pill ${car.status}">
+          ${car.status === 'in' ? '🟢' : '🔴'}
+        </div>
+      </div>
+    `).join('');
   }
+
   renderCars();
-  function openModal() { document.getElementById('modal-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
+
+  // ── MODAL ──
+  function openModal() {
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
   function closeModal() {
     document.getElementById('modal-overlay').classList.remove('open');
-    document.body.style.overflow='';
-    document.querySelectorAll('.area-btn').forEach(b=>b.classList.remove('selected'));
-    document.getElementById('report-detail').value='';
-    document.getElementById('send-btn').classList.remove('sent');
-    document.getElementById('send-label').textContent='📨 ส่งถึงคุณพ่อ · Send to Dad';
+    document.body.style.overflow = '';
+    // reset
+    document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('report-detail').value = '';
+    const btn = document.getElementById('send-btn');
+    btn.classList.remove('sent');
+    document.getElementById('send-label').textContent = '📨 ส่งถึงคุณพ่อ · Send to Dad';
   }
-  function handleOverlayClick(e) { if(e.target===document.getElementById('modal-overlay')) closeModal(); }
-  let selectedArea='';
-  function selectArea(el) { document.querySelectorAll('.area-btn').forEach(b=>b.classList.remove('selected')); el.classList.add('selected'); selectedArea=el.querySelector('.area-btn-th').textContent.trim(); }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  }
+
+  let selectedArea = '';
+
+  function selectArea(el) {
+    document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedArea = el.querySelector('.area-btn-th').textContent.trim();
+  }
+
   function sendReport() {
-    if(!selectedArea) { alert('กรุณาเลือกบริเวณที่มีปัญหา\nPlease select an area.'); return; }
     const detail = document.getElementById('report-detail').value.trim();
-    const msg = encodeURIComponent(`🔧 รายงานปัญหา DC House\n\n📍 บริเวณ: ${selectedArea}\n📝 รายละเอียด: ${detail||'(ไม่ได้ระบุ)'}\n\n⏰ เวลา: ${new Date().toLocaleTimeString('th-TH')}`);
-    window.open(`https://line.me/R/msg/text/?${msg}`,'_blank');
-    document.getElementById('send-btn').classList.add('sent');
-    document.getElementById('send-label').textContent='✅ ส่งแล้ว · Sent!';
-    setTimeout(closeModal,1800);
+    if (!selectedArea) {
+      alert('กรุณาเลือกบริเวณที่มีปัญหา\nPlease select an area.');
+      return;
+    }
+
+    const msg = encodeURIComponent(
+      `🔧 รายงานปัญหา DC House\n\n` +
+      `📍 บริเวณ: ${selectedArea}\n` +
+      `📝 รายละเอียด: ${detail || '(ไม่ได้ระบุ)'}\n\n` +
+      `⏰ เวลา: ${new Date().toLocaleTimeString('th-TH')}`
+    );
+
+    // Opens LINE app with prefilled message to send
+    window.open(`https://line.me/R/msg/text/?${msg}`, '_blank');
+
+    const btn = document.getElementById('send-btn');
+    btn.classList.add('sent');
+    document.getElementById('send-label').textContent = '✅ ส่งแล้ว · Sent!';
+    setTimeout(closeModal, 1800);
   }
 </script>
 </body>
