@@ -554,15 +554,12 @@
  
   /* ── INIT ── */
   async function init() {
-    try {
-      const res = await fetch('cities.json?t=' + Date.now());
-      cities = res.ok ? await res.json() : DEFAULT_CITIES;
-    } catch { cities = DEFAULT_CITIES; }
- 
-    await loadVotes();
+    cities = DEFAULT_CITIES;
     buildBGs();
     buildTabs();
     showCity(0);
+    await loadVotes();
+    showCity(currentCity);
   }
  
   /* ── LOAD VOTES ── */
