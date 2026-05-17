@@ -6,7 +6,7 @@
   <title>DC House — ระบบรถเข้า-ออก</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant:wght@300;400;500&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant:wght@300;400;500&display=swap" rel="stylesheet" />
  
   <style>
     /* ─── Design Tokens ─────────────────────────────────── */
@@ -32,7 +32,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  
     html, body {
-      font-family: 'Prompt', 'Cormorant Garamond', Georgia, sans-serif;
+      font-family: 'Cormorant Garamond', Georgia, serif;
       background: var(--warm-white);
       color: var(--ink);
       min-height: 100vh;
@@ -49,16 +49,12 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+      box-shadow: 0 1px 0 var(--divider), 0 2px 16px rgba(0,0,0,0.06);
     }
  
     .header-logo {
-      height: 52px;
+      height: 56px;
       width: auto;
-      /* PNG has grey background — use mix-blend-mode to blend on dark header.
-         If logo PNG has transparency, remove this block entirely.
-         Adjust as needed after seeing the result. */
-      border-radius: 6px;
       object-fit: contain;
     }
  
@@ -406,7 +402,7 @@
     /* ─── Responsive ─────────────────────────────────────── */
     @media (max-width: 540px) {
       header { padding: 0 16px; height: 64px; }
-      .header-logo { height: 42px; }
+      .header-logo { height: 44px; }
       main { padding: 24px 14px 50px; }
       .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .stat-card { padding: 18px 16px; gap: 12px; }
@@ -564,7 +560,7 @@
 ═══════════════════════════════════════ -->
 <script>
   /* ─── CONFIG ──────────────────────────────────────────── */
-  const PROXY_URL  = 'https://script.google.com/macros/s/AKfycbyNoDMaRd7e2wNhkY0Plcavp-odyK48jrOyrj7c9775qPKmH3vGhkb1N5kSDk8uAIgYQA/exec';
+  const PROXY_URL  = 'https://script.google.com/macros/s/AKfycby4SlIYGdaXgvnTaJacZ3Cby-rpCu4ZwKGJqQmEcUgJUvTGRFu1GUvXCReb1jOdukPXog/exec';
   const SECRET_KEY = 'dc-house-2026';
  
   // Auto-refresh every 60 seconds
@@ -607,7 +603,7 @@
  
       return `
         <div class="car-item">
-          <img src="${escapeHTML(car.photo)}" onerror="this.style.display='none'" style="width:56px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0;border:2px solid ${color};"/>
+          ${carSVG(color)}
           <div class="car-info">
             <div class="car-name">${escapeHTML(car.name)}</div>
             <div class="car-plate">${escapeHTML(car.plate)}</div>
