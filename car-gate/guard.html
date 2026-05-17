@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>DC House — ยาม</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="htt
+    s://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet" />
  
@@ -472,7 +473,40 @@
   }
  
   fetchData();
-  setInterval(fetchData, REFRESH_INTERVAL);
+  const CORRECT_PIN = '999999999';
+const pinEl = document.createElement('div');
+pinEl.id = 'pin-screen';
+pinEl.style.cssText = 'position:fixed;inset:0;background:var(--warm-white);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:Prompt,sans-serif;';
+pinEl.innerHTML = `
+  <img src="logo.png" style="height:48px;object-fit:contain;margin-bottom:8px;"/>
+  <div style="font-size:16px;font-weight:700;color:#1A1A1A;">กรุณาใส่รหัสผ่าน</div>
+  <input id="pin-input" type="password" inputmode="numeric" maxlength="9"
+    style="width:200px;text-align:center;font-size:24px;letter-spacing:0.2em;padding:12px;border:1.5px solid #E0D8C8;border-radius:12px;font-family:Prompt,sans-serif;"
+    placeholder="•••••••••"/>
+  <button onclick="checkPin()"
+    style="background:#C9A84C;color:#fff;border:none;border-radius:40px;padding:12px 32px;font-family:Prompt,sans-serif;font-size:15px;font-weight:700;cursor:pointer;">
+    เข้าสู่ระบบ
+  </button>
+  <div id="pin-error" style="color:#B33030;font-size:13px;display:none;">รหัสไม่ถูกต้อง</div>
+`;
+document.body.appendChild(pinEl);
+
+function checkPin() {
+  const input = document.getElementById('pin-input').value;
+  if (input === CORRECT_PIN) {
+    document.getElementById('pin-screen').remove();
+    fetchData();
+  } else {
+    document.getElementById('pin-error').style.display = 'block';
+    document.getElementById('pin-input').value = '';
+  }
+}
+
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPin();
+});
+
+setInterval(fetchData, REFRESH_INTERVAL);
 </script>
 </body>
 </html>
