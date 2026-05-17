@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet" />
  
   <style>
-    /* ─── Design Tokens ─────────────────────────────────── */
     :root {
       --warm-white:   #FAF8F4;
       --cream:        #F4F0E8;
@@ -22,57 +21,85 @@
       --divider:      #E0D8C8;
       --green-bg:     #EAF5EE;
       --green-text:   #2A7A4B;
+      --green-border: #B8DEC6;
       --red-bg:       #FAEAEA;
       --red-text:     #B33030;
-      --card-shadow:  0 2px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-      --radius:       12px;
+      --red-border:   #E8B8B8;
+      --card-shadow:  0 2px 12px rgba(0,0,0,0.06);
+      --radius:       10px;
     }
  
-    /* ─── Reset ─────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  
     html, body {
-      font-family: 'Prompt', 'Cormorant Garamond', Georgia, sans-serif;
+      font-family: 'Prompt', sans-serif;
       background: var(--warm-white);
       color: var(--ink);
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       -webkit-tap-highlight-color: transparent;
     }
  
-    /* ─── Header ────────────────────────────────────────── */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+ 
+    /* ─── Header ─────────────────────────────────────────── */
     header {
       background: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      height: 64px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 1px 0 var(--divider), 0 2px 16px rgba(0,0,0,0.06);
+      padding: 0 24px;
+      height: 56px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--divider);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+ 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
  
     .header-logo {
-      height: 40px;
+      height: 36px;
       width: auto;
       object-fit: contain;
     }
  
-    .header-title {
-      font-size: 14px;
-      font-weight: 600;
+    .header-subtitle {
+      font-size: 12px;
       color: var(--muted);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
+      border-left: 1px solid var(--divider);
+      padding-left: 16px;
     }
  
-    /* ─── Live Badge ─────────────────────────────────────── */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+ 
+    .stats-inline {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+ 
+    .stat-in  { color: var(--green-text); }
+    .stat-out { color: var(--red-text); }
+ 
     .live-badge {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      letter-spacing: 0.06em;
       color: var(--gold-dark);
       font-weight: 600;
     }
@@ -90,101 +117,76 @@
       100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
     }
  
-    /* ─── Main ───────────────────────────────────────────── */
-    main {
-      padding: 20px 16px 80px;
-      max-width: 480px;
-      margin: 0 auto;
-    }
- 
-    /* ─── Page Subtitle ──────────────────────────────────── */
-    .page-subtitle {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 400;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--divider);
-    }
-    .page-subtitle span { color: var(--gold); margin: 0 6px; }
- 
-    /* ─── Stats Row ──────────────────────────────────────── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
- 
-    .stat-card {
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: var(--card-shadow);
-    }
-    .stat-card.green { background: var(--green-bg); border: 1px solid #B8DEC6; }
-    .stat-card.red   { background: var(--red-bg);   border: 1px solid #E8B8B8; }
- 
-    .stat-count {
-      font-size: 32px;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .stat-card.green .stat-count { color: var(--green-text); }
-    .stat-card.red   .stat-count { color: var(--red-text); }
- 
-    .stat-label {
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.3;
-      margin-top: 2px;
-    }
-    .stat-card.green .stat-label { color: var(--green-text); }
-    .stat-card.red   .stat-label { color: var(--red-text); }
- 
-    /* ─── Section Header ─────────────────────────────────── */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .section-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--charcoal);
-    }
     .last-updated {
       font-size: 11px;
       color: var(--muted);
     }
  
-    /* ─── Car List ───────────────────────────────────────── */
-    .car-list {
+    /* ─── 3 Columns ──────────────────────────────────────── */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      flex: 1;
+      overflow: hidden;
+    }
+ 
+    .column {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--divider);
+      overflow: hidden;
+    }
+    .column:last-child { border-right: none; }
+ 
+    .column-header {
+      background: var(--cream);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--divider);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+ 
+    .column-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--charcoal);
+      letter-spacing: 0.04em;
+    }
+ 
+    .column-count {
+      font-size: 11px;
+      color: var(--muted);
+    }
+ 
+    .column-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+ 
+    /* ─── Car Card ───────────────────────────────────────── */
+    .car-card {
       background: #fff;
       border-radius: var(--radius);
-      border: 1px solid var(--divider);
-      overflow: hidden;
+      border: 1.5px solid var(--divider);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       box-shadow: var(--card-shadow);
     }
  
-    .car-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--divider);
-      transition: background 0.15s;
-    }
-    .car-item:last-child { border-bottom: none; }
+    .car-card.is-in  { border-color: var(--green-border); }
+    .car-card.is-out { border-color: var(--red-border); }
  
     .car-photo {
       width: 52px;
-      height: 38px;
+      height: 36px;
       object-fit: contain;
       border-radius: 6px;
       flex-shrink: 0;
@@ -196,35 +198,34 @@
     }
  
     .car-name {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--charcoal);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.3;
     }
  
     .car-plate {
-      font-size: 11px;
-      letter-spacing: 0.08em;
+      font-size: 10px;
       color: var(--muted);
-      margin-top: 2px;
+      letter-spacing: 0.06em;
+      margin-top: 1px;
     }
  
     /* ─── Toggle Button ──────────────────────────────────── */
     .toggle-btn {
       flex-shrink: 0;
-      width: 72px;
-      height: 36px;
+      width: 58px;
+      height: 32px;
       border-radius: 20px;
       border: none;
       font-family: 'Prompt', sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.06em;
       cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
+      transition: all 0.18s ease;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -233,22 +234,19 @@
     .toggle-btn.in {
       background: var(--green-bg);
       color: var(--green-text);
-      border: 1.5px solid #B8DEC6;
+      border: 1.5px solid var(--green-border);
     }
+ 
     .toggle-btn.out {
       background: var(--red-bg);
       color: var(--red-text);
-      border: 1.5px solid #E8B8B8;
+      border: 1.5px solid var(--red-border);
     }
  
-    .toggle-btn:active { transform: scale(0.94); }
+    .toggle-btn:active { transform: scale(0.93); }
+    .toggle-btn.loading { opacity: 0.45; pointer-events: none; }
  
-    .toggle-btn.loading {
-      opacity: 0.5;
-      pointer-events: none;
-    }
- 
-    /* ─── Flash animation on update ─────────────────────── */
+    /* ─── Flash ──────────────────────────────────────────── */
     @keyframes flashGreen {
       0%   { background: #B8DEC6; }
       100% { background: #fff; }
@@ -257,21 +255,21 @@
       0%   { background: #E8B8B8; }
       100% { background: #fff; }
     }
-    .car-item.flash-in  { animation: flashGreen 0.6s ease; }
-    .car-item.flash-out { animation: flashRed   0.6s ease; }
+    .car-card.flash-in  { animation: flashGreen 0.5s ease; }
+    .car-card.flash-out { animation: flashRed   0.5s ease; }
  
-    /* ─── Loading / Empty ────────────────────────────────── */
+    /* ─── Loading ────────────────────────────────────────── */
     .loading-row {
-      padding: 40px;
+      padding: 24px;
       text-align: center;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
     }
  
     /* ─── Toast ──────────────────────────────────────────── */
     .toast {
       position: fixed;
-      bottom: 28px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%) translateY(80px);
       background: var(--charcoal);
@@ -279,7 +277,7 @@
       font-family: 'Prompt', sans-serif;
       font-size: 14px;
       font-weight: 600;
-      padding: 12px 24px;
+      padding: 12px 28px;
       border-radius: 40px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       transition: transform 0.3s ease;
@@ -287,96 +285,72 @@
       white-space: nowrap;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
- 
-    /* ─── Gold Divider ───────────────────────────────────── */
-    .gold-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
-      margin: 20px 0;
-    }
- 
-    /* ─── Footer ─────────────────────────────────────────── */
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      border-top: 1px solid var(--divider);
-    }
   </style>
 </head>
 <body>
+<div class="app">
  
-<!-- ═══════════════════════════════════════
-     HEADER
-═══════════════════════════════════════ -->
-<header>
-  <img src="logo.png" alt="DC House" class="header-logo" />
-  <div class="live-badge">
-    <div class="live-dot"></div>
-    Live
-  </div>
-</header>
- 
- 
-<!-- ═══════════════════════════════════════
-     MAIN
-═══════════════════════════════════════ -->
-<main>
- 
-  <p class="page-subtitle">
-    DC House<span>·</span>หน้าจอยาม
-  </p>
- 
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-card green">
-      <div>
-        <div class="stat-count" id="count-in">—</div>
-        <div class="stat-label">อยู่ในบ้าน</div>
-      </div>
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="DC House" class="header-logo" />
+      <div class="header-subtitle">หน้าจอยาม</div>
     </div>
-    <div class="stat-card red">
-      <div>
-        <div class="stat-count" id="count-out">—</div>
-        <div class="stat-label">ออกไปแล้ว</div>
+    <div class="header-right">
+      <div class="stats-inline">
+        <span class="stat-in">🟢 อยู่ในบ้าน: <span id="count-in">—</span></span>
+        <span class="stat-out">🔴 ออกไปแล้ว: <span id="count-out">—</span></span>
       </div>
+      <div class="last-updated" id="last-updated">—</div>
+      <div class="live-badge"><div class="live-dot"></div>Live</div>
     </div>
+  </header>
+ 
+  <!-- 3 Columns -->
+  <div class="columns">
+ 
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">🚌 รถสาธารณะ</div>
+        <div class="column-count">16 คัน</div>
+      </div>
+      <div class="column-body" id="col-1"></div>
+    </div>
+ 
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">🚗 รถ Generation 2</div>
+        <div class="column-count">8 คัน</div>
+      </div>
+      <div class="column-body" id="col-2"></div>
+    </div>
+ 
+    <div class="column">
+      <div class="column-header">
+        <div class="column-title">🚙 รถ Generation 3</div>
+        <div class="column-count">10 คัน</div>
+      </div>
+      <div class="column-body" id="col-3"></div>
+    </div>
+ 
   </div>
+</div>
  
-  <!-- Car List -->
-  <div class="section-header">
-    <div class="section-title">รายการรถทั้งหมด</div>
-    <div class="last-updated" id="last-updated">—</div>
-  </div>
- 
-  <div class="car-list" id="car-list">
-    <div class="loading-row">กำลังโหลด…</div>
-  </div>
- 
-  <div class="gold-divider"></div>
- 
-</main>
- 
-<footer>DC House · ระบบยาม · Family System</footer>
- 
-<!-- Toast notification -->
 <div class="toast" id="toast"></div>
  
- 
-<!-- ═══════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════ -->
 <script>
-  /* ─── CONFIG ──────────────────────────────────────────── */
   const PROXY_URL  = 'https://script.google.com/macros/s/AKfycby4SlIYGdaXgvnTaJacZ3Cby-rpCu4ZwKGJqQmEcUgJUvTGRFu1GUvXCReb1jOdukPXog/exec';
   const SECRET_KEY = 'dc-house-2026';
-  const REFRESH_INTERVAL = 30 * 1000; // refresh every 30s on guard page
+  const REFRESH_INTERVAL = 30 * 1000;
+ 
+  const GROUPS = [
+    { id: 'col-1', start: 0,  end: 15 },
+    { id: 'col-2', start: 16, end: 23 },
+    { id: 'col-3', start: 24, end: 33 },
+  ];
  
   let carsData = [];
  
-  /* ─── FETCH DATA ──────────────────────────────────────── */
   async function fetchData() {
     try {
       const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&t=${Date.now()}`);
@@ -384,65 +358,63 @@
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       carsData = data.cars;
-      renderCars(data.cars);
+      renderAll(data.cars);
     } catch (err) {
-      document.getElementById('car-list').innerHTML =
-        `<div class="loading-row">⚠️ โหลดไม่ได้<br><small style="color:#aaa">${err.message}</small></div>`;
+      GROUPS.forEach(g => {
+        document.getElementById(g.id).innerHTML = `<div class="loading-row">⚠️ โหลดไม่ได้</div>`;
+      });
     }
   }
  
-  /* ─── RENDER ──────────────────────────────────────────── */
-  function renderCars(cars) {
-    const list = document.getElementById('car-list');
-    if (!cars.length) {
-      list.innerHTML = '<div class="loading-row">ไม่พบข้อมูล</div>';
-      return;
-    }
+  function renderAll(cars) {
+    let totalIn = 0, totalOut = 0;
  
-    let countIn = 0, countOut = 0;
+    GROUPS.forEach(g => {
+      const slice     = cars.slice(g.start, g.end + 1);
+      const container = document.getElementById(g.id);
  
-    const html = cars.map((car, i) => {
-      const isIn = car.status === 'in';
-      const color = isIn ? '#2A7A4B' : '#B33030';
-      if (isIn) countIn++; else countOut++;
+      const html = slice.map((car, li) => {
+        const globalIndex = g.start + li;
+        const isIn  = car.status === 'in';
+        const color = isIn ? '#2A7A4B' : '#B33030';
+        if (isIn) totalIn++; else totalOut++;
  
-      return `
-        <div class="car-item" id="car-item-${i}">
-          <img
-            class="car-photo"
-            src="${escapeHTML(car.photo || '')}"
-            onerror="this.style.display='none'"
-            style="border:2px solid ${color};"
-          />
-          <div class="car-info">
-            <div class="car-name">${escapeHTML(car.name)}</div>
-            <div class="car-plate">${escapeHTML(car.plate)}</div>
-          </div>
-          <button
-            class="toggle-btn ${isIn ? 'in' : 'out'}"
-            id="btn-${i}"
-            onclick="toggleStatus(${i})"
-          >${isIn ? 'IN' : 'OUT'}</button>
-        </div>`;
-    }).join('');
+        return `
+          <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}">
+            <img
+              class="car-photo"
+              src="${escapeHTML(car.photo || '')}"
+              onerror="this.style.display='none'"
+              style="border:2px solid ${color};"
+            />
+            <div class="car-info">
+              <div class="car-name">${escapeHTML(car.name)}</div>
+              <div class="car-plate">${escapeHTML(car.plate)}</div>
+            </div>
+            <button
+              class="toggle-btn ${isIn ? 'in' : 'out'}"
+              id="btn-${globalIndex}"
+              onclick="toggleStatus(${globalIndex})"
+            >${isIn ? 'IN' : 'OUT'}</button>
+          </div>`;
+      }).join('');
  
-    list.innerHTML = html;
-    document.getElementById('count-in').textContent  = countIn;
-    document.getElementById('count-out').textContent = countOut;
+      container.innerHTML = html || '<div class="loading-row">ไม่พบข้อมูล</div>';
+    });
  
+    document.getElementById('count-in').textContent  = totalIn;
+    document.getElementById('count-out').textContent = totalOut;
     const now = new Date();
     document.getElementById('last-updated').textContent =
-      now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      'อัพเดต ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
   }
  
-  /* ─── TOGGLE STATUS ───────────────────────────────────── */
   async function toggleStatus(index) {
-    const car    = carsData[index];
+    const car       = carsData[index];
     const newStatus = car.status === 'in' ? 'out' : 'in';
-    const btn    = document.getElementById(`btn-${index}`);
-    const item   = document.getElementById(`car-item-${index}`);
+    const btn       = document.getElementById(`btn-${index}`);
+    const card      = document.getElementById(`card-${index}`);
  
-    // Optimistic UI update
     btn.classList.add('loading');
     btn.textContent = '…';
  
@@ -454,32 +426,30 @@
       const data = await res.json();
       if (data.error) throw new Error(data.error);
  
-      // Update local data
       carsData[index].status = newStatus;
  
-      // Update button
-      const isIn = newStatus === 'in';
+      const isIn  = newStatus === 'in';
       const color = isIn ? '#2A7A4B' : '#B33030';
+ 
       btn.classList.remove('loading', 'in', 'out');
       btn.classList.add(isIn ? 'in' : 'out');
       btn.textContent = isIn ? 'IN' : 'OUT';
  
-      // Update photo border color
-      const photo = item.querySelector('.car-photo');
+      card.classList.remove('is-in', 'is-out');
+      card.classList.add(isIn ? 'is-in' : 'is-out');
+ 
+      const photo = card.querySelector('.car-photo');
       if (photo) photo.style.border = `2px solid ${color}`;
  
-      // Flash the row
-      item.classList.add(isIn ? 'flash-in' : 'flash-out');
-      setTimeout(() => item.classList.remove('flash-in', 'flash-out'), 700);
+      card.classList.add(isIn ? 'flash-in' : 'flash-out');
+      setTimeout(() => card.classList.remove('flash-in', 'flash-out'), 600);
  
-      // Update counters
-      let countIn = 0, countOut = 0;
-      carsData.forEach(c => c.status === 'in' ? countIn++ : countOut++);
-      document.getElementById('count-in').textContent  = countIn;
-      document.getElementById('count-out').textContent = countOut;
+      let totalIn = 0, totalOut = 0;
+      carsData.forEach(c => c.status === 'in' ? totalIn++ : totalOut++);
+      document.getElementById('count-in').textContent  = totalIn;
+      document.getElementById('count-out').textContent = totalOut;
  
-      // Toast
-      showToast(`${escapeHTML(car.name)} → ${isIn ? 'เข้า ✅' : 'ออก 🔴'}`);
+      showToast(`${car.name} → ${isIn ? 'เข้า ✅' : 'ออก 🔴'}`);
  
     } catch (err) {
       btn.classList.remove('loading');
@@ -488,7 +458,6 @@
     }
   }
  
-  /* ─── TOAST ───────────────────────────────────────────── */
   let toastTimer;
   function showToast(msg) {
     const toast = document.getElementById('toast');
@@ -498,15 +467,12 @@
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
   }
  
-  /* ─── HELPER ──────────────────────────────────────────── */
   function escapeHTML(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
  
-  /* ─── INIT ────────────────────────────────────────────── */
   fetchData();
   setInterval(fetchData, REFRESH_INTERVAL);
 </script>
- 
 </body>
 </html>
