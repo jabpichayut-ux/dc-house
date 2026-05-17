@@ -486,27 +486,6 @@
  
   <div class="gold-divider"></div>
  
-  <!-- Services -->
-  <div class="section-header" style="margin-bottom:18px;">
-    <div>
-      <span class="section-title">บริการ</span>
-      <span class="section-title-en">Services</span>
-    </div>
-  </div>
- 
-  <div class="services-grid">
-    <div class="service-card" onclick="openModal()">
-      <div class="service-inner">
-        <div class="service-icon">🔧</div>
-        <div>
-          <div class="service-name-th">รายงานปัญหา</div>
-          <div class="service-name-en">Report a problem</div>
-        </div>
-      </div>
-      <div class="service-arrow">›</div>
-    </div>
-  </div>
- 
 </main>
  
  
@@ -516,43 +495,6 @@
 <footer>
   DC House · Family System · ลิขสิทธิ์ครอบครัว
 </footer>
- 
- 
-<!-- ═══════════════════════════════════════
-     REPORT MODAL
-═══════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-title">รายงานปัญหา</div>
-    <div class="modal-subtitle">Report a Problem · ข้อความจะส่งตรงถึงคุณพ่อ</div>
- 
-    <div class="area-grid" id="area-grid">
-      <button class="area-btn" onclick="selectArea(this, '🚗 ลานจอดรถ')">
-        <span>🚗</span>ลานจอดรถ<br><small style="color:#aaa;font-size:11px;">Parking Area</small>
-      </button>
-      <button class="area-btn" onclick="selectArea(this, '🚪 ประตูรั้ว')">
-        <span>🚪</span>ประตูรั้ว<br><small style="color:#aaa;font-size:11px;">Gate / Fence</small>
-      </button>
-      <button class="area-btn" onclick="selectArea(this, '💡 ไฟทางเดิน')">
-        <span>💡</span>ไฟทางเดิน<br><small style="color:#aaa;font-size:11px;">Pathway Lights</small>
-      </button>
-      <button class="area-btn" onclick="selectArea(this, '📷 กล้องวงจรปิด')">
-        <span>📷</span>กล้องวงจรปิด<br><small style="color:#aaa;font-size:11px;">CCTV Camera</small>
-      </button>
-      <button class="area-btn" onclick="selectArea(this, '🌿 สวน')">
-        <span>🌿</span>สวน<br><small style="color:#aaa;font-size:11px;">Garden</small>
-      </button>
-      <button class="area-btn" onclick="selectArea(this, '⚙️ อื่นๆ')">
-        <span>⚙️</span>อื่นๆ<br><small style="color:#aaa;font-size:11px;">Other</small>
-      </button>
-    </div>
- 
-    <textarea class="problem-textarea" id="problem-text" placeholder="อธิบายปัญหา / Describe the problem…"></textarea>
- 
-    <button class="send-btn" onclick="sendReport()">📨 ส่งถึงคุณพ่อ · Send to Dad</button>
-  </div>
-</div>
  
  
 <!-- ═══════════════════════════════════════
