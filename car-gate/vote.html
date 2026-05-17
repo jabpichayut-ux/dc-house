@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DC House — เที่ยวประจำปี</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet" />
+ 
+  <style>
+    :root {
+      --warm-white:  #FAF8F4;
+      --cream:       #F4F0E8;
+      --gold:        #C9A84C;
+      --gold-light:  #E2C97E;
+      --gold-dark:   #9E7A2E;
+      --charcoal:    #1A1A1A;
+      --ink:         #2C2C2C;
+      --muted:       #888880;
+      --divider:     #E0D8C8;
+      --radius:      20px;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body {
+      font-family: 'Prompt', sans-serif;
+      background: #000;
+      color: var(--ink);
+      height: 100vh;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+ 
+    /* ════════════════════════════════
+       VIEW 1 — CITY SELECTION
+    ════════════════════════════════ */
+    #view-cities {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+ 
+    /* Backgrounds */
+    .city-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      z-index: 0;
+    }
+    .city-bg.active { opacity: 1; }
+    .city-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0,0,0,0.6) 0%,
+        rgba(0,0,0,0.25) 50%,
+        rgba(0,0,0,0.55) 100%
+      );
+    }
+ 
+    /* Header */
+    .v1-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      padding: 24px 24px 0;
+    }
+ 
+    .v1-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+ 
+    .v1-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--gold-light);
+      letter-spacing: 0.08em;
+      margin-top: 3px;
+    }
+ 
+    /* City tabs — right side */
+    .city-tabs {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+    }
+ 
+    .city-tab {
+      background: rgba(255,255,255,0.88);
+      border: none;
+      padding: 16px 10px;
+      cursor: pointer;
+      font-family: 'Prompt', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+ 
+    .city-tab:first-child { border-radius: 12px 0 0 0; }
+    .city-tab:last-child  { border-radius: 0 0 0 12px; }
+    .city-tab.active {
+      background: #fff;
+      color: var(--charcoal);
+      border-left-color: var(--gold);
+    }
+    .city-tab:active { transform: rotate(180deg) scale(0.95); }
+ 
+    /* City card — bottom */
+    .city-card {
+      position: absolute;
+      bottom: 32px;
+      left: 20px;
+      right: 68px;
+      z-index: 10;
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(14px);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+ 
+    .city-card-photo {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      display: block;
+    }
+ 
+    .city-card-body {
+      padding: 16px 18px 18px;
+    }
+ 
+    .city-card-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.1;
+    }
+ 
+    .city-card-name-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 3px;
+      letter-spacing: 0.06em;
+    }
+ 
+    .city-card-divider {
+      height: 1px;
+      background: var(--divider);
+      margin: 12px 0;
+    }
+ 
+    .city-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+ 
+    .vote-count {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .vote-count .num {
+      color: var(--charcoal);
+      font-size: 22px;
+      font-weight: 700;
+    }
+ 
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+ 
+    .btn-explore {
+      background: var(--cream);
+      color: var(--charcoal);
+      border: 1px solid var(--divider);
+      border-radius: 40px;
+      padding: 10px 16px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn-explore:active { transform: scale(0.95); }
+ 
+    .btn-vote {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      padding: 10px 20px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+    }
+    .btn-vote:active { transform: scale(0.95); }
+    .btn-vote.voted  { background: #4CAF50; box-shadow: 0 4px 16px rgba(76,175,80,0.35); }
+    .btn-vote.used   { opacity: 0.5; }
+ 
+    /* ════════════════════════════════
+       VIEW 2 — CITY DETAIL
+    ════════════════════════════════ */
+    #view-detail {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      background: var(--warm-white);
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    #view-detail.open {
+      display: flex;
+      transform: translateY(0);
+    }
+ 
+    /* Detail hero */
+    .detail-hero {
+      position: relative;
+      height: 220px;
+      flex-shrink: 0;
+    }
+ 
+    .detail-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+ 
+    .detail-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 60%);
+    }
+ 
+    .btn-back {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s;
+    }
+    .btn-back:active { background: rgba(0,0,0,0.55); }
+ 
+    /* Detail body */
+    .detail-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+ 
+    .detail-city-header {
+      padding: 20px 20px 0;
+      border-bottom: 1px solid var(--divider);
+      padding-bottom: 16px;
+    }
+ 
+    .detail-city-name {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+ 
+    .detail-city-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 3px;
+      letter-spacing: 0.06em;
+    }
+ 
+    .detail-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 18px 20px 10px;
+    }
+ 
+    /* Attraction list */
+    .attraction-list {
+      padding: 0 16px 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+ 
+    .attraction-item {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid var(--divider);
+      padding: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+ 
+    .attraction-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+ 
+    .attraction-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+ 
+    .attraction-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 400;
+    }
+ 
+    /* Fixed vote bar at bottom */
+    .detail-vote-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(250,248,244,0.96);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--divider);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+      gap: 12px;
+    }
+ 
+    .detail-vote-count {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .detail-vote-count .num {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+ 
+    .btn-vote-detail {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      padding: 13px 32px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+      flex: 1;
+      max-width: 200px;
+    }
+    .btn-vote-detail:active { transform: scale(0.96); }
+    .btn-vote-detail.voted  { background: #4CAF50; box-shadow: 0 4px 16px rgba(76,175,80,0.35); }
+    .btn-vote-detail.used   { background: var(--muted); box-shadow: none; opacity: 0.6; }
+ 
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--charcoal);
+      color: #fff;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 40px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+ 
+<!-- ════ VIEW 1 — CITY SELECTION ════ -->
+<div id="view-cities">
+  <div id="bg-container"></div>
+ 
+  <div class="v1-header">
+    <div class="v1-title">เที่ยวประจำปี บ้านดำรงค์ชัย</div>
+    <div class="v1-subtitle">DC House Annual Trip</div>
+  </div>
+ 
+  <div class="city-tabs" id="city-tabs"></div>
+ 
+  <div class="city-card">
+    <img class="city-card-photo" id="card-photo" src="" alt="" />
+    <div class="city-card-body">
+      <div class="city-card-name"    id="card-name">—</div>
+      <div class="city-card-name-en" id="card-name-en">—</div>
+      <div class="city-card-divider"></div>
+      <div class="city-card-footer">
+        <div class="vote-count">
+          ❤️ <span class="num" id="card-votes">0</span> โหวต
+        </div>
+        <div class="btn-row">
+          <button class="btn-explore" onclick="openDetail()">ดูสถานที่ ›</button>
+          <button class="btn-vote" id="btn-vote-main" onclick="castVote()">โหวต!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+ 
+<!-- ════ VIEW 2 — CITY DETAIL ════ -->
+<div id="view-detail">
+  <div class="detail-hero">
+    <img class="detail-hero-img" id="detail-photo" src="" alt="" />
+    <button class="btn-back" onclick="closeDetail()">←</button>
+  </div>
+ 
+  <div class="detail-body">
+    <div class="detail-city-header">
+      <div class="detail-city-name" id="detail-name">—</div>
+      <div class="detail-city-en"   id="detail-en">—</div>
+    </div>
+ 
+    <div class="detail-section-title">สถานที่น่าสนใจ</div>
+ 
+    <div class="attraction-list" id="attraction-list"></div>
+  </div>
+ 
+  <div class="detail-vote-bar">
+    <div class="detail-vote-count">
+      ❤️ <span class="num" id="detail-votes">0</span> โหวต
+    </div>
+    <button class="btn-vote-detail" id="btn-vote-detail" onclick="castVote()">
+      โหวตเมืองนี้!
+    </button>
+  </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+ 
+ 
+<script>
+  const PROXY_URL  = 'https://script.google.com/macros/s/AKfycby4SlIYGdaXgvnTaJacZ3Cby-rpCu4ZwKGJqQmEcUgJUvTGRFu1GUvXCReb1jOdukPXog/exec';
+  const SECRET_KEY = 'dc-house-2026';
+ 
+  /* ── Default cities (used until cities.json is uploaded) ── */
+  const DEFAULT_CITIES = [
+    {
+      id: 'zhangjiajie',
+      name: 'จางเจียเจี้ย',
+      name_en: 'Zhangjiajie',
+      cover: 'photos/zhangjiajie-cover.jpg',
+      attractions: [
+        { name: 'อุทยานแห่งชาติจางเจียเจี้ย', desc: 'แรงบันดาลใจของภาพยนตร์ Avatar เสาหินทรายสูงตระหง่านท่ามกลางหมอก สวยงามราวกับโลกอื่น' },
+        { name: 'สะพานแก้วจางเจียเจี้ย', desc: 'สะพานแก้วที่ยาวและสูงที่สุดในโลก ข้ามหุบเขาลึกกว่า 300 เมตร ระทึกใจไม่แพ้ใคร' },
+        { name: 'ภูเขาเทียนเหมิน', desc: 'ประตูสวรรค์ ถ้ำธรรมชาติขนาดใหญ่บนยอดเขา เดินทางด้วยกระเช้าที่ยาวที่สุดในโลก' },
+        { name: 'ทะเลสาบเป่าเฟิง', desc: 'ทะเลสาบมรกตล้อมรอบด้วยเสาหินสูงชัน นั่งเรือชมวิวธรรมชาติที่งดงาม' },
+        { name: 'หุบเขาสิบไมล์', desc: 'เส้นทางชมวิวที่สวยที่สุดในอุทยาน นั่งรถไฟฟ้าชมเสาหินหลากรูปทรงตลอดสองข้างทาง' }
+      ]
+    },
+    {
+      id: 'jiuzhaigou',
+      name: 'จิ่วไจ้โกว',
+      name_en: 'Jiuzhaigou',
+      cover: 'photos/jiuzhaigou-cover.jpg',
+      attractions: [
+        { name: 'ทะเลสาบห้าดอกไม้', desc: 'ทะเลสาบที่สวยที่สุดในจิ่วไจ้โกว น้ำใสจนมองเห็นก้น มีสีฟ้าเขียวมรกตสลับกันตามความลึก' },
+        { name: 'น้ำตกหนั่วรื่อหลาง', desc: 'น้ำตกที่กว้างที่สุดในที่ราบสูงของจีน ยาวกว่า 270 เมตร งดงามมากในฤดูใบไม้ร่วง' },
+        { name: 'ทะเลสาบแพนด้า', desc: 'ทะเลสาบที่ตั้งชื่อตามแพนด้ายักษ์ น้ำใสสีเขียวมรกต ท่ามกลางป่าสนโบราณ' },
+        { name: 'หมู่บ้านชนเผ่าทิเบต', desc: 'สัมผัสวัฒนธรรมทิเบตดั้งเดิม ชมบ้านเรือน วัดวาอาราม และผ้าสีสันสดใสของชาวทิเบต' },
+        { name: 'ทะเลสาบแรด', desc: 'ทะเลสาบที่ใหญ่ที่สุดในจิ่วไจ้โกว ลึก 40 เมตร สีน้ำเงินเข้มงดงามอย่างลึกลับ' }
+      ]
+    },
+    {
+      id: 'xian',
+      name: 'ซีอาน',
+      name_en: "Xi'an",
+      cover: 'photos/xian-cover.jpg',
+      attractions: [
+        { name: 'กองทัพดินเผา', desc: 'หนึ่งในสิ่งมหัศจรรย์ของโลก ทหารดินเผากว่า 8,000 องค์ ฝังไว้กับจักรพรรดิจิ๋นซีฮ่องเต้มากว่า 2,000 ปี' },
+        { name: 'กำแพงเมืองโบราณ', desc: 'กำแพงเมืองที่สมบูรณ์ที่สุดในจีน สร้างในสมัยราชวงศ์หมิง เดินหรือขี่จักรยานรอบกำแพงได้' },
+        { name: 'ถนนมุสลิม', desc: 'ย่านอาหารชื่อดัง ลองเบี้ยวเย้าะ ขนมปังเนื้อแกะ ทับเล็ก และของหวานนานาชนิดจากทั่วโลก' },
+        { name: 'หอระฆังและหอกลอง', desc: 'สัญลักษณ์ของซีอาน สองหอคอยโบราณกลางเมือง ชมวิวพระอาทิตย์ตกที่งดงามในยามเย็น' },
+        { name: 'เจดีย์ห่านป่าใหญ่', desc: 'เจดีย์พุทธศาสนาอายุกว่า 1,300 ปี ศูนย์กลางพุทธศาสนาสมัยราชวงศ์ถัง มีน้ำพุดนตรีกลางคืน' }
+      ]
+    }
+  ];
+ 
+  let cities      = [];
+  let currentCity = 0;
+  let votes       = {};
+  let myVote      = localStorage.getItem('dc-vote') || null;
+ 
+  /* ── INIT ── */
+  async function init() {
+    try {
+      const res = await fetch('cities.json?t=' + Date.now());
+      cities = res.ok ? await res.json() : DEFAULT_CITIES;
+    } catch { cities = DEFAULT_CITIES; }
+ 
+    await loadVotes();
+    buildBGs();
+    buildTabs();
+    showCity(0);
+  }
+ 
+  /* ── LOAD VOTES ── */
+  async function loadVotes() {
+    try {
+      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=getVotes&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.votes) votes = data.votes;
+    } catch { votes = {}; }
+  }
+ 
+  /* ── BUILD BGs ── */
+  function buildBGs() {
+    document.getElementById('bg-container').innerHTML = cities.map((c, i) => `
+      <div class="city-bg ${i === 0 ? 'active' : ''}"
+           style="background-image:url('${c.cover}')"
+           id="bg-${i}"></div>`).join('');
+  }
+ 
+  /* ── BUILD TABS ── */
+  function buildTabs() {
+    document.getElementById('city-tabs').innerHTML = cities.map((c, i) => `
+      <button class="city-tab ${i === 0 ? 'active' : ''}"
+              onclick="showCity(${i})">${c.name}</button>`).join('');
+  }
+ 
+  /* ── SHOW CITY ── */
+  function showCity(index) {
+    currentCity = index;
+    const c = cities[index];
+ 
+    document.querySelectorAll('.city-bg').forEach((el, i) =>
+      el.classList.toggle('active', i === index));
+    document.querySelectorAll('.city-tab').forEach((el, i) =>
+      el.classList.toggle('active', i === index));
+ 
+    document.getElementById('card-photo').src           = c.cover;
+    document.getElementById('card-name').textContent    = c.name;
+    document.getElementById('card-name-en').textContent = c.name_en;
+    document.getElementById('card-votes').textContent   = votes[c.id] || 0;
+ 
+    updateVoteButtons();
+  }
+ 
+  /* ── VOTE BUTTON STATE ── */
+  function updateVoteButtons() {
+    const c    = cities[currentCity];
+    const main = document.getElementById('btn-vote-main');
+    const det  = document.getElementById('btn-vote-detail');
+ 
+    if (myVote === c.id) {
+      main.textContent = '✅ โหวตแล้ว';
+      main.classList.add('voted');
+      main.classList.remove('used');
+      if (det) { det.textContent = '✅ โหวตแล้ว'; det.classList.add('voted'); det.classList.remove('used'); }
+    } else if (myVote) {
+      main.textContent = 'โหวตแล้ว';
+      main.classList.remove('voted');
+      main.classList.add('used');
+      if (det) { det.textContent = 'โหวตแล้ว'; det.classList.remove('voted'); det.classList.add('used'); }
+    } else {
+      main.textContent = 'โหวต!';
+      main.classList.remove('voted', 'used');
+      if (det) { det.textContent = 'โหวตเมืองนี้!'; det.classList.remove('voted', 'used'); }
+    }
+  }
+ 
+  /* ── CAST VOTE ── */
+  async function castVote() {
+    if (myVote) { showToast('คุณโหวตไปแล้ว ❤️'); return; }
+    const c = cities[currentCity];
+    myVote  = c.id;
+    localStorage.setItem('dc-vote', c.id);
+ 
+    votes[c.id] = (votes[c.id] || 0) + 1;
+    document.getElementById('card-votes').textContent   = votes[c.id];
+    document.getElementById('detail-votes').textContent = votes[c.id];
+    updateVoteButtons();
+    showToast(`โหวต ${c.name} แล้ว! ❤️`);
+ 
+    try {
+      await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=vote&city=${c.id}&t=${Date.now()}`);
+    } catch {}
+  }
+ 
+  /* ── OPEN DETAIL ── */
+  function openDetail() {
+    const c = cities[currentCity];
+ 
+    document.getElementById('detail-photo').src         = c.cover;
+    document.getElementById('detail-name').textContent  = c.name;
+    document.getElementById('detail-en').textContent    = c.name_en;
+    document.getElementById('detail-votes').textContent = votes[c.id] || 0;
+ 
+    document.getElementById('attraction-list').innerHTML =
+      c.attractions.map((a, i) => `
+        <div class="attraction-item">
+          <div class="attraction-num">สถานที่ ${i + 1}</div>
+          <div class="attraction-name">${a.name}</div>
+          <div class="attraction-desc">${a.desc}</div>
+        </div>`).join('');
+ 
+    updateVoteButtons();
+ 
+    const el = document.getElementById('view-detail');
+    el.style.display = 'flex';
+    requestAnimationFrame(() => el.classList.add('open'));
+  }
+ 
+  /* ── CLOSE DETAIL ── */
+  function closeDetail() {
+    const el = document.getElementById('view-detail');
+    el.classList.remove('open');
+    setTimeout(() => { el.style.display = 'none'; }, 400);
+  }
+ 
+  /* ── TOAST ── */
+  let toastTimer;
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  }
+ 
+  init();
+</script>
+</body>
+</html>
