@@ -564,7 +564,7 @@
 ═══════════════════════════════════════ -->
 <script>
   /* ─── CONFIG ──────────────────────────────────────────── */
-  const PROXY_URL  = 'https://script.google.com/macros/s/AKfycbz63Fg4Fm2B2UFPFYBCNiFJtsEQBhL4ldgPskzKeZfXd8yGPyeFWNytits-r9hFGbvXiw/exec';
+  const PROXY_URL  = 'https://script.google.com/macros/s/AKfycbyNoDMaRd7e2wNhkY0Plcavp-odyK48jrOyrj7c9775qPKmH3vGhkb1N5kSDk8uAIgYQA/exec';
   const SECRET_KEY = 'dc-house-2026';
  
   // Auto-refresh every 60 seconds
@@ -607,7 +607,7 @@
  
       return `
         <div class="car-item">
-          ${carSVG(color)}
+          <img src="${escapeHTML(car.photo)}" onerror="this.style.display='none'" style="width:56px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;border:2px solid ${color};"/>
           <div class="car-info">
             <div class="car-name">${escapeHTML(car.name)}</div>
             <div class="car-plate">${escapeHTML(car.plate)}</div>
