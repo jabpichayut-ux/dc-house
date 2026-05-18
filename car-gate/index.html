@@ -525,42 +525,57 @@
   }
  
   /* ─── RENDER CARS ─────────────────────────────────────── */
-  function renderCars(cars) {
+function renderCars(cars) {
     const list = document.getElementById('car-list');
- 
+
     if (!cars.length) {
       list.innerHTML = '<div class="loading-row">ไม่พบข้อมูล · No data found</div>';
       return;
     }
- 
+
     let countIn = 0, countOut = 0;
- 
-    const html = cars.map(car => {
-      const isIn      = car.status === 'in';
-      const color     = isIn ? '#2A7A4B' : '#B33030';
-      const statusTxt = isIn ? 'IN' : 'OUT';
-      const statusCls = isIn ? 'in' : 'out';
-      if (isIn)  countIn++;
-      else       countOut++;
- 
+
+    const groups = [
+      { label: 'รถสาธารณะ', start: 0,  end: 15 },
+      { label: 'รถ เจน 2',  start: 16, end: 23 },
+      { label: 'รถ เจน 3',  start: 24, end: 33 },
+    ];
+
+    const html = groups.map(g => {
+      const slice = cars.slice(g.start, g.end + 1).filter(c => c.name);
+      const rows = slice.map(car => {
+        const isIn      = car.status === 'in';
+        const color     = isIn ? '#2A7A4B' : '#B33030';
+        const statusTxt = isIn ? 'IN' : 'OUT';
+        const statusCls = isIn ? 'in' : 'out';
+        if (isIn) countIn++; else countOut++;
+
+        return `
+          <div class="car-item">
+            <img src="${escapeHTML(car.photo || '')}" onerror="this.style.display='none'"
+              style="width:56px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0;border:2px solid ${color};"/>
+            <div class="car-info">
+              <div class="car-name">${escapeHTML(car.name)}</div>
+              <div class="car-plate">${escapeHTML(car.plate)}</div>
+            </div>
+            <div class="car-status ${statusCls}">${statusTxt}</div>
+          </div>`;
+      }).join('');
+
       return `
-        <div class="car-item">
-          <img src="${escapeHTML(car.photo || '')}" onerror="this.style.display='none'" style="width:56px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0;border:2px solid ${color};"/>
-          <div class="car-info">
-            <div class="car-name">${escapeHTML(car.name)}</div>
-            <div class="car-plate">${escapeHTML(car.plate)}</div>
+        <div style="border:1px solid var(--divider);border-radius:var(--radius);overflow:hidden;margin-bottom:24px;">
+          <div style="background:var(--cream);padding:10px 22px;font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--charcoal);border-bottom:1px solid var(--divider);">
+            ${g.label}
           </div>
-          <div class="car-status ${statusCls}">${statusTxt}</div>
+          ${rows}
         </div>`;
     }).join('');
- 
+
     list.innerHTML = html;
- 
-    // Update counters
+
     document.getElementById('count-in').textContent  = countIn;
     document.getElementById('count-out').textContent = countOut;
- 
-    // Update timestamp
+
     const now = new Date();
     const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('last-updated').textContent = `อัพเดต ${timeStr}`;
