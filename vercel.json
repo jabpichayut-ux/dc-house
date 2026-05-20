@@ -2,5 +2,13 @@
   "rewrites": [
     { "source": "/guard", "destination": "/car-gate/guard.html" },
     { "source": "/index", "destination": "/car-gate/index.html" }
-  ]
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }]
+    }
+  ],
+  "cleanUrls": false,
+  "trailingSlash": false
 }
