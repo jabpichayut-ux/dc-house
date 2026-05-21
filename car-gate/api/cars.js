@@ -3,62 +3,33 @@ const API_KEY    = 'AIzaSyD8AvaVO0uYS_pDNBmQx5DYLaB0j8dIZo0';
 const SECRET     = 'dc-house-2026';
 const LINE_TOKEN = '7TEnqDtU6W9k1N17pCgjAHX8uhSuR9IN9finzj4aa1LctoS3DBiVvr/S/yjwgwQ1wrfKIMfLcL0KtyujVVxaNbXkr0ZLcwtEr30Af4QJ1WTnrUyG4Pyo22Dn+CpLp4LjZ1rxcJIE0JciHa8J74iWngdB04t89/1O/w1cDnyilFU=';
 
-/* ── Get Google OAuth token from Service Account ── */
-async function getAccessToken(serviceAccount) {
-  const now   = Math.floor(Date.now() / 1000);
-  const header  = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-  const payload = btoa(JSON.stringify({
-    iss: serviceAccount.client_email,
-    scope: 'https://www.googleapis.com/auth/spreadsheets',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now
-  })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+import { GoogleAuth } from 'google-auth-library';
 
-  const signingInput = `${header}.${payload}`;
-
-  // Import private key
-  const pemKey = serviceAccount.private_key;
-  const pemBody = pemKey.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g, '');
-  const keyBuffer = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
-
-  const cryptoKey = await crypto.subtle.importKey(
-    'pkcs8', keyBuffer.buffer,
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-    false, ['sign']
-  );
-
-  const encoder = new TextEncoder();
-  const signatureBuffer = await crypto.subtle.sign(
-    'RSASSA-PKCS1-v1_5', cryptoKey, encoder.encode(signingInput)
-  );
-
-  const signature = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)))
-    .replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-
-  const jwt = `${signingInput}.${signature}`;
-
-  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`
+async function getAuthClient() {
+  const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+  const auth = new GoogleAuth({
+    credentials,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
-
-  const tokenData = await tokenRes.json();
-  return tokenData.access_token;
+  return auth.getClient();
 }
 
-/* ── Append a row to a sheet ── */
+async function getAccessToken() {
+  const client = await getAuthClient();
+  const token = await client.getAccessToken();
+  return token.token;
+}
+
 async function appendRow(token, sheetName, values) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
-  await fetch(url, {
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ values: [values] })
   });
+  return res.json();
 }
 
-/* ── Write single cell ── */
 async function writeCell(token, range, value) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
   await fetch(url, {
@@ -68,7 +39,6 @@ async function writeCell(token, range, value) {
   });
 }
 
-/* ── Read a sheet range ── */
 async function readRange(range) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
   const r = await fetch(url);
@@ -76,7 +46,6 @@ async function readRange(range) {
   return d.values || [];
 }
 
-/* ── Thai date/time helpers ── */
 function thaiDate() {
   return new Date().toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit' });
 }
@@ -90,55 +59,43 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { key, action, row, status, driver, carName, plate, guestName, guestOf, carIndex } = req.query;
-
   if (key !== SECRET) return res.status(401).json({ error: 'Unauthorized' });
-
-  // ── Parse Service Account ──
-  let serviceAccount = null;
-  try {
-    serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
-  } catch(e) {
-    // write actions will fail gracefully
-  }
 
   // ── Update car status ──
   if (action === 'update') {
-    const token = await getAccessToken(serviceAccount);
+    const token = await getAccessToken();
     await writeCell(token, `Car Park!C${row}`, status);
-    res.setHeader('Cache-Control', 'no-store');
     return res.json({ success: true });
   }
 
-  // ── Log member car in/out (with driver name) ──
+  // ── Log member car in/out ──
   if (action === 'logMember') {
-    const token = await getAccessToken(serviceAccount);
+    const token = await getAccessToken();
     await appendRow(token, 'Member Log', [
       thaiDate(), thaiTime(), carName, plate, driver, status === 'in' ? 'เข้า' : 'ออก'
     ]);
-    // Update frequency: read Driver Freq sheet, increment count for this car+driver
     try {
-      const freqData = await readRange('Driver Freq!A:D');
+      const freqData = await readRange('Driver Freq!A:C');
       const idx = freqData.findIndex(r => r[0] === carIndex && r[1] === driver);
       if (idx >= 0) {
-        const newCount = (parseInt(freqData[idx][2]) || 0) + 1;
-        await writeCell(token, `Driver Freq!C${idx + 1}`, newCount);
+        await writeCell(token, `Driver Freq!C${idx + 1}`, (parseInt(freqData[idx][2]) || 0) + 1);
       } else {
         await appendRow(token, 'Driver Freq', [carIndex, driver, 1]);
       }
-    } catch(e) { /* freq tracking non-critical */ }
+    } catch(e) {}
     return res.json({ success: true });
   }
 
   // ── Log guest car in/out ──
   if (action === 'logGuest') {
-    const token = await getAccessToken(serviceAccount);
+    const token = await getAccessToken();
     await appendRow(token, 'Guest Log', [
       thaiDate(), thaiTime(), plate, guestName, guestOf, status === 'in' ? 'เข้า' : 'ออก'
     ]);
     return res.json({ success: true });
   }
 
-  // ── Get driver frequency for a car (for popup ordering) ──
+  // ── Get driver frequency ──
   if (action === 'getFrequency') {
     try {
       const freqData = await readRange('Driver Freq!A:C');
@@ -152,7 +109,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── Get members list ──
+  // ── Get members ──
   if (action === 'getMembers') {
     const data = await readRange('Members!A1:B100');
     const members = data.slice(1)
