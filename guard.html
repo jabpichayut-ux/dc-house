@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet" />
- 
+
   <style>
     :root {
       --warm-white:   #FAF8F4;
@@ -28,9 +28,9 @@
       --card-shadow:  0 2px 12px rgba(0,0,0,0.06);
       --radius:       10px;
     }
- 
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
     html, body {
       font-family: 'Prompt', sans-serif;
       background: var(--warm-white);
@@ -39,7 +39,7 @@
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
     }
- 
+
     /* ── PIN Screen ── */
     #pin-screen {
       position: fixed;
@@ -52,26 +52,25 @@
       justify-content: center;
       gap: 16px;
     }
- 
+
     .pin-logo {
       height: 52px;
       object-fit: contain;
       margin-bottom: 8px;
-      mix-blend-mode: multiply;
     }
- 
+
     .pin-title {
       font-size: 18px;
       font-weight: 700;
       color: var(--charcoal);
     }
- 
+
     .pin-subtitle {
       font-size: 13px;
       color: var(--muted);
       margin-top: -8px;
     }
- 
+
     .pin-input {
       width: 220px;
       text-align: center;
@@ -85,7 +84,7 @@
       transition: border-color 0.15s;
     }
     .pin-input:focus { outline: none; border-color: var(--gold); }
- 
+
     .pin-btn {
       background: var(--gold);
       color: #fff;
@@ -100,20 +99,20 @@
       transition: all 0.18s;
     }
     .pin-btn:active { transform: scale(0.96); background: var(--gold-dark); }
- 
+
     .pin-error {
       color: var(--red-text);
       font-size: 13px;
       display: none;
     }
- 
+
     /* ── App Layout ── */
     .app {
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
- 
+
     /* ── Header ── */
     header {
       background: #fff;
@@ -126,19 +125,19 @@
       border-bottom: 1px solid var(--divider);
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
- 
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 16px;
     }
- 
+
     .header-logo {
       height: 36px;
       width: auto;
       object-fit: contain;
     }
- 
+
     .header-subtitle {
       font-size: 12px;
       color: var(--muted);
@@ -146,13 +145,13 @@
       border-left: 1px solid var(--divider);
       padding-left: 16px;
     }
- 
+
     .header-right {
       display: flex;
       align-items: center;
       gap: 20px;
     }
- 
+
     .stats-inline {
       display: flex;
       gap: 16px;
@@ -161,7 +160,7 @@
     }
     .stat-in  { color: var(--green-text); }
     .stat-out { color: var(--red-text); }
- 
+
     .live-badge {
       display: flex;
       align-items: center;
@@ -170,25 +169,25 @@
       color: var(--gold-dark);
       font-weight: 600;
     }
- 
+
     .live-dot {
       width: 7px; height: 7px;
       border-radius: 50%;
       background: #4CAF50;
       animation: pulse 2s infinite;
     }
- 
+
     @keyframes pulse {
       0%   { box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
       70%  { box-shadow: 0 0 0 6px rgba(76,175,80,0); }
       100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
     }
- 
+
     .last-updated {
       font-size: 11px;
       color: var(--muted);
     }
- 
+
     /* ── Tab Bar ── */
     .tab-bar {
       display: flex;
@@ -196,7 +195,7 @@
       border-bottom: 1px solid var(--divider);
       flex-shrink: 0;
     }
- 
+
     .tab-btn {
       flex: 1;
       padding: 12px;
@@ -214,13 +213,13 @@
       justify-content: center;
       gap: 8px;
     }
- 
+
     .tab-btn.active {
       color: var(--gold-dark);
       border-bottom-color: var(--gold);
       background: #FFFDF7;
     }
- 
+
     /* ── Tab Content ── */
     .tab-content {
       flex: 1;
@@ -228,7 +227,7 @@
       display: none;
     }
     .tab-content.active { display: flex; flex-direction: column; }
- 
+
     /* ════════════════════════════
        TAB 1 — CAR IN/OUT
     ════════════════════════════ */
@@ -238,7 +237,7 @@
       flex: 1;
       overflow: hidden;
     }
- 
+
     .column {
       display: flex;
       flex-direction: column;
@@ -246,7 +245,7 @@
       overflow: hidden;
     }
     .column:last-child { border-right: none; }
- 
+
     .column-header {
       background: var(--cream);
       padding: 10px 16px;
@@ -256,18 +255,18 @@
       align-items: center;
       justify-content: space-between;
     }
- 
+
     .column-title {
       font-size: 13px;
       font-weight: 700;
       color: var(--charcoal);
     }
- 
+
     .column-count {
       font-size: 11px;
       color: var(--muted);
     }
- 
+
     .column-body {
       flex: 1;
       overflow-y: auto;
@@ -276,7 +275,7 @@
       flex-direction: column;
       gap: 6px;
     }
- 
+
     .car-card {
       background: #fff;
       border-radius: var(--radius);
@@ -287,10 +286,10 @@
       gap: 10px;
       box-shadow: var(--card-shadow);
     }
- 
+
     .car-card.is-in  { border-color: var(--green-border); }
     .car-card.is-out { border-color: var(--red-border); }
- 
+
     .car-photo {
       width: 52px;
       height: 36px;
@@ -298,9 +297,9 @@
       border-radius: 6px;
       flex-shrink: 0;
     }
- 
+
     .car-info { flex: 1; min-width: 0; }
- 
+
     .car-name {
       font-size: 13px;
       font-weight: 600;
@@ -309,14 +308,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
- 
+
     .car-plate {
-      font-size: 18px;
+      font-size: 10px;
       color: var(--muted);
       letter-spacing: 0.06em;
       margin-top: 1px;
     }
- 
+
     .toggle-btn {
       flex-shrink: 0;
       width: 58px;
@@ -332,12 +331,12 @@
       align-items: center;
       justify-content: center;
     }
- 
+
     .toggle-btn.in  { background: var(--green-bg); color: var(--green-text); border: 1.5px solid var(--green-border); }
     .toggle-btn.out { background: var(--red-bg);   color: var(--red-text);   border: 1.5px solid var(--red-border); }
     .toggle-btn:active { transform: scale(0.93); }
     .toggle-btn.loading { opacity: 0.45; pointer-events: none; }
- 
+
     @keyframes flashGreen {
       0%   { background: #B8DEC6; }
       100% { background: #fff; }
@@ -348,14 +347,14 @@
     }
     .car-card.flash-in  { animation: flashGreen 0.5s ease; }
     .car-card.flash-out { animation: flashRed   0.5s ease; }
- 
+
     .loading-row {
       padding: 24px;
       text-align: center;
       color: var(--muted);
       font-size: 13px;
     }
- 
+
     /* ════════════════════════════
        TAB 2 — COURIER
     ════════════════════════════ */
@@ -367,14 +366,14 @@
       margin: 0 auto;
       width: 100%;
     }
- 
+
     .steps {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 24px;
     }
- 
+
     .step {
       display: flex;
       align-items: center;
@@ -383,7 +382,7 @@
       font-weight: 600;
       color: var(--muted);
     }
- 
+
     .step-num {
       width: 22px; height: 22px;
       border-radius: 50%;
@@ -395,20 +394,20 @@
       align-items: center;
       justify-content: center;
     }
- 
+
     .step.active .step-num { background: var(--gold); color: #fff; }
     .step.active { color: var(--charcoal); }
     .step.done .step-num { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
- 
+
     .step-line { flex: 1; height: 1px; background: var(--divider); }
- 
+
     .section-title {
       font-size: 15px;
       font-weight: 700;
       color: var(--charcoal);
       margin-bottom: 12px;
     }
- 
+
     .search-box {
       width: 100%;
       border: 1.5px solid var(--divider);
@@ -422,7 +421,7 @@
       transition: border-color 0.15s;
     }
     .search-box:focus { outline: none; border-color: var(--gold); }
- 
+
     .member-list {
       background: #fff;
       border-radius: var(--radius);
@@ -433,7 +432,7 @@
       max-height: 260px;
       overflow-y: auto;
     }
- 
+
     .member-item {
       display: flex;
       align-items: center;
@@ -446,13 +445,13 @@
     .member-item:last-child { border-bottom: none; }
     .member-item:active { background: var(--cream); }
     .member-item.selected { background: #FBF6E8; border-left: 3px solid var(--gold); }
- 
+
     .member-name {
       font-size: 14px;
       font-weight: 600;
       color: var(--charcoal);
     }
- 
+
     .member-check {
       width: 22px; height: 22px;
       border-radius: 50%;
@@ -464,7 +463,7 @@
       transition: all 0.15s;
     }
     .member-item.selected .member-check { background: var(--gold); border-color: var(--gold); color: #fff; }
- 
+
     .quantity-section {
       background: #fff;
       border-radius: var(--radius);
@@ -473,18 +472,18 @@
       box-shadow: var(--card-shadow);
       margin-bottom: 20px;
     }
- 
+
     .selected-name-display {
       font-size: 13px;
       color: var(--muted);
       margin-bottom: 14px;
     }
     .selected-name-display strong { color: var(--gold-dark); font-size: 15px; }
- 
+
     .quantity-label { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 10px; }
- 
+
     .quantity-controls { display: flex; align-items: center; gap: 16px; }
- 
+
     .qty-btn {
       width: 42px; height: 42px;
       border-radius: 50%;
@@ -500,10 +499,10 @@
       transition: all 0.15s;
     }
     .qty-btn:active { background: var(--cream); transform: scale(0.93); }
- 
+
     .qty-display { font-size: 34px; font-weight: 700; color: var(--charcoal); min-width: 50px; text-align: center; }
     .qty-unit { font-size: 13px; color: var(--muted); }
- 
+
     .submit-btn {
       width: 100%;
       background: var(--gold);
@@ -520,7 +519,7 @@
     }
     .submit-btn:active { transform: scale(0.98); background: var(--gold-dark); }
     .submit-btn:disabled { opacity: 0.5; pointer-events: none; }
- 
+
     .success-card {
       display: none;
       background: var(--green-bg);
@@ -534,7 +533,7 @@
     .success-icon { font-size: 44px; margin-bottom: 10px; }
     .success-title { font-size: 17px; font-weight: 700; color: var(--green-text); margin-bottom: 6px; }
     .success-desc { font-size: 13px; color: var(--green-text); opacity: 0.8; line-height: 1.6; }
- 
+
     .btn-reset {
       margin-top: 14px;
       background: #fff;
@@ -547,7 +546,7 @@
       font-weight: 600;
       cursor: pointer;
     }
- 
+
     .warning-card {
       background: #FFF8E8;
       border: 1px solid #E8D8A0;
@@ -559,7 +558,7 @@
       margin-bottom: 14px;
       display: none;
     }
- 
+
     /* ── Toast ── */
     .toast {
       position: fixed;
@@ -579,10 +578,244 @@
       white-space: nowrap;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Driver Popup ── */
+    .driver-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 500;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .driver-overlay.open { display: flex; }
+
+    .driver-sheet {
+      background: var(--warm-white);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 600px;
+      padding: 20px 16px 32px;
+      animation: slideUp 0.25s ease;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .driver-sheet-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .driver-sheet-car {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .driver-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      margin-top: 12px;
+    }
+
+    .driver-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .driver-btn {
+      background: #fff;
+      border: 1.5px solid var(--divider);
+      border-radius: 10px;
+      padding: 12px 8px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--charcoal);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .driver-btn:active { background: var(--cream); transform: scale(0.96); }
+    .driver-btn.top-pick { border-color: var(--gold); background: #FFFDF7; }
+    .driver-btn.guest-btn {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+      color: var(--red-text);
+      grid-column: 1 / -1;
+      margin-top: 4px;
+    }
+
+    .driver-cancel {
+      margin-top: 12px;
+      width: 100%;
+      background: none;
+      border: 1px solid var(--divider);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    /* ── Guest Of Popup (second step) ── */
+    .guestof-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 600;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .guestof-overlay.open { display: flex; }
+
+    /* ── Guest Tab ── */
+    .guest-wrap {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px 80px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .scan-area {
+      background: #fff;
+      border: 2px dashed var(--divider);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .scan-area:active { border-color: var(--gold); }
+    .scan-icon { font-size: 40px; margin-bottom: 8px; }
+    .scan-label { font-size: 14px; font-weight: 600; color: var(--charcoal); }
+    .scan-sublabel { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .plate-result {
+      display: none;
+      background: #fff;
+      border: 1.5px solid var(--green-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .plate-result.show { display: block; }
+    .plate-result-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .plate-result-value { font-size: 22px; font-weight: 700; color: var(--charcoal); letter-spacing: 0.05em; }
+
+    .guest-input {
+      width: 100%;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      background: #fff;
+      color: var(--ink);
+      margin-bottom: 16px;
+      transition: border-color 0.15s;
+    }
+    .guest-input:focus { outline: none; border-color: var(--gold); }
+
+    .guestof-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .guestof-btn {
+      background: #fff;
+      border: 1.5px solid var(--divider);
+      border-radius: 10px;
+      padding: 10px 6px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--charcoal);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .guestof-btn:active { background: var(--cream); }
+    .guestof-btn.selected { border-color: var(--gold); background: #FBF6E8; color: var(--gold-dark); }
+
+    .checkin-btn {
+      width: 100%;
+      background: var(--green-text);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 12px;
+    }
+    .checkin-btn:active { transform: scale(0.98); opacity: 0.9; }
+    .checkin-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+    .returning-guest {
+      background: #fff;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .returning-info { flex: 1; }
+    .returning-plate { font-size: 15px; font-weight: 700; color: var(--charcoal); }
+    .returning-name  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .returning-toggle {
+      width: 64px;
+      height: 36px;
+      border-radius: 20px;
+      border: none;
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .returning-toggle.in  { background: var(--green-bg); color: var(--green-text); border: 1.5px solid var(--green-border); }
+    .returning-toggle.out { background: var(--red-bg);   color: var(--red-text);   border: 1.5px solid var(--red-border); }
+
+    #camera-input { display: none; }
+
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(30px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
   </style>
 </head>
 <body>
- 
+
 <!-- ══ PIN SCREEN ══ -->
 <div id="pin-screen">
   <img src="logo.png" class="pin-logo" alt="DC House" />
@@ -599,10 +832,10 @@
   <button class="pin-btn" onclick="checkPin()">เข้าสู่ระบบ</button>
   <div class="pin-error" id="pin-error">รหัสไม่ถูกต้อง กรุณาลองใหม่</div>
 </div>
- 
+
 <!-- ══ MAIN APP ══ -->
 <div class="app" id="main-app" style="display:none;">
- 
+
   <!-- Header -->
   <header>
     <div class="header-left">
@@ -618,7 +851,7 @@
       <div class="live-badge"><div class="live-dot"></div>Live</div>
     </div>
   </header>
- 
+
   <!-- Tab Bar -->
   <div class="tab-bar">
     <button class="tab-btn active" id="tab-cars-btn" onclick="switchTab('cars')">
@@ -627,8 +860,11 @@
     <button class="tab-btn" id="tab-courier-btn" onclick="switchTab('courier')">
       📦 แจ้งพัสดุ
     </button>
+    <button class="tab-btn" id="tab-guest-btn" onclick="switchTab('guest')">
+      🧑‍🤝‍🧑 แขก
+    </button>
   </div>
- 
+
   <!-- Tab 1: Cars -->
   <div class="tab-content active" id="tab-cars">
     <div class="columns">
@@ -655,11 +891,11 @@
       </div>
     </div>
   </div>
- 
+
   <!-- Tab 2: Courier -->
   <div class="tab-content" id="tab-courier">
     <div class="courier-wrap">
- 
+
       <div class="steps">
         <div class="step active" id="step1"><div class="step-num">1</div>เลือกชื่อ</div>
         <div class="step-line"></div>
@@ -667,14 +903,14 @@
         <div class="step-line"></div>
         <div class="step" id="step3"><div class="step-num">3</div>ส่งแจ้งเตือน</div>
       </div>
- 
+
       <div class="success-card" id="success-card">
         <div class="success-icon">📦✅</div>
         <div class="success-title">ส่งแจ้งเตือนแล้ว!</div>
         <div class="success-desc" id="success-desc">—</div>
         <button class="btn-reset" onclick="resetCourier()">+ แจ้งพัสดุรายการใหม่</button>
       </div>
- 
+
       <div id="section-member">
         <div class="section-title">1. เลือกชื่อผู้รับพัสดุ</div>
         <div class="warning-card" id="warning-card">
@@ -685,7 +921,7 @@
           <div class="loading-row">กำลังโหลด…</div>
         </div>
       </div>
- 
+
       <div id="section-quantity" style="display:none;">
         <div class="section-title">2. จำนวนพัสดุ</div>
         <div class="quantity-section">
@@ -702,51 +938,147 @@
           📨 ส่งแจ้งเตือนไปที่ LINE
         </button>
       </div>
- 
+
     </div>
   </div>
- 
+
+  <!-- Tab 3: Guests -->
+  <div class="tab-content" id="tab-guest">
+    <div class="guest-wrap">
+
+      <div class="section-title" style="margin-bottom:14px;">🧑‍🤝‍🧑 แขกที่อยู่ในบ้าน</div>
+
+      <!-- Returning guests list -->
+      <div id="returning-list"></div>
+
+      <div class="gold-divider" style="height:1px;background:linear-gradient(90deg,transparent,#E2C97E,transparent);margin:16px 0;"></div>
+
+      <div class="section-title" style="margin-bottom:14px;">➕ รับแขกใหม่</div>
+
+      <!-- Camera scan -->
+      <div class="scan-area" onclick="openCamera()">
+        <div class="scan-icon">📷</div>
+        <div class="scan-label">ถ่ายป้ายทะเบียน</div>
+        <div class="scan-sublabel">กดเพื่อเปิดกล้อง · AI จะอ่านป้ายให้อัตโนมัติ</div>
+      </div>
+      <input type="file" accept="image/*" capture="environment" id="camera-input" onchange="handlePhoto(event)" />
+
+      <!-- Plate result / manual entry -->
+      <div class="plate-result" id="plate-result">
+        <div class="plate-result-label">ป้ายทะเบียนที่อ่านได้</div>
+        <div class="plate-result-value" id="plate-value">—</div>
+      </div>
+
+      <input class="guest-input" id="guest-plate-input" type="text" placeholder="ป้ายทะเบียน (กรอกหรือแก้ไขที่นี่)" />
+      <input class="guest-input" id="guest-name-input" type="text" placeholder="ชื่อแขก (ไม่บังคับ)" />
+
+      <div class="driver-section-label">แขกของใคร?</div>
+      <div class="guestof-grid" id="guestof-grid"></div>
+
+      <button class="checkin-btn" id="checkin-btn" onclick="registerGuest()">
+        ✅ รับแขกเข้าบ้าน
+      </button>
+
+    </div>
+  </div>
+
+</div><!-- end main-app -->
+
+<!-- ══ DRIVER POPUP ══ -->
+<div class="driver-overlay" id="driver-overlay">
+  <div class="driver-sheet">
+    <div class="driver-sheet-title">ใครขับ?</div>
+    <div class="driver-sheet-car" id="driver-sheet-car">—</div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="driver-section-label" id="freq-label">บ่อยครั้ง</div>
+      <div class="driver-grid" id="driver-freq-grid"></div>
+      <div class="driver-section-label" style="margin-top:14px;">สมาชิก</div>
+      <div class="driver-grid" id="driver-all-grid"></div>
+      <div class="driver-section-label" style="margin-top:14px;">คนขับ</div>
+      <div class="driver-grid" id="driver-staff-grid"></div>
+      <div class="driver-grid" style="margin-top:8px;">
+        <button class="driver-btn guest-btn" onclick="selectDriver('แขก', true)">🧑‍🤝‍🧑 แขก</button>
+      </div>
+    </div>
+    <button class="driver-cancel" onclick="cancelDriver()">ยกเลิก</button>
+  </div>
 </div>
- 
+
+<!-- ══ GUEST-OF POPUP (second step when driver = แขก) ══ -->
+<div class="guestof-overlay" id="guestof-overlay">
+  <div class="driver-sheet">
+    <div class="driver-sheet-title">แขกของใคร?</div>
+    <div class="driver-sheet-car" id="guestof-car">—</div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="driver-grid" id="guestof-popup-grid"></div>
+    </div>
+    <button class="driver-cancel" onclick="cancelGuestOf()">ยกเลิก</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
- 
+
 <script>
-  document.getElementById('main-app').style.display = 'none';
   /* ── CONFIG ── */
-  const PROXY_URL  = 'https://dc-house.vercel.app/api/cars';
-  const SECRET_KEY = 'dc-house-2026';
-  const CORRECT_PIN = '999999999';
+  const PROXY_URL        = 'https://dc-house.vercel.app/api/cars';
+  const SECRET_KEY       = 'dc-house-2026';
+  const CORRECT_PIN      = '999999999';
   const REFRESH_INTERVAL = 30 * 1000;
- 
+  const CACHE_KEY        = 'dc_guard_cars_v1';
+  const FREQ_KEY         = 'dc_driver_freq_v1';
+
   const GROUPS = [
     { id: 'col-1', start: 0,  end: 15 },
     { id: 'col-2', start: 16, end: 23 },
     { id: 'col-3', start: 24, end: 33 },
   ];
- 
+
+  const FAMILY = [
+    'คุณดำรงค์','คุณกิตติ','คุณน้ำผึ้ง','คุณชรินทร์','คุณนิพนธ์',
+    'คุณเบญจมาศ','คุณนิทัศน์','คุณสุรีย์พร','คุณนิรันดร์','คุณศิริพร',
+    'คุณธีรพล','คุณนิติพัทญ์','คุณสญาค์มณท์','คุณศิริเพ็ญ','คุณฟลุ๊ค',
+    'คุณเบล','คุณฝัน','คุณโบ๊ท','คุณแฟร์','คุณบีม',
+    'คุณจ๊อบ','คุณแบม','คุณแจ๊บ','คุณเจฟ','คุณเนย',
+    'คุณเจอาร์','คุณมุก','คุณนอย','คุณเกรซ','คุณเจทู',
+    'คุณลิสา','คุณแมกซ์','คุณทันญ่า','คุณมาร์ก','คุณแดนนี่'
+  ];
+
+  const DRIVERS = ['ปุ๊ก','เสิด','บล','เก่ง'];
+
   let carsData       = [];
   let allMembers     = [];
   let selectedMember = null;
   let quantity       = 1;
- 
+
+  // Driver popup state
+  let pendingIndex   = null;
+  let pendingStatus  = null;
+  let localFreq      = {};  // { "carIndex:driver": count }
+
+  // Guest tab state
+  let guestSelectedOf = null;
+  let guestData       = []; // returning guests
+
   /* ── PIN ── */
   function checkPin() {
     const input = document.getElementById('pin-input').value;
     if (input === CORRECT_PIN) {
       document.getElementById('pin-screen').style.display = 'none';
       document.getElementById('main-app').style.display = 'flex';
-      fetchCars();
-      fetchMembers();
+      loadLocalFreq();
+      Promise.all([fetchCars(), fetchMembers()]);
+      buildGuestOfGrid();
+      loadGuestData();
     } else {
       document.getElementById('pin-error').style.display = 'block';
       document.getElementById('pin-input').value = '';
     }
   }
- 
+
   document.getElementById('pin-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') checkPin();
   });
- 
+
   /* ── TABS ── */
   function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -754,37 +1086,48 @@
     document.getElementById(`tab-${tab}-btn`).classList.add('active');
     document.getElementById(`tab-${tab}`).classList.add('active');
   }
- 
+
   /* ════════════════════
      CAR IN/OUT
   ════════════════════ */
   async function fetchCars() {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { cars } = JSON.parse(cached);
+        if (cars && cars.length) { carsData = cars; renderCars(cars); }
+      }
+    } catch (_) {}
+
     try {
       const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&t=${Date.now()}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       carsData = data.cars;
       renderCars(data.cars);
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ cars: data.cars, ts: Date.now() })); } catch (_) {}
     } catch (err) {
-      GROUPS.forEach(g => {
-        document.getElementById(g.id).innerHTML = `<div class="loading-row">⚠️ โหลดไม่ได้</div>`;
-      });
+      if (!carsData.length) {
+        GROUPS.forEach(g => {
+          document.getElementById(g.id).innerHTML = `<div class="loading-row">⚠️ โหลดไม่ได้</div>`;
+        });
+      }
     }
   }
- 
+
   function renderCars(cars) {
     let totalIn = 0, totalOut = 0;
- 
+
     GROUPS.forEach(g => {
       const slice     = cars.slice(g.start, g.end + 1);
       const container = document.getElementById(g.id);
- 
+
       const html = slice.map((car, li) => {
         const globalIndex = g.start + li;
         const isIn  = car.status === 'in';
         const color = isIn ? '#2A7A4B' : '#B33030';
         if (isIn) totalIn++; else totalOut++;
- 
+
         return `
           <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}">
             <img class="car-photo"
@@ -797,68 +1140,308 @@
             </div>
             <button class="toggle-btn ${isIn ? 'in' : 'out'}"
               id="btn-${globalIndex}"
-              onclick="toggleStatus(${globalIndex})">
+              onclick="openDriverPopup(${globalIndex})">
               ${isIn ? 'IN' : 'OUT'}
             </button>
           </div>`;
       }).join('');
- 
+
       container.innerHTML = html || '<div class="loading-row">ไม่พบข้อมูล</div>';
     });
- 
+
     document.getElementById('count-in').textContent  = totalIn;
     document.getElementById('count-out').textContent = totalOut;
- 
+
     const now = new Date();
     document.getElementById('last-updated').textContent =
       'อัพเดต ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
   }
- 
-  async function toggleStatus(index) {
+
+  /* ════════════════════
+     DRIVER POPUP
+  ════════════════════ */
+  function loadLocalFreq() {
+    try { localFreq = JSON.parse(localStorage.getItem(FREQ_KEY) || '{}'); } catch (_) { localFreq = {}; }
+  }
+
+  function saveLocalFreq() {
+    try { localStorage.setItem(FREQ_KEY, JSON.stringify(localFreq)); } catch (_) {}
+  }
+
+  function getTopDrivers(carIndex) {
+    const key = String(carIndex);
+    const counts = {};
+    Object.entries(localFreq).forEach(([k, v]) => {
+      if (k.startsWith(key + ':')) {
+        const driver = k.slice(key.length + 1);
+        counts[driver] = v;
+      }
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name]) => name);
+  }
+
+  function openDriverPopup(index) {
     const car       = carsData[index];
     const newStatus = car.status === 'in' ? 'out' : 'in';
-    const btn       = document.getElementById(`btn-${index}`);
-    const card      = document.getElementById(`card-${index}`);
- 
-    btn.classList.add('loading');
-    btn.textContent = '…';
- 
+    pendingIndex  = index;
+    pendingStatus = newStatus;
+
+    document.getElementById('driver-sheet-car').textContent =
+      `${car.name} · ${car.plate} → ${newStatus === 'in' ? 'เข้า' : 'ออก'}`;
+
+    const topDrivers = getTopDrivers(index);
+
+    // Frequent drivers section
+    const freqGrid = document.getElementById('driver-freq-grid');
+    const freqLabel = document.getElementById('freq-label');
+    if (topDrivers.length) {
+      freqLabel.style.display = 'block';
+      freqGrid.innerHTML = topDrivers.map(name =>
+        `<button class="driver-btn top-pick" onclick="selectDriver('${escapeHTML(name)}', false)">⭐ ${escapeHTML(name)}</button>`
+      ).join('');
+    } else {
+      freqLabel.style.display = 'none';
+      freqGrid.innerHTML = '';
+    }
+
+    // All family members
+    document.getElementById('driver-all-grid').innerHTML = FAMILY.map(name =>
+      `<button class="driver-btn" onclick="selectDriver('${escapeHTML(name)}', false)">${escapeHTML(name)}</button>`
+    ).join('');
+
+    // Staff drivers
+    document.getElementById('driver-staff-grid').innerHTML = DRIVERS.map(name =>
+      `<button class="driver-btn" onclick="selectDriver('${escapeHTML(name)}', false)">${escapeHTML(name)}</button>`
+    ).join('');
+
+    document.getElementById('driver-overlay').classList.add('open');
+  }
+
+  function cancelDriver() {
+    document.getElementById('driver-overlay').classList.remove('open');
+    pendingIndex = null;
+    pendingStatus = null;
+  }
+
+  function selectDriver(driver, isGuest) {
+    document.getElementById('driver-overlay').classList.remove('open');
+
+    if (isGuest) {
+      // Show guest-of popup
+      const car = carsData[pendingIndex];
+      document.getElementById('guestof-car').textContent = `${car.name} · แขกของใคร?`;
+      document.getElementById('guestof-popup-grid').innerHTML = FAMILY.map(name =>
+        `<button class="driver-btn" onclick="selectGuestOf('${escapeHTML(name)}')">${escapeHTML(name)}</button>`
+      ).join('');
+      document.getElementById('guestof-overlay').classList.add('open');
+      return;
+    }
+
+    completeToggle(driver, null);
+  }
+
+  function cancelGuestOf() {
+    document.getElementById('guestof-overlay').classList.remove('open');
+    pendingIndex = null;
+    pendingStatus = null;
+  }
+
+  function selectGuestOf(guestOf) {
+    document.getElementById('guestof-overlay').classList.remove('open');
+    completeToggle('แขก', guestOf);
+  }
+
+  async function completeToggle(driver, guestOf) {
+    const index    = pendingIndex;
+    const newStatus = pendingStatus;
+    const car      = carsData[index];
+    const btn      = document.getElementById(`btn-${index}`);
+    const card     = document.getElementById(`card-${index}`);
+
+    // Optimistic UI
+    carsData[index].status = newStatus;
+    applyToggleUI(index, newStatus, card, btn);
+    updateCounters();
+    showToast(`${car.name} → ${newStatus === 'in' ? 'เข้า ✅' : 'ออก 🔴'} (${driver})`);
+
+    // Update frequency locally
+    const freqKey = `${index}:${driver}`;
+    localFreq[freqKey] = (localFreq[freqKey] || 0) + 1;
+    saveLocalFreq();
+
+    pendingIndex = null;
+    pendingStatus = null;
+
+    // API calls in background
     try {
-      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=update&row=${index + 2}&status=${newStatus}&t=${Date.now()}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
- 
-      carsData[index].status = newStatus;
-      const isIn  = newStatus === 'in';
-      const color = isIn ? '#2A7A4B' : '#B33030';
- 
-      btn.classList.remove('loading', 'in', 'out');
-      btn.classList.add(isIn ? 'in' : 'out');
-      btn.textContent = isIn ? 'IN' : 'OUT';
- 
-      card.classList.remove('is-in', 'is-out');
-      card.classList.add(isIn ? 'is-in' : 'is-out');
- 
-      const photo = card.querySelector('.car-photo');
-      if (photo) photo.style.border = `2px solid ${color}`;
- 
-      card.classList.add(isIn ? 'flash-in' : 'flash-out');
-      setTimeout(() => card.classList.remove('flash-in', 'flash-out'), 600);
- 
-      let totalIn = 0, totalOut = 0;
-      carsData.forEach(c => c.status === 'in' ? totalIn++ : totalOut++);
-      document.getElementById('count-in').textContent  = totalIn;
-      document.getElementById('count-out').textContent = totalOut;
- 
-      showToast(`${car.name} → ${isIn ? 'เข้า ✅' : 'ออก 🔴'}`);
- 
+      // 1. Update status
+      await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=update&row=${index + 2}&status=${newStatus}&t=${Date.now()}`);
+
+      // 2. Log to Member Log
+      fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&t=${Date.now()}`);
+
+      // 3. If guest, also log to Guest Log
+      if (guestOf) {
+        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(car.plate)}&guestName=${encodeURIComponent('แขก')}&guestOf=${encodeURIComponent(guestOf)}&status=${newStatus}&t=${Date.now()}`);
+      }
+
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ cars: carsData, ts: Date.now() })); } catch (_) {}
     } catch (err) {
-      btn.classList.remove('loading');
-      btn.textContent = car.status === 'in' ? 'IN' : 'OUT';
+      // Revert on failure
+      carsData[index].status = newStatus === 'in' ? 'out' : 'in';
+      applyToggleUI(index, carsData[index].status, card, btn);
+      updateCounters();
       showToast('⚠️ อัพเดตไม่สำเร็จ');
     }
   }
- 
+
+  function applyToggleUI(index, status, card, btn) {
+    const isIn  = status === 'in';
+    const color = isIn ? '#2A7A4B' : '#B33030';
+    btn.classList.remove('loading', 'in', 'out');
+    btn.classList.add(isIn ? 'in' : 'out');
+    btn.textContent = isIn ? 'IN' : 'OUT';
+    card.classList.remove('is-in', 'is-out');
+    card.classList.add(isIn ? 'is-in' : 'is-out');
+    const photo = card.querySelector('.car-photo');
+    if (photo) photo.style.border = `2px solid ${color}`;
+    card.classList.add(isIn ? 'flash-in' : 'flash-out');
+    setTimeout(() => card.classList.remove('flash-in', 'flash-out'), 600);
+  }
+
+  function updateCounters() {
+    let totalIn = 0, totalOut = 0;
+    carsData.forEach(c => c.status === 'in' ? totalIn++ : totalOut++);
+    document.getElementById('count-in').textContent  = totalIn;
+    document.getElementById('count-out').textContent = totalOut;
+  }
+
+  /* ════════════════════
+     GUEST TAB
+  ════════════════════ */
+  const GUEST_STORAGE_KEY = 'dc_guests_v1';
+
+  function loadGuestData() {
+    try { guestData = JSON.parse(localStorage.getItem(GUEST_STORAGE_KEY) || '[]'); } catch (_) { guestData = []; }
+    renderReturningGuests();
+  }
+
+  function saveGuestData() {
+    try { localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(guestData)); } catch (_) {}
+  }
+
+  function renderReturningGuests() {
+    const list = document.getElementById('returning-list');
+    const inside = guestData.filter(g => g.status === 'in');
+    if (!inside.length) { list.innerHTML = '<div class="loading-row" style="padding:16px;">ไม่มีแขกในบ้านขณะนี้</div>'; return; }
+    list.innerHTML = inside.map((g, i) => `
+      <div class="returning-guest">
+        <div class="returning-info">
+          <div class="returning-plate">${escapeHTML(g.plate)}</div>
+          <div class="returning-name">${escapeHTML(g.name || 'ไม่ระบุชื่อ')} · แขกของ ${escapeHTML(g.guestOf)}</div>
+        </div>
+        <button class="returning-toggle in" onclick="toggleGuest('${escapeHTML(g.plate)}')">IN</button>
+      </div>`).join('');
+  }
+
+  async function toggleGuest(plate) {
+    const idx = guestData.findIndex(g => g.plate === plate && g.status === 'in');
+    if (idx < 0) return;
+    const g = guestData[idx];
+    guestData[idx].status = 'out';
+    saveGuestData();
+    renderReturningGuests();
+    showToast(`${plate} ออกแล้ว 🔴`);
+    fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(plate)}&guestName=${encodeURIComponent(g.name||'')}&guestOf=${encodeURIComponent(g.guestOf)}&status=out&t=${Date.now()}`);
+  }
+
+  function buildGuestOfGrid() {
+    document.getElementById('guestof-grid').innerHTML = FAMILY.map(name =>
+      `<button class="guestof-btn" onclick="selectGuestOfTab(this, '${escapeHTML(name)}')">${escapeHTML(name)}</button>`
+    ).join('');
+  }
+
+  function selectGuestOfTab(btn, name) {
+    document.querySelectorAll('.guestof-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    guestSelectedOf = name;
+  }
+
+  /* ── Camera / Plate Scan ── */
+  function openCamera() {
+    document.getElementById('camera-input').click();
+  }
+
+  async function handlePhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showToast('กำลังอ่านป้ายทะเบียน…');
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target.result;
+      try {
+        const res  = await fetch('https://dc-house.vercel.app/api/scan-plate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: SECRET_KEY, image: base64 })
+        });
+        const data = await res.json();
+
+        if (data.success && data.plate) {
+          document.getElementById('plate-value').textContent = data.plate;
+          document.getElementById('plate-result').classList.add('show');
+          document.getElementById('guest-plate-input').value = data.plate;
+          showToast('อ่านป้ายได้: ' + data.plate);
+        } else {
+          showToast('อ่านไม่ได้ · กรอกเอง');
+        }
+      } catch (err) {
+        showToast('⚠️ สแกนไม่สำเร็จ · กรอกเอง');
+      }
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  }
+
+  async function registerGuest() {
+    const plate    = document.getElementById('guest-plate-input').value.trim();
+    const name     = document.getElementById('guest-name-input').value.trim();
+    const guestOf  = guestSelectedOf;
+
+    if (!plate) { showToast('กรุณาใส่ป้ายทะเบียน'); return; }
+    if (!guestOf) { showToast('กรุณาเลือกว่าแขกของใคร'); return; }
+
+    // Check if returning guest
+    const existing = guestData.find(g => g.plate === plate);
+    if (existing) {
+      existing.status = 'in';
+      existing.guestOf = guestOf;
+      if (name) existing.name = name;
+    } else {
+      guestData.push({ plate, name, guestOf, status: 'in', ts: Date.now() });
+    }
+    saveGuestData();
+    renderReturningGuests();
+
+    // Log to sheet
+    fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(plate)}&guestName=${encodeURIComponent(name||'ไม่ระบุ')}&guestOf=${encodeURIComponent(guestOf)}&status=in&t=${Date.now()}`);
+
+    // Reset form
+    document.getElementById('guest-plate-input').value = '';
+    document.getElementById('guest-name-input').value = '';
+    document.getElementById('plate-result').classList.remove('show');
+    document.querySelectorAll('.guestof-btn').forEach(b => b.classList.remove('selected'));
+    guestSelectedOf = null;
+
+    showToast(`${plate} เข้าแล้ว ✅`);
+    switchTab('guest');
+  }
+
   /* ════════════════════
      COURIER
   ════════════════════ */
@@ -873,7 +1456,7 @@
       document.getElementById('member-list').innerHTML = `<div class="loading-row">⚠️ โหลดไม่ได้</div>`;
     }
   }
- 
+
   function renderMembers(members) {
     const list = document.getElementById('member-list');
     if (!members.length) { list.innerHTML = '<div class="loading-row">ไม่พบสมาชิก</div>'; return; }
@@ -883,94 +1466,82 @@
         <div class="member-check" id="check-${i}">✓</div>
       </div>`).join('');
   }
- 
+
   function filterMembers() {
     const q = document.getElementById('search-box').value.toLowerCase();
     renderMembers(allMembers.filter(m => m.name.toLowerCase().includes(q)));
   }
- 
+
   function getCurrentMembers() {
     const q = document.getElementById('search-box').value.toLowerCase();
     return q ? allMembers.filter(m => m.name.toLowerCase().includes(q)) : allMembers;
   }
- 
+
   function selectMember(index) {
     const members = getCurrentMembers();
     selectedMember = members[index];
- 
     document.querySelectorAll('.member-item').forEach(el => el.classList.remove('selected'));
     document.getElementById(`member-${index}`).classList.add('selected');
- 
     setTimeout(() => {
       document.getElementById('selected-display').textContent = selectedMember.name;
       document.getElementById('section-quantity').style.display = 'block';
- 
       document.getElementById('step1').classList.remove('active');
       document.getElementById('step1').classList.add('done');
       document.getElementById('step1').querySelector('.step-num').textContent = '✓';
       document.getElementById('step2').classList.add('active');
     }, 150);
   }
- 
+
   function changeQty(delta) {
     quantity = Math.max(1, Math.min(99, quantity + delta));
     document.getElementById('qty-display').textContent = quantity;
   }
- 
+
   async function sendNotification() {
     if (!selectedMember) { showToast('กรุณาเลือกชื่อก่อนค่ะ'); return; }
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
     btn.textContent = 'กำลังส่ง…';
- 
     try {
       const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=notify&userId=${encodeURIComponent(selectedMember.userId)}&name=${encodeURIComponent(selectedMember.name)}&quantity=${quantity}&t=${Date.now()}`);
       const data = await res.json();
- 
       if (data.success) {
         document.getElementById('success-desc').textContent =
           `ส่งแจ้งเตือนถึง คุณ${selectedMember.name} แล้วค่ะ\nพัสดุ ${quantity} ชิ้น`;
         document.getElementById('success-card').classList.add('show');
         document.getElementById('section-member').style.display = 'none';
         document.getElementById('section-quantity').style.display = 'none';
- 
         document.getElementById('step2').classList.remove('active');
         document.getElementById('step2').classList.add('done');
         document.getElementById('step2').querySelector('.step-num').textContent = '✓';
         document.getElementById('step3').classList.add('active');
         document.getElementById('step3').querySelector('.step-num').textContent = '✓';
-      } else {
-        throw new Error('ส่งไม่สำเร็จ');
-      }
+      } else { throw new Error('ส่งไม่สำเร็จ'); }
     } catch {
       showToast('⚠️ ส่งไม่สำเร็จ กรุณาลองใหม่');
       btn.disabled = false;
       btn.textContent = '📨 ส่งแจ้งเตือนไปที่ LINE';
     }
   }
- 
+
   function resetCourier() {
-    selectedMember = null;
-    quantity = 1;
- 
+    selectedMember = null; quantity = 1;
     document.getElementById('success-card').classList.remove('show');
     document.getElementById('section-member').style.display = 'block';
     document.getElementById('section-quantity').style.display = 'none';
     document.getElementById('search-box').value = '';
     document.getElementById('qty-display').textContent = '1';
- 
     ['step1','step2','step3'].forEach((id, i) => {
       const el = document.getElementById(id);
       el.classList.remove('active', 'done');
       el.querySelector('.step-num').textContent = i + 1;
     });
     document.getElementById('step1').classList.add('active');
- 
     document.getElementById('submit-btn').disabled = false;
     document.getElementById('submit-btn').textContent = '📨 ส่งแจ้งเตือนไปที่ LINE';
     renderMembers(allMembers);
   }
- 
+
   /* ── TOAST ── */
   let toastTimer;
   function showToast(msg) {
@@ -980,11 +1551,11 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
   }
- 
+
   function escapeHTML(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
- 
+
   /* ── AUTO REFRESH CARS ── */
   setInterval(fetchCars, REFRESH_INTERVAL);
 </script>
