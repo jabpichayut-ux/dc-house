@@ -1,5 +1,3 @@
-import { SignJWT, importPKCS8 } from 'jose';
-
 const SHEET_ID   = '1CMSqYFS352rIKXW0x0ZeEbtNjiBB1sOvMMI9linioLg';
 const API_KEY    = 'AIzaSyD8AvaVO0uYS_pDNBmQx5DYLaB0j8dIZo0';
 const SECRET     = 'dc-house-2026';
@@ -12,50 +10,31 @@ async function readRange(range) {
   return d.values || [];
 }
 
+async function writeRange(range, values) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED&key=${API_KEY}`;
+  const r = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ range, majorDimension: 'ROWS', values })
+  });
+  return r.json();
+}
+
+async function appendRange(sheetName, values) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${API_KEY}`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values: [values] })
+  });
+  return r.json();
+}
+
 function thaiDate() {
   return new Date().toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 function thaiTime() {
   return new Date().toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' });
-}
-
-async function getAccessToken() {
-  const sa = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
-  const privateKey = await importPKCS8(sa.private_key, 'RS256');
-  const jwt = await new SignJWT({
-    scope: 'https://www.googleapis.com/auth/spreadsheets'
-  })
-    .setProtectedHeader({ alg: 'RS256' })
-    .setIssuedAt()
-    .setIssuer(sa.client_email)
-    .setAudience('https://oauth2.googleapis.com/token')
-    .setExpirationTime('1h')
-    .sign(privateKey);
-
-  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`
-  });
-  const tokenData = await tokenRes.json();
-  if (!tokenData.access_token) throw new Error('No token: ' + JSON.stringify(tokenData));
-  return tokenData.access_token;
-}
-
-async function appendRow(token, sheetName, values) {
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ values: [values] })
-  });
-}
-
-async function writeCell(token, range, value) {
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
-    method: 'PUT',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ range, majorDimension: 'ROWS', values: [[value]] })
-  });
 }
 
 export default async function handler(req, res) {
@@ -68,29 +47,27 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'update') {
-      const token = await getAccessToken();
-      await writeCell(token, `Car Park!C${row}`, status);
+      const result = await writeRange(`Car Park!C${row}`, [[status]]);
+      if (result.error) throw new Error(result.error.message);
       return res.json({ success: true });
     }
 
     if (action === 'logMember') {
-      const token = await getAccessToken();
-      await appendRow(token, 'Member Log', [thaiDate(), thaiTime(), carName, plate, driver, status === 'in' ? 'เข้า' : 'ออก']);
+      await appendRange('Member Log', [thaiDate(), thaiTime(), carName, plate, driver, status === 'in' ? 'เข้า' : 'ออก']);
       try {
         const fd = await readRange('Driver Freq!A:C');
         const idx = fd.findIndex(r => r[0] === carIndex && r[1] === driver);
         if (idx >= 0) {
-          await writeCell(token, `Driver Freq!C${idx+1}`, (parseInt(fd[idx][2])||0)+1);
+          await writeRange(`Driver Freq!C${idx+1}`, [[(parseInt(fd[idx][2])||0)+1]]);
         } else {
-          await appendRow(token, 'Driver Freq', [carIndex, driver, 1]);
+          await appendRange('Driver Freq', [carIndex, driver, 1]);
         }
       } catch(e) {}
       return res.json({ success: true });
     }
 
     if (action === 'logGuest') {
-      const token = await getAccessToken();
-      await appendRow(token, 'Guest Log', [thaiDate(), thaiTime(), plate, guestName, guestOf, status === 'in' ? 'เข้า' : 'ออก']);
+      await appendRange('Guest Log', [thaiDate(), thaiTime(), plate, guestName, guestOf, status === 'in' ? 'เข้า' : 'ออก']);
       return res.json({ success: true });
     }
 
@@ -123,6 +100,6 @@ export default async function handler(req, res) {
     return res.json({ cars, updated: new Date().toISOString() });
 
   } catch(err) {
-    return res.status(500).json({ error: err.message, stack: err.stack ? err.stack.substring(0,300) : '' });
+    return res.status(500).json({ error: err.message });
   }
 }
