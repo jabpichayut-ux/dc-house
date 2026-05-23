@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import { SignJWT, importPKCS8 } from 'jose';
 
 const SHEET_ID   = '1CMSqYFS352rIKXW0x0ZeEbtNjiBB1sOvMMI9linioLg';
 const API_KEY    = 'AIzaSyD8AvaVO0uYS_pDNBmQx5DYLaB0j8dIZo0';
@@ -21,15 +21,17 @@ function thaiTime() {
 
 async function getAccessToken() {
   const sa = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
-  const now = Math.floor(Date.now() / 1000);
-  const claim = { iss: sa.client_email, scope: 'https://www.googleapis.com/auth/spreadsheets', aud: 'https://oauth2.googleapis.com/token', exp: now + 3600, iat: now };
-  const header  = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
-  const payload = Buffer.from(JSON.stringify(claim)).toString('base64url');
-  const sigInput = `${header}.${payload}`;
-  const sign = crypto.createSign('RSA-SHA256');
-  sign.update(sigInput);
-  const sig = sign.sign(sa.private_key, 'base64url');
-  const jwt = `${sigInput}.${sig}`;
+  const privateKey = await importPKCS8(sa.private_key, 'RS256');
+  const jwt = await new SignJWT({
+    scope: 'https://www.googleapis.com/auth/spreadsheets'
+  })
+    .setProtectedHeader({ alg: 'RS256' })
+    .setIssuedAt()
+    .setIssuer(sa.client_email)
+    .setAudience('https://oauth2.googleapis.com/token')
+    .setExpirationTime('1h')
+    .sign(privateKey);
+
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
