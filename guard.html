@@ -955,19 +955,8 @@
 
       <div class="section-title" style="margin-bottom:14px;">➕ รับแขกใหม่</div>
 
-      <!-- Camera scan -->
-      <div class="scan-area" onclick="openCamera()">
-        <div class="scan-icon">📷</div>
-        <div class="scan-label">ถ่ายป้ายทะเบียน</div>
-        <div class="scan-sublabel">กดเพื่อเปิดกล้อง · AI จะอ่านป้ายให้อัตโนมัติ</div>
-      </div>
-      <input type="file" accept="image/*" capture="environment" id="camera-input" onchange="handlePhoto(event)" />
-
-      <!-- Plate result / manual entry -->
-      <div class="plate-result" id="plate-result">
-        <div class="plate-result-label">ป้ายทะเบียนที่อ่านได้</div>
-        <div class="plate-result-value" id="plate-value">—</div>
-      </div>
+      <!-- Manual plate entry -->
+<div class="section-title" style="margin-bottom:8px;">ป้ายทะเบียน</div>
 
       <input class="guest-input" id="guest-plate-input" type="text" placeholder="ป้ายทะเบียน (กรอกหรือแก้ไขที่นี่)" />
       <input class="guest-input" id="guest-name-input" type="text" placeholder="ชื่อแขก (ไม่บังคับ)" />
@@ -1368,44 +1357,6 @@
     document.querySelectorAll('.guestof-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     guestSelectedOf = name;
-  }
-
-  /* ── Camera / Plate Scan ── */
-  function openCamera() {
-    document.getElementById('camera-input').click();
-  }
-
-  async function handlePhoto(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    showToast('กำลังอ่านป้ายทะเบียน…');
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result;
-      try {
-        const res  = await fetch('https://dc-house.vercel.app/api/scan-plate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: SECRET_KEY, image: base64 })
-        });
-        const data = await res.json();
-
-        if (data.success && data.plate) {
-          document.getElementById('plate-value').textContent = data.plate;
-          document.getElementById('plate-result').classList.add('show');
-          document.getElementById('guest-plate-input').value = data.plate;
-          showToast('อ่านป้ายได้: ' + data.plate);
-        } else {
-          showToast('อ่านไม่ได้ · กรอกเอง');
-        }
-      } catch (err) {
-        showToast('⚠️ สแกนไม่สำเร็จ · กรอกเอง');
-      }
-    };
-    reader.readAsDataURL(file);
-    event.target.value = '';
   }
 
   async function registerGuest() {
