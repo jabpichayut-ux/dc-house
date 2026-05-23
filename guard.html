@@ -1009,7 +1009,7 @@
 
 <script>
   /* ── CONFIG ── */
-  const PROXY_URL        = 'https://dc-house.vercel.app/api/cars';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKXEgGjhmal3npVEcU3wHdn9UVYOrLtYFLb-JZyPDX81oPPDil2x9P_SD0n5z3EX1akg/exec';
   const SECRET_KEY       = 'dc-house-2026';
   const CORRECT_PIN      = '999999999';
   const REFRESH_INTERVAL = 30 * 1000;
@@ -1267,14 +1267,14 @@
     // API calls in background
     try {
       // 1. Update status
-      await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=update&row=${index + 2}&status=${newStatus}&t=${Date.now()}`);
+      await fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=update&row=${index + 2}&status=${newStatus}&t=${Date.now()}`);
 
       // 2. Log to Member Log
-      fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&t=${Date.now()}`);
+      fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&t=${Date.now()}`);
 
       // 3. If guest, also log to Guest Log
       if (guestOf) {
-        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(car.plate)}&guestName=${encodeURIComponent('แขก')}&guestOf=${encodeURIComponent(guestOf)}&status=${newStatus}&t=${Date.now()}`);
+        fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(car.plate)}&guestName=${encodeURIComponent('แขก')}&guestOf=${encodeURIComponent(guestOf)}&status=${newStatus}&t=${Date.now()}`);
       }
 
       try { localStorage.setItem(CACHE_KEY, JSON.stringify({ cars: carsData, ts: Date.now() })); } catch (_) {}
