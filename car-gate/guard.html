@@ -1010,6 +1010,7 @@
 <script>
   /* ── CONFIG ── */
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtmuGIo4fC39uG4uslI26utMh0Fc0F_teaoJrwVY_hRnG2w8tCi0nMPhDGzk3bueyLyw/exec';
+  const PROXY_URL = APPS_SCRIPT_URL;
   const SECRET_KEY       = 'dc-house-2026';
   const CORRECT_PIN      = '999999999';
   const REFRESH_INTERVAL = 30 * 1000;
@@ -1385,7 +1386,6 @@
     // Reset form
     document.getElementById('guest-plate-input').value = '';
     document.getElementById('guest-name-input').value = '';
-    document.getElementById('plate-result').classList.remove('show');
     document.querySelectorAll('.guestof-btn').forEach(b => b.classList.remove('selected'));
     guestSelectedOf = null;
 
