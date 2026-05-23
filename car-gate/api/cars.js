@@ -10,24 +10,22 @@ async function readRange(range) {
   return d.values || [];
 }
 
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKXEgGjhmal3npVEcU3wHdn9UVYOrLtYFLb-JZyPDX81oPPDil2x9P_SD0n5z3EX1akg/exec';
+
 async function writeRange(range, values) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED&key=${API_KEY}`;
-  const r = await fetch(url, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ range, majorDimension: 'ROWS', values })
-  });
-  return r.json();
+  const row = range.split('!C')[1];
+  const status = values[0][0];
+  await fetch(`${APPS_SCRIPT_URL}?key=${SECRET}&action=update&row=${row}&status=${status}`);
 }
 
 async function appendRange(sheetName, values) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${API_KEY}`;
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ values: [values] })
+  const params = new URLSearchParams({
+    key: SECRET,
+    action: 'appendRow',
+    sheet: sheetName,
+    values: JSON.stringify(values)
   });
-  return r.json();
+  await fetch(`${APPS_SCRIPT_URL}?${params}`);
 }
 
 function thaiDate() {
