@@ -1,3 +1,4 @@
+import { createSign } from 'crypto';
 const SHEET_ID   = '1CMSqYFS352rIKXW0x0ZeEbtNjiBB1sOvMMI9linioLg';
 const API_KEY    = 'AIzaSyD8AvaVO0uYS_pDNBmQx5DYLaB0j8dIZo0';
 const SECRET     = 'dc-house-2026';
@@ -24,7 +25,6 @@ async function getAccessToken() {
   const header  = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
   const payload = Buffer.from(JSON.stringify(claim)).toString('base64url');
   const sigInput = `${header}.${payload}`;
-  const { createSign } = await import('crypto');
   const sign = createSign('RSA-SHA256');
   sign.update(sigInput);
   const sig = sign.sign(sa.private_key, 'base64url');
