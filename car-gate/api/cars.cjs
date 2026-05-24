@@ -10,7 +10,7 @@ async function readRange(range) {
   return d.values || [];
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKXEgGjhmal3npVEcU3wHdn9UVYOrLtYFLb-JZyPDX81oPPDil2x9P_SD0n5z3EX1akg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtmuGIo4fC39uG4uslI26utMh0Fc0F_teaoJrwVY_hRnG2w8tCi0nMPhDGzk3bueyLyw/exec';
 
 async function writeRange(range, values) {
   const row = range.split('!C')[1];
@@ -35,7 +35,7 @@ function thaiTime() {
   return new Date().toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' });
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
   try {
     if (action === 'update') {
       const result = await writeRange(`Car Park!C${row}`, [[status]]);
-      if (result.error) throw new Error(result.error.message);
+      if (result && result.error) throw new Error(result.error.message);
       return res.json({ success: true });
     }
 
@@ -100,4 +100,4 @@ export default async function handler(req, res) {
   } catch(err) {
     return res.status(500).json({ error: err.message });
   }
-}
+};
