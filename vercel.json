@@ -1,7 +1,8 @@
 {
   "rewrites": [
-    { "source": "/guard", "destination": "/car-gate/guard.html" },
-    { "source": "/index", "destination": "/car-gate/index.html" }
+    { "source": "/guard",     "destination": "/car-gate/guard.html" },
+    { "source": "/index",     "destination": "/car-gate/index.html" },
+    { "source": "/dashboard", "destination": "/car-gate/dashboard.html" }
   ],
   "headers": [
     {
