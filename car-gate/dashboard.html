@@ -5,215 +5,255 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DC House — Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg:       #EEF2FF;
-      --surface:  #FFFFFF;
-      --primary:  #3B82F6;
-      --plight:   #EFF6FF;
-      --in:       #22C55E;
-      --in-bg:    #F0FDF4;
-      --out:      #F59E0B;
-      --out-bg:   #FFFBEB;
-      --t1:       #1E293B;
-      --t2:       #64748B;
-      --t3:       #94A3B8;
-      --border:   #E2E8F0;
-      --shadow:   0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);
-      --r:        14px;
-      --font:     'Sarabun', system-ui, sans-serif;
+      --bg:      #EEF2FF;
+      --surface: #FFFFFF;
+      --primary: #3B82F6;
+      --plight:  #EFF6FF;
+      --in:      #22C55E;
+      --in-bg:   #F0FDF4;
+      --out:     #DC2626;
+      --out-bg:  #FEF2F2;
+      --t1:      #1E293B;
+      --t2:      #64748B;
+      --t3:      #94A3B8;
+      --border:  #E2E8F0;
+      --shadow:  0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);
+      --r:       12px;
+      --font:    'Sarabun', system-ui, sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body { font-family: var(--font); background: var(--bg); color: var(--t1); min-height: 100vh; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--t1);
+    }
 
     /* ── HEADER ─────────────────────────────── */
     .header {
+      height: 54px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 28px;
-      height: 62px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      padding: 0 20px;
+      flex-shrink: 0;
     }
-    .brand { display: flex; align-items: center; gap: 11px; }
-    .brand-ico {
-      width: 38px; height: 38px;
-      background: var(--primary);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; color: #fff; font-weight: 700;
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      border-radius: 8px;
+      object-fit: contain;
+      display: block;
     }
-    .brand-name { font-size: 16px; font-weight: 700; color: var(--t1); }
+    .brand-name { font-size: 17px; font-weight: 800; color: var(--t1); }
     .brand-sub  { font-size: 11px; color: var(--t2); margin-top: 1px; }
-    .hnav { display: flex; gap: 2px; }
-    .hnav a {
-      padding: 6px 13px; border-radius: 8px; font-family: var(--font);
-      font-size: 13px; font-weight: 500; color: var(--t2);
-      text-decoration: none; transition: all .15s;
-    }
-    .hnav a:hover  { background: var(--bg); color: var(--t1); }
-    .hnav a.active { background: var(--plight); color: var(--primary); }
-    .hright { display: flex; align-items: center; gap: 10px; }
-    .date-lbl { font-size: 12px; color: var(--t2); }
+    .hright { display: flex; align-items: center; gap: 12px; }
+    .date-lbl { font-size: 13px; color: var(--t2); }
     .status-pill {
       font-size: 11px; font-weight: 600;
-      padding: 4px 11px; border-radius: 20px;
+      padding: 4px 12px; border-radius: 20px;
       background: #FEF3C7; color: #D97706;
     }
     .status-pill.ok { background: var(--in-bg); color: var(--in); }
 
-    /* ── LAYOUT ─────────────────────────────── */
-    .page { max-width: 1280px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    /* ── PAGE GRID ───────────────────────────── */
+    .page {
+      height: calc(100vh - 54px);
+      display: grid;
+      grid-template-rows: 76px 1fr 160px 1fr;
+      gap: 10px;
+      padding: 10px;
+      overflow: hidden;
+    }
 
     /* ── STAT CARDS ─────────────────────────── */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
     .scard {
-      background: var(--surface); border-radius: var(--r); padding: 20px 20px;
-      box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px;
+      background: var(--surface);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
     }
     .sico {
-      width: 50px; height: 50px; border-radius: 13px;
+      width: 44px; height: 44px; border-radius: 11px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
+      font-size: 20px; flex-shrink: 0;
     }
     .sico.green  { background: #F0FDF4; }
-    .sico.amber  { background: #FFFBEB; }
+    .sico.red    { background: var(--out-bg); }
     .sico.blue   { background: var(--plight); }
     .sico.purple { background: #FAF5FF; }
-    .sval  { font-size: 30px; font-weight: 800; line-height: 1; color: var(--t1); }
-    .slth  { font-size: 13px; font-weight: 600; color: var(--t1); margin-top: 5px; }
-    .slen  { font-size: 11px; color: var(--t3); margin-top: 1px; }
+    .sval { font-size: 30px; font-weight: 800; line-height: 1; color: var(--t1); }
+    .slth { font-size: 12px; font-weight: 600; color: var(--t1); margin-top: 4px; }
+    .slen { font-size: 10px; color: var(--t3); margin-top: 1px; }
 
-    /* ── GRID HELPERS ───────────────────────── */
-    .g2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
-    .g1-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    /* ── CHART ROW ───────────────────────────── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      min-height: 0;
+    }
 
-    /* ── CARD ───────────────────────────────── */
-    .card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
-    .ch   { padding: 18px 20px 0; }
-    .ct   { font-size: 15px; font-weight: 700; color: var(--t1); }
-    .cten { font-size: 11px; color: var(--t3); font-weight: 400; margin-left: 6px; }
-    .cwrap { padding: 16px 20px 20px; }
+    /* ── CAR STATUS ROW ──────────────────────── */
+    /* full-width, horizontal grid of car rows   */
 
-    /* ── CAR STATUS ─────────────────────────── */
-    .clist  { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 7px; }
-    .crow   {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 11px; border-radius: 10px; background: var(--bg);
+    /* ── BOTTOM ROW ──────────────────────────── */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    /* ── CARD BASE ───────────────────────────── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .ch {
+      padding: 10px 14px 0;
+      flex-shrink: 0;
+    }
+    .ct   { font-size: 13px; font-weight: 700; color: var(--t1); }
+    .cten { font-size: 10px; color: var(--t3); font-weight: 400; margin-left: 5px; }
+
+    /* ── CHART WRAP ──────────────────────────── */
+    .chart-wrap {
+      flex: 1;
+      min-height: 0;
+      padding: 8px 14px 10px;
+      position: relative;
+    }
+
+    /* ── CAR STATUS GRID ─────────────────────── */
+    .cars-grid {
+      flex: 1;
+      padding: 6px 10px 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 6px;
+      overflow: hidden;
+      align-content: center;
+    }
+    .crow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: var(--bg);
     }
     .cphoto {
-      width: 46px; height: 30px; border-radius: 6px;
-      object-fit: cover; flex-shrink: 0; background: var(--border);
+      width: 54px; height: 36px;
+      border-radius: 5px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--border);
     }
-    .cph-placeholder {
-      width: 46px; height: 30px; border-radius: 6px;
-      background: var(--border); display: flex; align-items: center;
-      justify-content: center; font-size: 16px; flex-shrink: 0;
+    .cph-p {
+      width: 54px; height: 36px;
+      border-radius: 5px;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
     }
-    .cname { font-size: 13px; font-weight: 600; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cplate { font-size: 11px; color: var(--t3); }
+    .cinfo { flex: 1; min-width: 0; }
+    .cname  { font-size: 13px; font-weight: 700; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cplate { font-size: 12px; font-weight: 700; color: var(--t2); font-family: monospace; letter-spacing: .5px; }
     .sbadge {
-      font-size: 11px; font-weight: 600;
-      padding: 3px 9px; border-radius: 20px; flex-shrink: 0; margin-left: auto;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 9px; border-radius: 20px; flex-shrink: 0;
     }
     .sbadge.in  { background: var(--in-bg);  color: var(--in); }
     .sbadge.out { background: var(--out-bg); color: var(--out); }
 
-    /* ── LISTS (drivers / guests) ────────────── */
-    .dlist, .glist { padding: 10px 18px 16px; display: flex; flex-direction: column; }
-    .ditem, .gitem {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 0; border-bottom: 1px solid var(--border);
+    /* ── GUEST LIST ──────────────────────────── */
+    .glist { flex: 1; overflow-y: auto; padding: 4px 12px 8px; }
+    .gitem {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
     }
-    .ditem:last-child, .gitem:last-child { border-bottom: none; }
-    .avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700; flex-shrink: 0;
+    .gitem:last-child { border-bottom: none; }
+    .gico {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #FAF5FF; display: flex; align-items: center;
+      justify-content: center; font-size: 14px; flex-shrink: 0;
     }
-    .avatar.blue   { background: var(--plight); color: var(--primary); }
-    .avatar.purple { background: #FAF5FF; color: #7C3AED; font-size: 16px; }
-    .dname, .gname { font-size: 13px; font-weight: 600; color: var(--t1); }
-    .dcar,  .gsub  { font-size: 11px; color: var(--t2); }
-    .gplate { font-size: 11px; color: var(--t2); font-family: monospace; }
-    .gof    { font-size: 10px; color: var(--t3); }
-    .cnt { text-align: right; }
-    .cnt-n { font-size: 13px; font-weight: 700; }
-    .cnt-n.blue   { color: var(--primary); }
-    .cnt-n.purple { color: #7C3AED; }
-    .cnt-u { font-size: 10px; color: var(--t3); }
+    .gname { font-size: 13px; font-weight: 600; color: var(--t1); }
+    .gsub  { font-size: 10px; color: var(--t2); }
+    .gcnt  { font-size: 14px; font-weight: 700; color: #7C3AED; margin-left: auto; flex-shrink: 0; text-align: right; }
+    .gcnt-u { font-size: 10px; color: var(--t3); }
 
-    /* ── ACTIVITY ────────────────────────────── */
-    .alist { padding: 10px 20px 18px; display: flex; flex-direction: column; }
+    /* ── ACTIVITY LIST ───────────────────────── */
+    .alist { flex: 1; overflow-y: auto; padding: 4px 12px 8px; }
     .aitem {
-      display: grid; grid-template-columns: 40px 1fr auto auto;
-      align-items: center; gap: 12px;
-      padding: 10px 0; border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 32px 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
     }
     .aitem:last-child { border-bottom: none; }
     .aico {
-      width: 34px; height: 34px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
     }
     .aico.member { background: var(--plight); }
     .aico.guest  { background: #FAF5FF; }
     .aname { font-size: 13px; font-weight: 600; color: var(--t1); }
-    .asub  { font-size: 11px; color: var(--t2); }
-    .adir  { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+    .asub  { font-size: 10px; color: var(--t2); }
+    .adir  { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
     .adir.in  { background: var(--in-bg);  color: var(--in); }
     .adir.out { background: var(--out-bg); color: var(--out); }
-    .atime { font-size: 11px; color: var(--t3); text-align: right; min-width: 58px; line-height: 1.5; }
+    .atime { font-size: 10px; color: var(--t3); text-align: right; line-height: 1.6; min-width: 54px; }
 
-    /* ── EMPTY ──────────────────────────────── */
-    .empty { padding: 22px; text-align: center; color: var(--t3); font-size: 13px; }
-
-    /* ── RESPONSIVE ─────────────────────────── */
-    @media (max-width: 1024px) {
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .g2-1  { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-      .page  { padding: 14px; gap: 14px; }
-      .stats { gap: 10px; }
-      .g1-1  { grid-template-columns: 1fr; }
-      .header { padding: 0 16px; }
-      .hnav  { display: none; }
-    }
+    .empty { padding: 16px; text-align: center; color: var(--t3); font-size: 12px; }
   </style>
 </head>
 <body>
 
-<!-- ─── HEADER ───────────────────────────────── -->
+<!-- ── HEADER ──────────────────────────────── -->
 <header class="header">
   <div class="brand">
-    <div class="brand-ico">DC</div>
+    <img class="brand-logo" src="/logo.png" alt="DC House" onerror="this.style.display='none'">
     <div>
       <div class="brand-name">DC House</div>
       <div class="brand-sub">แดชบอร์ด · Dashboard</div>
     </div>
   </div>
-  <nav class="hnav">
-    <a class="active" href="/dashboard">📊 แดชบอร์ด</a>
-    <a href="/guard">🚦 ยามรถ</a>
-    <a href="/index">📦 พัสดุ</a>
-  </nav>
   <div class="hright">
     <div class="date-lbl" id="dateLabel"></div>
     <div class="status-pill" id="statusPill">กำลังโหลด…</div>
   </div>
 </header>
 
-<!-- ─── PAGE ─────────────────────────────────── -->
-<main class="page">
+<!-- ── PAGE ───────────────────────────────── -->
+<div class="page">
 
-  <!-- Summary cards -->
+  <!-- Stats -->
   <div class="stats">
     <div class="scard">
       <div class="sico green">🟢</div>
@@ -224,7 +264,7 @@
       </div>
     </div>
     <div class="scard">
-      <div class="sico amber">🟡</div>
+      <div class="sico red">🔴</div>
       <div>
         <div class="sval" id="valOut">—</div>
         <div class="slth">รถออกไป</div>
@@ -249,61 +289,62 @@
     </div>
   </div>
 
-  <!-- Peak hours + car status -->
-  <div class="g2-1">
+  <!-- Charts row -->
+  <div class="charts-row">
     <div class="card">
       <div class="ch">
         <span class="ct">ช่วงเวลาที่ยุ่งที่สุด</span>
         <span class="cten">Peak Hours</span>
       </div>
-      <div class="cwrap"><canvas id="peakChart"></canvas></div>
+      <div class="chart-wrap">
+        <canvas id="peakChart"></canvas>
+      </div>
     </div>
     <div class="card">
       <div class="ch">
-        <span class="ct">สถานะรถ</span>
-        <span class="cten">Car Status</span>
+        <span class="ct">ย้อนหลัง 7 วัน</span>
+        <span class="cten">Last 7 Days Activity</span>
       </div>
-      <div class="clist" id="carsList"><div class="empty">กำลังโหลด…</div></div>
+      <div class="chart-wrap">
+        <canvas id="trendChart"></canvas>
+      </div>
     </div>
   </div>
 
-  <!-- 7-day trend -->
+  <!-- Car status — full-width horizontal grid -->
   <div class="card">
     <div class="ch">
-      <span class="ct">ย้อนหลัง 7 วัน</span>
-      <span class="cten">Last 7 Days Activity</span>
+      <span class="ct">สถานะรถ</span>
+      <span class="cten">Car Status</span>
     </div>
-    <div class="cwrap"><canvas id="trendChart"></canvas></div>
+    <div class="cars-grid" id="carsList">
+      <div class="empty">กำลังโหลด…</div>
+    </div>
   </div>
 
-  <!-- Top drivers + frequent guests -->
-  <div class="g1-1">
-    <div class="card">
-      <div class="ch">
-        <span class="ct">ผู้ขับบ่อยที่สุด</span>
-        <span class="cten">Top Drivers</span>
-      </div>
-      <div class="dlist" id="driversList"><div class="empty">กำลังโหลด…</div></div>
-    </div>
+  <!-- Bottom row: guests + activity -->
+  <div class="bottom-row">
     <div class="card">
       <div class="ch">
         <span class="ct">แขกประจำ</span>
         <span class="cten">Frequent Guests</span>
       </div>
-      <div class="glist" id="guestsList"><div class="empty">กำลังโหลด…</div></div>
+      <div class="glist" id="guestsList">
+        <div class="empty">กำลังโหลด…</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <span class="ct">กิจกรรมล่าสุด</span>
+        <span class="cten">Recent Activity</span>
+      </div>
+      <div class="alist" id="activityList">
+        <div class="empty">กำลังโหลด…</div>
+      </div>
     </div>
   </div>
 
-  <!-- Recent activity -->
-  <div class="card">
-    <div class="ch">
-      <span class="ct">กิจกรรมล่าสุด</span>
-      <span class="cten">Recent Activity</span>
-    </div>
-    <div class="alist" id="activityList"><div class="empty">กำลังโหลด…</div></div>
-  </div>
-
-</main>
+</div>
 
 <script>
 const SECRET = 'dc-house-2026';
@@ -311,12 +352,10 @@ const API    = '/api/dashboard';
 
 let peakChart, trendChart;
 
-// ── Date header ──────────────────────────────
 document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('th-TH', {
   timeZone: 'Asia/Bangkok', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
 });
 
-// ── Load ─────────────────────────────────────
 async function load() {
   const pill = document.getElementById('statusPill');
   try {
@@ -324,7 +363,9 @@ async function load() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const d = await res.json();
     render(d);
-    const t = new Date(d.updated).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' });
+    const t = new Date(d.updated).toLocaleTimeString('th-TH', {
+      timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit'
+    });
     pill.textContent = `อัปเดต ${t}`;
     pill.className = 'status-pill ok';
   } catch (e) {
@@ -341,12 +382,11 @@ function render(d) {
   renderCars(d.cars);
   renderPeak(d.peakHours);
   renderTrend(d.dailyTrend);
-  renderDrivers(d.driversByCar, d.cars);
   renderGuests(d.frequentGuests);
   renderActivity(d.recent);
 }
 
-// ── Cars ─────────────────────────────────────
+// ── Cars ────────────────────────────────────
 function renderCars(cars) {
   const el = document.getElementById('carsList');
   if (!cars.length) { el.innerHTML = '<div class="empty">ไม่มีข้อมูลรถ</div>'; return; }
@@ -354,10 +394,10 @@ function renderCars(cars) {
     <div class="crow">
       ${c.photo
         ? `<img class="cphoto" src="${h(c.photo)}" alt="" onerror="this.style.display='none'">`
-        : `<div class="cph-placeholder">🚗</div>`}
-      <div style="flex:1;min-width:0">
+        : `<div class="cph-p">🚗</div>`}
+      <div class="cinfo">
         <div class="cname">${h(c.name)}</div>
-        <div class="cplate">${h(c.plate)}</div>
+        <div class="cplate">${h(c.plate) || '—'}</div>
       </div>
       <div class="sbadge ${c.status === 'in' ? 'in' : 'out'}">
         ${c.status === 'in' ? 'อยู่ In' : 'ออก Out'}
@@ -366,7 +406,7 @@ function renderCars(cars) {
   `).join('');
 }
 
-// ── Peak hours chart ──────────────────────────
+// ── Peak hours chart ─────────────────────────
 function renderPeak(peakHours) {
   const ctx = document.getElementById('peakChart').getContext('2d');
   if (peakChart) peakChart.destroy();
@@ -375,25 +415,36 @@ function renderPeak(peakHours) {
     data: {
       labels: peakHours.map(p => `${p.hour}:00`),
       datasets: [
-        { label: 'เข้า (In)',  data: peakHours.map(p => p.in),  backgroundColor: 'rgba(34,197,94,.75)',  borderRadius: 4, borderSkipped: false },
-        { label: 'ออก (Out)', data: peakHours.map(p => p.out), backgroundColor: 'rgba(245,158,11,.75)', borderRadius: 4, borderSkipped: false }
+        {
+          label: 'เข้า (In)',
+          data: peakHours.map(p => p.in),
+          backgroundColor: 'rgba(34,197,94,.75)',
+          borderRadius: 4, borderSkipped: false
+        },
+        {
+          label: 'ออก (Out)',
+          data: peakHours.map(p => p.out),
+          backgroundColor: 'rgba(220,38,38,.70)',
+          borderRadius: 4, borderSkipped: false
+        }
       ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top', labels: { font: { family: 'Sarabun', size: 12 }, boxWidth: 12, padding: 16 } },
+        legend: { position: 'top', labels: { font: { family: 'Sarabun', size: 11 }, boxWidth: 10, padding: 12 } },
         tooltip: { titleFont: { family: 'Sarabun' }, bodyFont: { family: 'Sarabun' } }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11 } } },
-        y: { beginAtZero: true, ticks: { precision: 0, font: { family: 'Sarabun', size: 11 } }, grid: { color: '#F1F5F9' } }
+        x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 10 } } },
+        y: { beginAtZero: true, ticks: { precision: 0, font: { family: 'Sarabun', size: 10 } }, grid: { color: '#F1F5F9' } }
       }
     }
   });
 }
 
-// ── 7-day trend ───────────────────────────────
+// ── 7-day trend chart ────────────────────────
 function renderTrend(trend) {
   const labels = trend.map(t => {
     const p = t.label.split('/');
@@ -406,71 +457,55 @@ function renderTrend(trend) {
     data: {
       labels,
       datasets: [
-        { label: 'สมาชิก (Members)', data: trend.map(t => t.members), borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,.1)', fill: true, tension: 0.4, pointRadius: 4 },
-        { label: 'แขก (Guests)',     data: trend.map(t => t.guests),  borderColor: '#8B5CF6', backgroundColor: 'rgba(139,92,246,.1)',  fill: true, tension: 0.4, pointRadius: 4 }
+        {
+          label: 'สมาชิก (Members)',
+          data: trend.map(t => t.members),
+          borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,.1)',
+          fill: true, tension: 0.4, pointRadius: 4
+        },
+        {
+          label: 'แขก (Guests)',
+          data: trend.map(t => t.guests),
+          borderColor: '#8B5CF6', backgroundColor: 'rgba(139,92,246,.1)',
+          fill: true, tension: 0.4, pointRadius: 4
+        }
       ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top', labels: { font: { family: 'Sarabun', size: 12 }, boxWidth: 12, padding: 16 } },
+        legend: { position: 'top', labels: { font: { family: 'Sarabun', size: 11 }, boxWidth: 10, padding: 12 } },
         tooltip: { titleFont: { family: 'Sarabun' }, bodyFont: { family: 'Sarabun' } }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11 } } },
-        y: { beginAtZero: true, ticks: { precision: 0, font: { family: 'Sarabun', size: 11 } }, grid: { color: '#F1F5F9' } }
+        x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 10 } } },
+        y: { beginAtZero: true, ticks: { precision: 0, font: { family: 'Sarabun', size: 10 } }, grid: { color: '#F1F5F9' } }
       }
     }
   });
 }
 
-// ── Drivers ───────────────────────────────────
-function renderDrivers(driversByCar, cars) {
-  const el = document.getElementById('driversList');
-  const rows = [];
-  Object.entries(driversByCar).forEach(([idx, drivers]) => {
-    const car = cars[parseInt(idx)];
-    const carName = car ? car.name : `รถ #${idx}`;
-    drivers.slice(0, 2).forEach(d => rows.push({ carName, driver: d.driver, count: d.count }));
-  });
-  rows.sort((a, b) => b.count - a.count);
-  if (!rows.length) { el.innerHTML = '<div class="empty">ยังไม่มีข้อมูล</div>'; return; }
-  el.innerHTML = rows.slice(0, 8).map(r => `
-    <div class="ditem">
-      <div class="avatar blue">${h(r.driver.charAt(0) || '?')}</div>
-      <div style="flex:1">
-        <div class="dname">${h(r.driver)}</div>
-        <div class="dcar">${h(r.carName)}</div>
-      </div>
-      <div class="cnt">
-        <div class="cnt-n blue">${r.count}</div>
-        <div class="cnt-u">ครั้ง / trips</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ── Guests ────────────────────────────────────
+// ── Frequent guests ──────────────────────────
 function renderGuests(guests) {
   const el = document.getElementById('guestsList');
   if (!guests.length) { el.innerHTML = '<div class="empty">ยังไม่มีแขกประจำ</div>'; return; }
   el.innerHTML = guests.map(g => `
     <div class="gitem">
-      <div class="avatar purple">👤</div>
-      <div style="flex:1">
+      <div class="gico">👤</div>
+      <div>
         <div class="gname">${h(g.name)}</div>
-        ${g.plate   ? `<div class="gplate">${h(g.plate)}</div>` : ''}
-        ${g.guestOf ? `<div class="gof">แขกของ / Guest of: ${h(g.guestOf)}</div>` : ''}
+        <div class="gsub">${g.plate ? h(g.plate) : ''}${g.guestOf ? ` · แขกของ ${h(g.guestOf)}` : ''}</div>
       </div>
-      <div class="cnt">
-        <div class="cnt-n purple">${g.count}</div>
-        <div class="cnt-u">ครั้ง / visits</div>
+      <div>
+        <div class="gcnt">${g.count}</div>
+        <div class="gcnt-u">ครั้ง</div>
       </div>
     </div>
   `).join('');
 }
 
-// ── Activity ──────────────────────────────────
+// ── Recent activity ──────────────────────────
 function renderActivity(recent) {
   const el = document.getElementById('activityList');
   if (!recent.length) { el.innerHTML = '<div class="empty">ยังไม่มีกิจกรรม</div>'; return; }
@@ -493,7 +528,6 @@ function renderActivity(recent) {
   `).join('');
 }
 
-// ── Escape HTML ───────────────────────────────
 function h(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
