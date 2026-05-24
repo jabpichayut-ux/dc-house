@@ -564,8 +564,7 @@
   const PROXY_URL  = 'https://dc-house.vercel.app/api/cars';
   const SECRET_KEY = 'dc-house-2026';
  
-  // Auto-refresh every 60 seconds
-  const REFRESH_INTERVAL = 60 * 1000;
+  const REFRESH_INTERVAL = 8 * 1000;
  
   /* ─── SVG CAR ICON ────────────────────────────────────── */
   function carSVG(color) {
@@ -643,7 +642,7 @@ function renderCars(cars) {
   /* ─── FETCH VIA APPS SCRIPT PROXY ────────────────────── */
   async function fetchData() {
     try {
-      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&t=${Date.now()}`);
+      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);

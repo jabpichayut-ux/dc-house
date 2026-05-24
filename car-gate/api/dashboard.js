@@ -4,7 +4,7 @@ const SECRET = 'dc-house-2026';
 // Module-level data cache — reduces cold-hit latency on warm Lambda instances
 let _cache = null;
 let _cacheAt = 0;
-const CACHE_TTL = 30 * 1000; // 30 s
+const CACHE_TTL = 8 * 1000; // 8 s
 
 // Parse "DD/MM/YYYY" (Buddhist Era) + "HH:MM" → Unix ms for correct chronological sort
 function parseThaiTs(date, time) {
@@ -139,7 +139,7 @@ module.exports = async function handler(req, res) {
   try {
     if (_cache && Date.now() - _cacheAt < CACHE_TTL) {
       res.setHeader('X-Cache', 'HIT');
-      res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate');
+      res.setHeader('Cache-Control', 's-maxage=8');
       return res.json(_cache);
     }
 
@@ -148,7 +148,7 @@ module.exports = async function handler(req, res) {
     _cacheAt = Date.now();
 
     res.setHeader('X-Cache', 'MISS');
-    res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate');
+    res.setHeader('Cache-Control', 's-maxage=8');
     return res.json(payload);
 
   } catch (err) {
