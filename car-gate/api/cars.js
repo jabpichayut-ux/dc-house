@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'logMember') {
-      await appendRange('Member Log', [thaiDate(), thaiTime(), carName, plate, driver, status === 'in' ? 'เข้า' : 'ออก']);
+      await appendRange('Members Log', [thaiDate(), thaiTime(), carName, plate, driver, status === 'in' ? 'เข้า' : 'ออก']);
       try {
         const fd = await readRange('Driver Freq!A:C');
         const idx = fd.findIndex(r => r[0] === carIndex && r[1] === driver);
