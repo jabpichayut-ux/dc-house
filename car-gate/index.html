@@ -563,22 +563,6 @@
   </div>
 </div>
 
-<!-- ── REGISTRATION SUCCESS (shown after Face ID, redirects back to LINE) -->
-<div id="reg-success-overlay" style="
-  display:none;position:fixed;inset:0;background:var(--warm-white);
-  z-index:99999;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;text-align:center;padding:32px;">
-  <div style="font-size:56px;">✅</div>
-  <div style="font-size:18px;font-weight:700;color:var(--charcoal);">ลงทะเบียนสำเร็จ!</div>
-  <div style="font-size:13px;color:var(--muted);">กำลังกลับไป LINE…</div>
-  <div id="reg-success-counter" style="font-size:28px;font-weight:700;color:var(--gold);">3</div>
-  <button onclick="goBackToLine()" style="
-    background:transparent;border:1.5px solid var(--divider);border-radius:40px;
-    padding:10px 28px;font-family:'Prompt',sans-serif;font-size:13px;
-    color:var(--muted);cursor:pointer;">
-    กลับเดี๋ยวนี้
-  </button>
-</div>
 
 <!-- ── WEBAUTHN REGISTER MODAL ────────────────────────────── -->
 <div id="wa-modal" class="modal-overlay">
@@ -615,6 +599,12 @@
   />
  
   <div class="header-right">
+    <button id="back-to-line-btn" onclick="goBackToLine()" style="
+      display:none;background:transparent;border:1px solid var(--divider);
+      border-radius:20px;padding:6px 14px;font-family:'Prompt',sans-serif;
+      font-size:12px;color:var(--muted);cursor:pointer;">
+      ← LINE
+    </button>
     <button class="faceid-header-btn" id="faceid-header-btn" onclick="openWaModal()">
       🔐 เปิดใช้งาน Face ID
     </button>
@@ -887,25 +877,17 @@ function renderCars(cars) {
 
   // ── Enter main app ────────────────────────────────────────
   let _refreshTimer;
-  let _isFirstRegistration = false; // set true when registerAndEnter() succeeds
+  let _isFirstRegistration = false;
 
   function enterApp() {
     document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('faceid-header-btn').style.display = 'inline-block';
 
-    // If this was a first-time registration from LINE deeplink → countdown back to LINE
-    if (_isFirstRegistration && _lineUserId) {
-      const overlay = document.getElementById('reg-success-overlay');
-      overlay.style.display = 'flex';
-      let secs = 3;
-      const tick = setInterval(() => {
-        secs--;
-        document.getElementById('reg-success-counter').textContent = secs;
-        if (secs <= 0) { clearInterval(tick); goBackToLine(); }
-      }, 1000);
-      return; // don't start the car-gate data fetch
+    // Show "← LINE" header button if this session came from a LINE deeplink
+    if (_lineUserId) {
+      document.getElementById('back-to-line-btn').style.display = 'inline-block';
     }
 
-    document.getElementById('faceid-header-btn').style.display = 'inline-block';
     fetchData();
     _refreshTimer = setInterval(fetchData, REFRESH_INTERVAL);
   }
