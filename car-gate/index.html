@@ -539,27 +539,45 @@
     </div>
   </div>
 
-  <!-- State D: Opened inside LINE app → must open in Safari/Chrome -->
+  <!-- State D: Opened inside LINE app → redirect to Safari/Chrome -->
   <div id="ls-line-browser" style="display:none;text-align:center;padding:0 28px;max-width:320px">
-    <div style="font-size:36px;margin-bottom:10px;">🌐</div>
+    <div style="font-size:42px;margin-bottom:12px;">🌐</div>
     <div style="font-size:15px;font-weight:700;color:var(--charcoal);margin-bottom:8px;">
-      เปิดในเบราว์เซอร์ก่อนนะคะ
+      ต้องเปิดใน Safari ก่อนนะคะ
     </div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">
-      Face ID ไม่รองรับใน LINE Browser<br>
-      <span id="ls-line-ios" style="display:none;">กด <strong>···</strong> มุมขวาบน → <strong>เปิดใน Safari</strong></span>
-      <span id="ls-line-android" style="display:none;">กด <strong>⋮</strong> มุมขวาบน → <strong>เปิดใน Chrome</strong></span>
+    <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:20px;">
+      Face ID ใช้ไม่ได้ใน LINE Browser<br>
+      <span id="ls-line-ios-hint" style="display:none;">กด <strong>···</strong> ด้านบนขวา → <strong>เปิดใน Safari</strong><br>หรือกดปุ่มด้านล่าง</span>
+      <span id="ls-line-android-hint" style="display:none;">กำลังเปิดใน Chrome…</span>
     </div>
-    <button onclick="copyInviteUrl()" style="
+    <button id="ls-open-browser-btn" onclick="openInExternalBrowser()" style="
       background:var(--gold);color:#fff;border:none;border-radius:40px;
-      padding:11px 28px;font-family:'Prompt',sans-serif;font-size:14px;
-      font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;">
-      📋 คัดลอกลิงก์เพื่อเปิดใน Safari
+      padding:14px 0;font-family:'Prompt',sans-serif;font-size:15px;
+      font-weight:700;cursor:pointer;width:100%;margin-bottom:10px;
+      box-shadow:0 4px 16px rgba(201,168,76,.35);">
+      🔓 เปิดใน Safari
     </button>
-    <div id="ls-copy-msg" style="font-size:12px;color:var(--green-text);display:none;">
-      ✅ คัดลอกแล้ว! วางในช่องที่อยู่ของ Safari
+    <div id="ls-copy-msg" style="font-size:12px;color:var(--green-text);display:none;margin-top:4px;">
+      ✅ กำลังเปิด…
     </div>
   </div>
+</div>
+
+<!-- ── REGISTRATION SUCCESS (shown after Face ID, redirects back to LINE) -->
+<div id="reg-success-overlay" style="
+  display:none;position:fixed;inset:0;background:var(--warm-white);
+  z-index:99999;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;text-align:center;padding:32px;">
+  <div style="font-size:56px;">✅</div>
+  <div style="font-size:18px;font-weight:700;color:var(--charcoal);">ลงทะเบียนสำเร็จ!</div>
+  <div style="font-size:13px;color:var(--muted);">กำลังกลับไป LINE…</div>
+  <div id="reg-success-counter" style="font-size:28px;font-weight:700;color:var(--gold);">3</div>
+  <button onclick="goBackToLine()" style="
+    background:transparent;border:1.5px solid var(--divider);border-radius:40px;
+    padding:10px 28px;font-family:'Prompt',sans-serif;font-size:13px;
+    color:var(--muted);cursor:pointer;">
+    กลับเดี๋ยวนี้
+  </button>
 </div>
 
 <!-- ── WEBAUTHN REGISTER MODAL ────────────────────────────── -->
@@ -869,8 +887,24 @@ function renderCars(cars) {
 
   // ── Enter main app ────────────────────────────────────────
   let _refreshTimer;
+  let _isFirstRegistration = false; // set true when registerAndEnter() succeeds
+
   function enterApp() {
     document.getElementById('login-screen').style.display = 'none';
+
+    // If this was a first-time registration from LINE deeplink → countdown back to LINE
+    if (_isFirstRegistration && _lineUserId) {
+      const overlay = document.getElementById('reg-success-overlay');
+      overlay.style.display = 'flex';
+      let secs = 3;
+      const tick = setInterval(() => {
+        secs--;
+        document.getElementById('reg-success-counter').textContent = secs;
+        if (secs <= 0) { clearInterval(tick); goBackToLine(); }
+      }, 1000);
+      return; // don't start the car-gate data fetch
+    }
+
     document.getElementById('faceid-header-btn').style.display = 'inline-block';
     fetchData();
     _refreshTimer = setInterval(fetchData, REFRESH_INTERVAL);
@@ -889,18 +923,28 @@ function renderCars(cars) {
     return /\bLine\//i.test(navigator.userAgent);
   }
 
-  function copyInviteUrl() {
+  function isIOS() {
+    return /iPhone|iPad|iPod/.test(navigator.userAgent);
+  }
+
+  // Open current URL in Safari (iOS) or Chrome (Android), preserving all params
+  function openInExternalBrowser() {
     const url = location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      document.getElementById('ls-copy-msg').style.display = 'block';
-    }).catch(() => {
-      // Fallback for older iOS
-      const ta = document.createElement('textarea');
-      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-      document.body.removeChild(ta);
-      document.getElementById('ls-copy-msg').style.display = 'block';
-    });
+    document.getElementById('ls-copy-msg').style.display = 'block';
+    if (isIOS()) {
+      // window.open with _blank triggers Safari when called from user gesture in LINE WKWebView
+      window.open(url, '_blank');
+    } else {
+      // Android: intent:// scheme reliably opens Chrome
+      const intentUrl = url.replace(/^https:\/\//, 'intent://')
+        + '#Intent;scheme=https;package=com.android.chrome;'
+        + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+      location.href = intentUrl;
+    }
+  }
+
+  function goBackToLine() {
+    window.location.href = 'line://';
   }
 
   // Auto-fill name when a valid code is typed/pasted
@@ -918,12 +962,26 @@ function renderCars(cars) {
     const urlCode = params.get('code');
     _lineUserId   = params.get('lid') || '';
 
-    // LINE in-app browser can't do WebAuthn — ask user to open in Safari/Chrome
+    // LINE in-app browser can't do WebAuthn
     if (isLineBrowser()) {
-      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-      document.getElementById('ls-line-ios').style.display     = isIOS ? 'inline' : 'none';
-      document.getElementById('ls-line-android').style.display = isIOS ? 'none' : 'inline';
-      document.getElementById('ls-line-browser').style.display = 'block';
+      if (isIOS()) {
+        // iOS: show one-tap "Open in Safari" button (can't auto-redirect without gesture)
+        document.getElementById('ls-line-ios-hint').style.display     = 'inline';
+        document.getElementById('ls-line-android-hint').style.display = 'none';
+        document.getElementById('ls-open-browser-btn').textContent    = '🔓 เปิดใน Safari';
+        document.getElementById('ls-line-browser').style.display      = 'block';
+      } else {
+        // Android: auto-redirect to Chrome via intent scheme — no tap needed
+        document.getElementById('ls-line-ios-hint').style.display     = 'none';
+        document.getElementById('ls-line-android-hint').style.display = 'inline';
+        document.getElementById('ls-open-browser-btn').style.display  = 'none';
+        document.getElementById('ls-line-browser').style.display      = 'block';
+        const url = location.href;
+        const intentUrl = url.replace(/^https:\/\//, 'intent://')
+          + '#Intent;scheme=https;package=com.android.chrome;'
+          + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+        setTimeout(() => { location.href = intentUrl; }, 300);
+      }
       return;
     }
 
@@ -1040,6 +1098,7 @@ function renderCars(cars) {
           .catch(() => {}); // fire-and-forget
       }
 
+      _isFirstRegistration = true;
       enterApp();
     } catch (err) {
       btn.textContent = '🔐 ลงทะเบียน Face ID';
