@@ -789,11 +789,11 @@ function renderCars(cars) {
 
     saveSession({ name, code, lineUserId: _lineUserId, loginAt: new Date().toISOString() });
 
-    if (_lineUserId) {
-      fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember`
-        + `&memberName=${encodeURIComponent(name)}&lineUserId=${encodeURIComponent(_lineUserId)}`)
-        .catch(() => {});
-    }
+    // Always register for courier list; pass LINE ID if we have it
+    fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember`
+      + `&memberName=${encodeURIComponent(name)}`
+      + (_lineUserId ? `&lineUserId=${encodeURIComponent(_lineUserId)}` : ''))
+      .catch(() => {});
 
     enterApp();
   }
@@ -811,6 +811,14 @@ function renderCars(cars) {
 
     const session = getSession();
     if (session && session.name) {
+      // Returning user via LINE deeplink — upgrade their registration with LINE ID if missing
+      if (_lineUserId && !session.lineUserId) {
+        session.lineUserId = _lineUserId;
+        saveSession(session);
+        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember`
+          + `&memberName=${encodeURIComponent(session.name)}&lineUserId=${encodeURIComponent(_lineUserId)}`)
+          .catch(() => {});
+      }
       enterApp();
       return;
     }

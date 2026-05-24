@@ -70,16 +70,34 @@ module.exports = async function handler(req, res) {
 
     if (action === 'getMembers') {
       const data = await readRange('Members!A1:B100');
-      return res.json({ members: data.slice(1).filter(r => r[0]&&r[1]).map(r => ({ name: r[0], userId: r[1] })) });
+      const rows = data.slice(1).filter(r => r[0]);
+      // Deduplicate by name — prefer the row that has a LINE ID
+      const map = new Map();
+      for (const r of rows) {
+        const name = r[0], uid = r[1] || '';
+        if (!map.has(name) || uid) map.set(name, { name, userId: uid });
+      }
+      return res.json({ members: [...map.values()] });
     }
 
     if (action === 'registerMember') {
       const { memberName, lineUserId } = req.query;
-      if (!memberName || !lineUserId) return res.status(400).json({ error: 'Missing params' });
+      if (!memberName) return res.status(400).json({ error: 'Missing memberName' });
       const existing = await readRange('Members!A:B');
-      const alreadyIn = existing.some(r => r[1] === lineUserId);
-      if (!alreadyIn) await appendRange('Members', [memberName, lineUserId]);
-      return res.json({ success: true, new: !alreadyIn });
+      if (lineUserId) {
+        // Already stored with this exact LINE ID → skip
+        if (existing.some(r => r[0] === memberName && r[1] === lineUserId)) {
+          return res.json({ success: true, new: false });
+        }
+        // Append new row with LINE ID (deduplication on read handles any old nameless rows)
+      } else {
+        // No LINE ID — only skip if the name is already there at all
+        if (existing.some(r => r[0] === memberName)) {
+          return res.json({ success: true, new: false });
+        }
+      }
+      await appendRange('Members', [memberName, lineUserId || '']);
+      return res.json({ success: true, new: true });
     }
 
     if (action === 'notify') {

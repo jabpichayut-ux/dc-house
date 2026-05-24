@@ -1560,7 +1560,7 @@
     if (!members.length) { list.innerHTML = '<div class="loading-row">ไม่พบสมาชิก</div>'; return; }
     list.innerHTML = members.map((m, i) => `
       <div class="member-item" id="member-${i}" onclick="selectMember(${i})">
-        <div class="member-name">${escapeHTML(m.name)}</div>
+        <div class="member-name">${escapeHTML(m.name)}${m.userId ? '' : ' <span style="font-size:10px;color:#aaa">(ไม่มี LINE)</span>'}</div>
         <div class="member-check" id="check-${i}">✓</div>
       </div>`).join('');
   }
@@ -1597,6 +1597,10 @@
 
   async function sendNotification() {
     if (!selectedMember) { showToast('กรุณาเลือกชื่อก่อนค่ะ'); return; }
+    if (!selectedMember.userId) {
+      showToast(`⚠️ ${selectedMember.name} ยังไม่มี LINE ID — ไม่สามารถส่งแจ้งเตือนได้ค่ะ`);
+      return;
+    }
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
     btn.textContent = 'กำลังส่ง…';
