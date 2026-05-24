@@ -1264,7 +1264,7 @@
             <button class="toggle-btn ${isIn ? 'in' : 'out'}"
               id="btn-${globalIndex}"
               onclick="openDriverPopup(${globalIndex})">
-              ${isIn ? 'เข้า' : 'ออก'}
+              ${isIn ? 'อยู่' : 'ไม่อยู่'}
             </button>
           </div>`;
       }).join('');
@@ -1503,7 +1503,7 @@
     const color = isIn ? '#2A7A4B' : '#B33030';
     btn.classList.remove('loading', 'in', 'out');
     btn.classList.add(isIn ? 'in' : 'out');
-    btn.textContent = isIn ? 'เข้า' : 'ออก';
+    btn.textContent = isIn ? 'อยู่' : 'ไม่อยู่';
     card.classList.remove('is-in', 'is-out');
     card.classList.add(isIn ? 'is-in' : 'is-out');
     const photo = card.querySelector('.car-photo');
