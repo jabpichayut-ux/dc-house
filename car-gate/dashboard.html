@@ -69,7 +69,7 @@
     .page {
       height: calc(100vh - 54px);
       display: grid;
-      grid-template-rows: 76px 1fr 160px 1fr;
+      grid-template-rows: 76px 1fr 190px 1fr;
       gap: 10px;
       padding: 10px;
       overflow: hidden;
@@ -150,41 +150,26 @@
     /* ── CAR STATUS GRID ─────────────────────── */
     .cars-grid {
       flex: 1;
-      padding: 6px 10px 8px;
+      padding: 5px 10px 8px;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 6px;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 4px 6px;
       overflow: hidden;
-      align-content: center;
+      align-content: start;
     }
     .crow {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 10px;
-      border-radius: 8px;
+      gap: 7px;
+      padding: 5px 9px;
+      border-radius: 7px;
       background: var(--bg);
     }
-    .cphoto {
-      width: 54px; height: 36px;
-      border-radius: 5px;
-      object-fit: cover;
-      flex-shrink: 0;
-      background: var(--border);
-    }
-    .cph-p {
-      width: 54px; height: 36px;
-      border-radius: 5px;
-      background: var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .cinfo { flex: 1; min-width: 0; }
-    .cname  { font-size: 13px; font-weight: 700; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cplate { font-size: 12px; font-weight: 700; color: var(--t2); font-family: monospace; letter-spacing: .5px; }
+    .cname  { font-size: 12px; font-weight: 700; color: var(--t1); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cplate { font-size: 11px; font-weight: 700; color: var(--t2); font-family: monospace; letter-spacing: .4px; white-space: nowrap; }
     .sbadge {
-      font-size: 11px; font-weight: 700;
-      padding: 2px 9px; border-radius: 20px; flex-shrink: 0;
+      font-size: 10px; font-weight: 700;
+      padding: 1px 7px; border-radius: 20px; flex-shrink: 0;
     }
     .sbadge.in  { background: var(--in-bg);  color: var(--in); }
     .sbadge.out { background: var(--out-bg); color: var(--out); }
@@ -393,15 +378,10 @@ function renderCars(cars) {
   if (!cars.length) { el.innerHTML = '<div class="empty">ไม่มีข้อมูลรถ</div>'; return; }
   el.innerHTML = cars.map(c => `
     <div class="crow">
-      ${c.photo
-        ? `<img class="cphoto" src="${h(c.photo)}" alt="" onerror="this.style.display='none'">`
-        : `<div class="cph-p">🚗</div>`}
-      <div class="cinfo">
-        <div class="cname">${h(c.name)}</div>
-        <div class="cplate">${h(c.plate) || '—'}</div>
-      </div>
+      <div class="cname">${h(c.name)}</div>
+      <div class="cplate">${h(c.plate) || '—'}</div>
       <div class="sbadge ${c.status === 'in' ? 'in' : 'out'}">
-        ${c.status === 'in' ? 'อยู่ In' : 'ออก Out'}
+        ${c.status === 'in' ? 'อยู่' : 'ออก'}
       </div>
     </div>
   `).join('');
