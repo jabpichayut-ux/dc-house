@@ -686,6 +686,89 @@
     }
     .guestof-overlay.open { display: flex; }
 
+    /* ── Exit Reason Overlay ── */
+    .reason-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 700;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .reason-overlay.open { display: flex; }
+
+    .reason-hint {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .reason-quick-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .reason-quick-btn {
+      background: var(--cream);
+      border: 1px solid var(--divider);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--ink);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .reason-quick-btn:active, .reason-quick-btn.selected {
+      background: var(--gold-light);
+      border-color: var(--gold);
+    }
+
+    .reason-input {
+      width: 100%;
+      border: 1.5px solid var(--divider);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+    .reason-input:focus { border-color: var(--gold); }
+
+    .reason-actions { display: flex; gap: 8px; }
+
+    .reason-confirm-btn {
+      flex: 1;
+      background: #B33030;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .reason-skip-btn {
+      flex: 1;
+      background: var(--cream);
+      color: var(--ink);
+      border: 1.5px solid var(--divider);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
     /* ── Guest Tab ── */
     .guest-wrap {
       flex: 1;
@@ -1005,6 +1088,31 @@
   </div>
 </div>
 
+<!-- ══ EXIT REASON OVERLAY (third step when toggling OUT) ══ -->
+<div class="reason-overlay" id="reason-overlay">
+  <div class="driver-sheet">
+    <div class="driver-sheet-title" style="color:#B33030;">🔴 เหตุผลที่ออก</div>
+    <div class="driver-sheet-car" id="reason-sheet-car">—</div>
+    <div class="reason-hint">ไม่บังคับ แต่แนะนำให้ระบุ &nbsp;·&nbsp; Optional but recommended</div>
+    <div class="reason-quick-grid">
+      <button class="reason-quick-btn" onclick="setReason('ไปทำงาน')">🏢 ไปทำงาน</button>
+      <button class="reason-quick-btn" onclick="setReason('ไปซื้อของ')">🛒 ไปซื้อของ</button>
+      <button class="reason-quick-btn" onclick="setReason('ไปรับ-ส่ง')">🚗 ไปรับ-ส่ง</button>
+      <button class="reason-quick-btn" onclick="setReason('ไปกินข้าว')">🍜 ไปกินข้าว</button>
+      <button class="reason-quick-btn" onclick="setReason('ไปทำธุระ')">📋 ไปทำธุระ</button>
+      <button class="reason-quick-btn" onclick="setReason('เที่ยว')">✈️ เที่ยว</button>
+    </div>
+    <input class="reason-input" id="reason-input" type="text"
+           placeholder="หรือพิมพ์เหตุผลเอง…" maxlength="100"
+           onkeydown="if(event.key==='Enter') confirmReason()">
+    <div class="reason-actions">
+      <button class="reason-confirm-btn" onclick="confirmReason()">บันทึก OUT</button>
+      <button class="reason-skip-btn" onclick="skipReason()">ข้ามขั้นตอนนี้</button>
+    </div>
+    <button class="driver-cancel" style="margin-top:8px;" onclick="cancelExitReason()">ยกเลิก</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1043,6 +1151,8 @@
   // Driver popup state
   let pendingIndex   = null;
   let pendingStatus  = null;
+  let pendingDriver  = null;
+  let pendingGuestOf = null;
   let localFreq      = {};  // { "carIndex:driver": count }
 
   // Guest tab state
@@ -1212,15 +1322,14 @@
 
   function cancelDriver() {
     document.getElementById('driver-overlay').classList.remove('open');
-    pendingIndex = null;
-    pendingStatus = null;
+    pendingIndex = pendingStatus = pendingDriver = pendingGuestOf = null;
   }
 
   function selectDriver(driver, isGuest) {
     document.getElementById('driver-overlay').classList.remove('open');
+    pendingDriver = driver;
 
     if (isGuest) {
-      // Show guest-of popup
       const car = carsData[pendingIndex];
       document.getElementById('guestof-car').textContent = `${car.name} · แขกของใคร?`;
       document.getElementById('guestof-popup-grid').innerHTML = FAMILY.map(name =>
@@ -1230,21 +1339,59 @@
       return;
     }
 
-    completeToggle(driver, null);
+    if (pendingStatus === 'out') { showExitReasonModal(); return; }
+    completeToggle(driver, null, '');
   }
 
   function cancelGuestOf() {
     document.getElementById('guestof-overlay').classList.remove('open');
-    pendingIndex = null;
-    pendingStatus = null;
+    pendingIndex = pendingStatus = pendingDriver = pendingGuestOf = null;
   }
 
   function selectGuestOf(guestOf) {
     document.getElementById('guestof-overlay').classList.remove('open');
-    completeToggle('แขก', guestOf);
+    pendingGuestOf = guestOf;
+    if (pendingStatus === 'out') { showExitReasonModal(); return; }
+    completeToggle('แขก', guestOf, '');
   }
 
-  async function completeToggle(driver, guestOf) {
+  function showExitReasonModal() {
+    const car = carsData[pendingIndex];
+    document.getElementById('reason-sheet-car').textContent = `${car.name} · ${car.plate}`;
+    document.getElementById('reason-input').value = '';
+    document.querySelectorAll('.reason-quick-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('reason-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('reason-input').focus(), 200);
+  }
+
+  function setReason(text) {
+    document.getElementById('reason-input').value = text;
+    document.querySelectorAll('.reason-quick-btn').forEach(b =>
+      b.classList.toggle('selected', b.textContent.includes(text))
+    );
+  }
+
+  function confirmReason() {
+    const reason = document.getElementById('reason-input').value.trim();
+    document.getElementById('reason-overlay').classList.remove('open');
+    const d = pendingDriver, g = pendingGuestOf;
+    pendingDriver = pendingGuestOf = null;
+    completeToggle(d, g, reason);
+  }
+
+  function skipReason() {
+    document.getElementById('reason-overlay').classList.remove('open');
+    const d = pendingDriver, g = pendingGuestOf;
+    pendingDriver = pendingGuestOf = null;
+    completeToggle(d, g, '');
+  }
+
+  function cancelExitReason() {
+    document.getElementById('reason-overlay').classList.remove('open');
+    pendingIndex = pendingStatus = pendingDriver = pendingGuestOf = null;
+  }
+
+  async function completeToggle(driver, guestOf, reason = '') {
     const index    = pendingIndex;
     const newStatus = pendingStatus;
     const car      = carsData[index];
@@ -1271,7 +1418,7 @@
       await fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=update&row=${index + 2}&status=${newStatus}&t=${Date.now()}`);
 
       // 2. Log to Member Log
-      fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&t=${Date.now()}`);
+      fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&reason=${encodeURIComponent(reason)}&t=${Date.now()}`);
 
       // 3. If guest, also log to Guest Log
       if (guestOf) {
