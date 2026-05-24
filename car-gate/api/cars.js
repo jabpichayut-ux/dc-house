@@ -59,7 +59,8 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'logGuest') {
-      await appendRange('Guest Log', [thaiDate(), thaiTime(), plate, guestName, guestOf, status === 'in' ? 'เข้า' : 'ออก']);
+      const reason = req.query.reason || '';
+      await appendRange('Guest Log', [thaiDate(), thaiTime(), plate, guestName, guestOf, status === 'in' ? 'เข้า' : 'ออก', reason]);
       return res.json({ success: true });
     }
 

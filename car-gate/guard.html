@@ -301,7 +301,7 @@
     .car-info { flex: 1; min-width: 0; }
 
     .car-name {
-      font-size: 13px;
+      font-size: 19px;
       font-weight: 600;
       color: var(--charcoal);
       white-space: nowrap;
@@ -310,7 +310,7 @@
     }
 
     .car-plate {
-      font-size: 10px;
+      font-size: 20px;
       color: var(--muted);
       letter-spacing: 0.06em;
       margin-top: 1px;
@@ -1113,6 +1113,28 @@
   </div>
 </div>
 
+<!-- ══ GUEST PURPOSE OVERLAY ══ -->
+<div class="reason-overlay" id="guest-purpose-overlay">
+  <div class="driver-sheet">
+    <div class="driver-sheet-title" style="color:#2A7A4B;">🟢 วัตถุประสงค์การเข้า</div>
+    <div class="driver-sheet-car" id="guest-purpose-car">—</div>
+    <div class="reason-quick-grid">
+      <button class="reason-quick-btn guest-purpose-btn" onclick="selectGuestPurpose('ประชุม')">🤝 ประชุม</button>
+      <button class="reason-quick-btn guest-purpose-btn" onclick="selectGuestPurpose('ซ่อมบำรุง')">🔧 ซ่อมบำรุง</button>
+      <button class="reason-quick-btn guest-purpose-btn" onclick="selectGuestPurpose('นัดพบ')">📅 นัดพบ</button>
+      <button class="reason-quick-btn guest-purpose-btn" onclick="selectGuestPurpose('ส่งของ / รับของ')">📦 ส่ง/รับของ</button>
+      <button class="reason-quick-btn guest-purpose-btn" id="guest-purpose-other-btn" onclick="selectGuestPurposeOther()">✏️ อื่นๆ</button>
+    </div>
+    <input class="reason-input" id="guest-purpose-input" type="text"
+           placeholder="ระบุวัตถุประสงค์…" maxlength="100" style="display:none"
+           onkeydown="if(event.key==='Enter') confirmGuestPurpose()">
+    <div class="reason-actions">
+      <button class="reason-confirm-btn" onclick="confirmGuestPurpose()">บันทึก IN</button>
+      <button class="reason-skip-btn" onclick="skipGuestPurpose()">ข้ามขั้นตอนนี้</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1152,7 +1174,8 @@
   let pendingIndex   = null;
   let pendingStatus  = null;
   let pendingDriver  = null;
-  let pendingGuestOf = null;
+  let pendingGuestOf      = null;
+  let _guestPurposeCb     = null;
   let localFreq      = {};  // { "carIndex:driver": count }
 
   // Guest tab state
@@ -1241,7 +1264,7 @@
             <button class="toggle-btn ${isIn ? 'in' : 'out'}"
               id="btn-${globalIndex}"
               onclick="openDriverPopup(${globalIndex})">
-              ${isIn ? 'IN' : 'OUT'}
+              ${isIn ? 'เข้า' : 'ออก'}
             </button>
           </div>`;
       }).join('');
@@ -1352,7 +1375,47 @@
     document.getElementById('guestof-overlay').classList.remove('open');
     pendingGuestOf = guestOf;
     if (pendingStatus === 'out') { showExitReasonModal(); return; }
-    completeToggle('แขก', guestOf, '');
+    const car = carsData[pendingIndex];
+    showGuestPurposeModal(`${car.name} · แขกของ ${guestOf}`, purpose => {
+      completeToggle('แขก', guestOf, purpose);
+    });
+  }
+
+  function showGuestPurposeModal(label, callback) {
+    document.getElementById('guest-purpose-car').textContent = label;
+    document.getElementById('guest-purpose-input').value = '';
+    document.getElementById('guest-purpose-input').style.display = 'none';
+    document.querySelectorAll('.guest-purpose-btn').forEach(b => b.classList.remove('selected'));
+    _guestPurposeCb = callback;
+    document.getElementById('guest-purpose-overlay').classList.add('open');
+  }
+
+  function selectGuestPurpose(text) {
+    document.querySelectorAll('.guest-purpose-btn').forEach(b =>
+      b.classList.toggle('selected', b.textContent.includes(text))
+    );
+    document.getElementById('guest-purpose-input').style.display = 'none';
+    document.getElementById('guest-purpose-input').value = text;
+  }
+
+  function selectGuestPurposeOther() {
+    document.querySelectorAll('.guest-purpose-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('guest-purpose-other-btn').classList.add('selected');
+    const inp = document.getElementById('guest-purpose-input');
+    inp.style.display = 'block';
+    inp.value = '';
+    setTimeout(() => inp.focus(), 100);
+  }
+
+  function confirmGuestPurpose() {
+    document.getElementById('guest-purpose-overlay').classList.remove('open');
+    const purpose = document.getElementById('guest-purpose-input').value.trim();
+    if (_guestPurposeCb) { _guestPurposeCb(purpose); _guestPurposeCb = null; }
+  }
+
+  function skipGuestPurpose() {
+    document.getElementById('guest-purpose-overlay').classList.remove('open');
+    if (_guestPurposeCb) { _guestPurposeCb(''); _guestPurposeCb = null; }
   }
 
   function showExitReasonModal() {
@@ -1422,7 +1485,7 @@
 
       // 3. If guest, also log to Guest Log
       if (guestOf) {
-        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(car.plate)}&guestName=${encodeURIComponent('แขก')}&guestOf=${encodeURIComponent(guestOf)}&status=${newStatus}&t=${Date.now()}`);
+        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(car.plate)}&guestName=${encodeURIComponent('แขก')}&guestOf=${encodeURIComponent(guestOf)}&status=${newStatus}&reason=${encodeURIComponent(reason)}&t=${Date.now()}`);
       }
 
       try { localStorage.setItem(CACHE_KEY, JSON.stringify({ cars: carsData, ts: Date.now() })); } catch (_) {}
@@ -1440,7 +1503,7 @@
     const color = isIn ? '#2A7A4B' : '#B33030';
     btn.classList.remove('loading', 'in', 'out');
     btn.classList.add(isIn ? 'in' : 'out');
-    btn.textContent = isIn ? 'IN' : 'OUT';
+    btn.textContent = isIn ? 'เข้า' : 'ออก';
     card.classList.remove('is-in', 'is-out');
     card.classList.add(isIn ? 'is-in' : 'is-out');
     const photo = card.querySelector('.car-photo');
@@ -1515,28 +1578,30 @@
     if (!plate) { showToast('กรุณาใส่ป้ายทะเบียน'); return; }
     if (!guestOf) { showToast('กรุณาเลือกว่าแขกของใคร'); return; }
 
-    // Check if returning guest
-    const existing = guestData.find(g => g.plate === plate);
-    if (existing) {
-      existing.status = 'in';
-      existing.guestOf = guestOf;
-      if (name) existing.name = name;
-    } else {
-      guestData.push({ plate, name, guestOf, status: 'in', ts: Date.now() });
-    }
-    saveGuestData();
-    renderReturningGuests();
+    showGuestPurposeModal(`${plate} · แขกของ ${guestOf}`, purpose => {
+      // Check if returning guest
+      const existing = guestData.find(g => g.plate === plate);
+      if (existing) {
+        existing.status = 'in';
+        existing.guestOf = guestOf;
+        if (name) existing.name = name;
+      } else {
+        guestData.push({ plate, name, guestOf, status: 'in', ts: Date.now() });
+      }
+      saveGuestData();
+      renderReturningGuests();
 
-    // Log to sheet
-    fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(plate)}&guestName=${encodeURIComponent(name||'ไม่ระบุ')}&guestOf=${encodeURIComponent(guestOf)}&status=in&t=${Date.now()}`);
+      // Log to sheet
+      fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(plate)}&guestName=${encodeURIComponent(name||'ไม่ระบุ')}&guestOf=${encodeURIComponent(guestOf)}&status=in&reason=${encodeURIComponent(purpose)}&t=${Date.now()}`);
 
-    // Reset form
-    document.getElementById('guest-plate-input').value = '';
-    document.getElementById('guest-name-input').value = '';
-    document.querySelectorAll('.guestof-btn').forEach(b => b.classList.remove('selected'));
-    guestSelectedOf = null;
+      // Reset form
+      document.getElementById('guest-plate-input').value = '';
+      document.getElementById('guest-name-input').value = '';
+      document.querySelectorAll('.guestof-btn').forEach(b => b.classList.remove('selected'));
+      guestSelectedOf = null;
 
-    showToast(`${plate} เข้าแล้ว ✅`);
+      showToast(`${plate} เข้าแล้ว ✅`);
+    });
     switchTab('guest');
   }
 

@@ -211,7 +211,7 @@
     .car-info { flex: 1; min-width: 0; }
  
     .car-name {
-      font-size: 17px;
+      font-size: 23px;
       font-weight: 500;
       color: var(--charcoal);
       white-space: nowrap;
@@ -220,7 +220,7 @@
     }
  
     .car-plate {
-      font-size: 18px;
+      font-size: 28px;
       letter-spacing: 0.1em;
       color: var(--muted);
       margin-top: 2px;
@@ -604,7 +604,7 @@ function renderCars(cars) {
       const rows = slice.map(car => {
         const isIn      = car.status === 'in';
         const color     = isIn ? '#2A7A4B' : '#B33030';
-        const statusTxt = isIn ? 'IN' : 'OUT';
+        const statusTxt = isIn ? 'เข้า' : 'ออก';
         const statusCls = isIn ? 'in' : 'out';
         if (isIn) countIn++; else countOut++;
 
