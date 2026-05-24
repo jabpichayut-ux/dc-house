@@ -539,28 +539,8 @@
     </div>
   </div>
 
-  <!-- State D: Opened inside LINE app → redirect to Safari/Chrome -->
-  <div id="ls-line-browser" style="display:none;text-align:center;padding:0 28px;max-width:320px">
-    <div style="font-size:42px;margin-bottom:12px;">🌐</div>
-    <div style="font-size:15px;font-weight:700;color:var(--charcoal);margin-bottom:8px;">
-      ต้องเปิดใน Safari ก่อนนะคะ
-    </div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:20px;">
-      Face ID ใช้ไม่ได้ใน LINE Browser<br>
-      <span id="ls-line-ios-hint" style="display:none;">กด <strong>···</strong> ด้านบนขวา → <strong>เปิดใน Safari</strong><br>หรือกดปุ่มด้านล่าง</span>
-      <span id="ls-line-android-hint" style="display:none;">กำลังเปิดใน Chrome…</span>
-    </div>
-    <button id="ls-open-browser-btn" onclick="openInExternalBrowser()" style="
-      background:var(--gold);color:#fff;border:none;border-radius:40px;
-      padding:14px 0;font-family:'Prompt',sans-serif;font-size:15px;
-      font-weight:700;cursor:pointer;width:100%;margin-bottom:10px;
-      box-shadow:0 4px 16px rgba(201,168,76,.35);">
-      🔓 เปิดใน Safari
-    </button>
-    <div id="ls-copy-msg" style="font-size:12px;color:var(--green-text);display:none;margin-top:4px;">
-      ✅ กำลังเปิด…
-    </div>
-  </div>
+  <!-- State D: WebAuthn not supported at all -->
+  <div id="ls-unsupported-old" style="display:none"></div>
 </div>
 
 
@@ -877,7 +857,6 @@ function renderCars(cars) {
 
   // ── Enter main app ────────────────────────────────────────
   let _refreshTimer;
-  let _isFirstRegistration = false;
 
   function enterApp() {
     document.getElementById('login-screen').style.display = 'none';
@@ -901,30 +880,6 @@ function renderCars(cars) {
   // LINE user ID passed via deeplink (?lid=...) — used to auto-register for courier
   let _lineUserId = '';
 
-  function isLineBrowser() {
-    return /\bLine\//i.test(navigator.userAgent);
-  }
-
-  function isIOS() {
-    return /iPhone|iPad|iPod/.test(navigator.userAgent);
-  }
-
-  // Open current URL in Safari (iOS) or Chrome (Android), preserving all params
-  function openInExternalBrowser() {
-    const url = location.href;
-    document.getElementById('ls-copy-msg').style.display = 'block';
-    if (isIOS()) {
-      // window.open with _blank triggers Safari when called from user gesture in LINE WKWebView
-      window.open(url, '_blank');
-    } else {
-      // Android: intent:// scheme reliably opens Chrome
-      const intentUrl = url.replace(/^https:\/\//, 'intent://')
-        + '#Intent;scheme=https;package=com.android.chrome;'
-        + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
-      location.href = intentUrl;
-    }
-  }
-
   function goBackToLine() {
     window.location.href = 'line://';
   }
@@ -937,25 +892,11 @@ function renderCars(cars) {
     if (mapped) nameEl.value = mapped;
   }
 
-  // ── Login screen init: decide which state to show ─────────
+  // ── Login screen init ─────────────────────────────────────
   function initAuth() {
     const params = new URLSearchParams(location.search);
     const urlCode = params.get('code');
     _lineUserId   = params.get('lid') || '';
-
-    // Android LINE browser: redirect to Chrome (Android passkeys don't cross WebView)
-    if (isLineBrowser() && !isIOS()) {
-      document.getElementById('ls-line-ios-hint').style.display     = 'none';
-      document.getElementById('ls-line-android-hint').style.display = 'inline';
-      document.getElementById('ls-open-browser-btn').style.display  = 'none';
-      document.getElementById('ls-line-browser').style.display      = 'block';
-      const url = location.href;
-      const intentUrl = url.replace(/^https:\/\//, 'intent://')
-        + '#Intent;scheme=https;package=com.android.chrome;'
-        + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
-      setTimeout(() => { location.href = intentUrl; }, 300);
-      return;
-    }
 
     if (!waSupported()) {
       document.getElementById('ls-unsupported').style.display = 'block';
@@ -969,28 +910,10 @@ function renderCars(cars) {
 
     const keys = getPasskeys();
     if (keys.length > 0) {
-      // This browser has stored credentials — show Face ID button
       document.getElementById('ls-faceid').style.display = 'flex';
-    } else if (isLineBrowser() && isIOS()) {
-      // iOS LINE browser with empty localStorage: the passkey may exist in iOS Keychain
-      // from a prior Safari registration. Show Face ID — iOS will find it.
-      document.getElementById('ls-faceid').style.display = 'flex';
-      // Swap the secondary link to a "first time?" hint
-      const sub = document.querySelector('#ls-faceid .login-sub');
-      if (sub) sub.textContent = 'ยืนยันตัวตนด้วย Face ID';
-      const reg = document.querySelector('#ls-faceid .wa-btn-secondary');
-      if (reg) { reg.textContent = 'ยังไม่ได้ลงทะเบียน? กด Safari ก่อน'; reg.onclick = showLineRegisterHint; }
     } else {
-      // Fresh device, no passkeys anywhere — show registration form
       document.getElementById('ls-register').style.display = 'flex';
     }
-  }
-
-  function showLineRegisterHint() {
-    document.getElementById('ls-faceid').style.display   = 'none';
-    document.getElementById('ls-line-ios-hint').style.display = 'inline';
-    document.getElementById('ls-open-browser-btn').textContent = '🔓 เปิดใน Safari เพื่อลงทะเบียน';
-    document.getElementById('ls-line-browser').style.display  = 'block';
   }
 
   // ── Returning user: Face ID login ─────────────────────────
@@ -1000,39 +923,20 @@ function renderCars(cars) {
     btn.textContent = '⏳ กำลังยืนยัน…';
     btn.disabled = true;
     try {
-      // If keys is empty (LINE browser, registered via Safari), use allowCredentials:[]
-      // so iOS Keychain presents any saved passkey for this RP automatically.
-      const allowCredentials = keys.length > 0
-        ? keys.map(k => ({ type: 'public-key', id: b64ToBuf(k.credentialId) }))
-        : [];
-
       const assertion = await navigator.credentials.get({
         publicKey: {
           challenge: crypto.getRandomValues(new Uint8Array(32)),
           timeout: 60000,
           userVerification: 'required',
-          allowCredentials,
+          allowCredentials: keys.map(k => ({ type: 'public-key', id: b64ToBuf(k.credentialId) })),
         },
       });
-
-      // First login from LINE browser: save credential ID so next time is instant
-      if (keys.length === 0 && assertion) {
-        savePasskeys([{
-          name: 'LINE User',
-          credentialId: bufToB64(assertion.rawId),
-          device: 'LINE Browser (iOS)',
-          registeredAt: new Date().toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
-          lineUserId: _lineUserId || '',
-        }]);
-      }
-
       enterApp();
     } catch (err) {
       btn.textContent = '🔐 เข้าสู่ระบบด้วย Face ID';
       btn.disabled = false;
       if (err.name !== 'NotAllowedError') {
-        document.querySelector('#ls-faceid .login-sub').textContent =
-          'ยืนยันไม่สำเร็จ กรุณาลองใหม่';
+        document.querySelector('#ls-faceid .login-sub').textContent = 'ยืนยันไม่สำเร็จ กรุณาลองใหม่';
       }
     }
   }
@@ -1100,7 +1004,6 @@ function renderCars(cars) {
           .catch(() => {}); // fire-and-forget
       }
 
-      _isFirstRegistration = true;
       enterApp();
     } catch (err) {
       btn.textContent = '🔐 ลงทะเบียน Face ID';
