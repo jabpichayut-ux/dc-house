@@ -1415,7 +1415,7 @@
     // API calls in background
     try {
       // 1. Update status
-      await fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=update&row=${index + 2}&status=${newStatus}&t=${Date.now()}`);
+      await fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=update&row=${car.row}&status=${newStatus}&t=${Date.now()}`);
 
       // 2. Log to Member Log
       fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&reason=${encodeURIComponent(reason)}&t=${Date.now()}`);

@@ -112,9 +112,12 @@ module.exports = async function handler(req, res) {
     }
 
     const data = await readRange('Car Park!A1:D34');
-    const cars = data.filter(r => r[0]).map(r => ({
-      name: r[0], plate: r[1]||'', status: String(r[2]||'').toLowerCase().trim(), photo: r[3]||''
-    }));
+    const cars = data
+      .map((r, i) => (!r[0] || /^(ชื่อ|name)/i.test(r[0])) ? null : {
+        name: r[0], plate: r[1]||'', status: String(r[2]||'').toLowerCase().trim(), photo: r[3]||'',
+        row: i + 1  // actual 1-based sheet row — used by guard.html for status updates
+      })
+      .filter(Boolean);
     res.setHeader('Cache-Control', 's-maxage=25, stale-while-revalidate');
     return res.json({ cars, updated: new Date().toISOString() });
 
