@@ -1121,7 +1121,7 @@
   const PROXY_URL = '/api/cars';
   const SECRET_KEY       = 'dc-house-2026';
   const CORRECT_PIN      = '999999999';
-  const REFRESH_INTERVAL = 30 * 1000;
+  const REFRESH_INTERVAL = 10 * 1000;
   const CACHE_KEY        = 'dc_guard_cars_v1';
   const FREQ_KEY         = 'dc_driver_freq_v1';
 
@@ -1659,7 +1659,7 @@
   }
 
   /* ── AUTO REFRESH CARS ── */
-  setInterval(fetchCars, REFRESH_INTERVAL);
+  setInterval(() => { fetchCars(); fetchMembers(); }, REFRESH_INTERVAL);
 </script>
 </body>
 </html>
