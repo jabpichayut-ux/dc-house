@@ -860,6 +860,9 @@ function renderCars(cars) {
     document.getElementById('ls-register').style.display = 'flex';
   }
 
+  // LINE user ID passed via deeplink (?lid=...) — used to auto-register for courier
+  let _lineUserId = '';
+
   // Auto-fill name when a valid code is typed/pasted
   function onCodeInput() {
     const code = document.getElementById('reg-code').value.trim().toUpperCase();
@@ -875,11 +878,12 @@ function renderCars(cars) {
       return;
     }
 
-    // Pre-fill code (and name) from URL parameter — set by LINE bot deeplink
-    const urlCode = new URLSearchParams(location.search).get('code');
+    // Pre-fill code, name, and LINE user ID from URL params (set by LINE bot deeplink)
+    const params = new URLSearchParams(location.search);
+    const urlCode = params.get('code');
+    _lineUserId   = params.get('lid') || '';
     if (urlCode) {
-      const codeEl = document.getElementById('reg-code');
-      codeEl.value = urlCode.toUpperCase();
+      document.getElementById('reg-code').value = urlCode.toUpperCase();
       onCodeInput();
     }
 
@@ -974,9 +978,18 @@ function renderCars(cars) {
                : /Mac/.test(navigator.userAgent)        ? 'Mac'
                : 'PC',
         registeredAt: new Date().toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
+        lineUserId: _lineUserId || '',
       });
       savePasskeys(keys);
-      enterApp(); // registration = first login, go straight in
+
+      // Auto-register for courier notifications if LINE user ID is available
+      if (_lineUserId) {
+        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember`
+          + `&memberName=${encodeURIComponent(name)}&lineUserId=${encodeURIComponent(_lineUserId)}`)
+          .catch(() => {}); // fire-and-forget
+      }
+
+      enterApp();
     } catch (err) {
       btn.textContent = '🔐 ลงทะเบียน Face ID';
       btn.disabled = false;

@@ -73,6 +73,15 @@ module.exports = async function handler(req, res) {
       return res.json({ members: data.slice(1).filter(r => r[0]&&r[1]).map(r => ({ name: r[0], userId: r[1] })) });
     }
 
+    if (action === 'registerMember') {
+      const { memberName, lineUserId } = req.query;
+      if (!memberName || !lineUserId) return res.status(400).json({ error: 'Missing params' });
+      const existing = await readRange('Members!A:B');
+      const alreadyIn = existing.some(r => r[1] === lineUserId);
+      if (!alreadyIn) await appendRange('Members', [memberName, lineUserId]);
+      return res.json({ success: true, new: !alreadyIn });
+    }
+
     if (action === 'notify') {
       const { userId, name, quantity } = req.query;
       const msg = `📦 DC House — พัสดุมาถึงแล้วค่ะ!\n\nเรียน คุณ${name}\nพัสดุของคุณมาถึงแล้ว จำนวน ${quantity} ชิ้น\n\nกรุณามารับที่ห้องยามได้เลยค่ะ 🏠`;

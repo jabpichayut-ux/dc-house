@@ -104,13 +104,14 @@ const handler = async function (req, res) {
       continue;
     }
 
-    // Number 1–35 → send that member's code + deeplink
+    // Number 1–35 → send that member's code + deeplink (lid = LINE user ID)
+    const lineUserId = event.source && event.source.userId ? event.source.userId : '';
     const num = parseInt(text, 10);
     if (!isNaN(num) && num >= 1 && num <= MEMBERS.length && String(num) === text) {
       const m = MEMBERS[num - 1];
-      const link = `${APP_URL}?code=${m.code}`;
+      const link = `${APP_URL}?code=${m.code}&lid=${encodeURIComponent(lineUserId)}`;
       await replyMessage(replyToken,
-        `🏠 DC House\nรหัสเชิญของ${m.name}:\n📌 ${m.code}\n\nกดลิงก์เพื่อลงทะเบียน Face ID:\n${link}\n\n✨ ชื่อและรหัสจะถูกกรอกให้อัตโนมัติ`
+        `🏠 DC House\nรหัสเชิญของ${m.name}:\n📌 ${m.code}\n\nกดลิงก์เพื่อลงทะเบียน Face ID:\n${link}\n\n✨ ชื่อและรหัสจะถูกกรอกให้อัตโนมัติ\n🔔 ระบบแจ้งพัสดุจะถูกเปิดใช้งานอัตโนมัติ`
       );
       continue;
     }
@@ -120,9 +121,10 @@ const handler = async function (req, res) {
       text.includes(m.name) || m.name.includes(text.replace(/^คุณ/, ''))
     );
     if (match) {
-      const link = `${APP_URL}?code=${match.code}`;
+      const lineUserIdM = event.source && event.source.userId ? event.source.userId : '';
+      const link = `${APP_URL}?code=${match.code}&lid=${encodeURIComponent(lineUserIdM)}`;
       await replyMessage(replyToken,
-        `🏠 DC House\nรหัสเชิญของ${match.name}:\n📌 ${match.code}\n\nกดลิงก์เพื่อลงทะเบียน Face ID:\n${link}\n\n✨ ชื่อและรหัสจะถูกกรอกให้อัตโนมัติ`
+        `🏠 DC House\nรหัสเชิญของ${match.name}:\n📌 ${match.code}\n\nกดลิงก์เพื่อลงทะเบียน Face ID:\n${link}\n\n✨ ชื่อและรหัสจะถูกกรอกให้อัตโนมัติ\n🔔 ระบบแจ้งพัสดุจะถูกเปิดใช้งานอัตโนมัติ`
       );
     }
   }
