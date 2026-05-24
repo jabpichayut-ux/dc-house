@@ -939,31 +939,21 @@ function renderCars(cars) {
 
   // ── Login screen init: decide which state to show ─────────
   function initAuth() {
-    // Read URL params first (needed even for LINE browser state)
     const params = new URLSearchParams(location.search);
     const urlCode = params.get('code');
     _lineUserId   = params.get('lid') || '';
 
-    // LINE in-app browser can't do WebAuthn
-    if (isLineBrowser()) {
-      if (isIOS()) {
-        // iOS: show one-tap "Open in Safari" button (can't auto-redirect without gesture)
-        document.getElementById('ls-line-ios-hint').style.display     = 'inline';
-        document.getElementById('ls-line-android-hint').style.display = 'none';
-        document.getElementById('ls-open-browser-btn').textContent    = '🔓 เปิดใน Safari';
-        document.getElementById('ls-line-browser').style.display      = 'block';
-      } else {
-        // Android: auto-redirect to Chrome via intent scheme — no tap needed
-        document.getElementById('ls-line-ios-hint').style.display     = 'none';
-        document.getElementById('ls-line-android-hint').style.display = 'inline';
-        document.getElementById('ls-open-browser-btn').style.display  = 'none';
-        document.getElementById('ls-line-browser').style.display      = 'block';
-        const url = location.href;
-        const intentUrl = url.replace(/^https:\/\//, 'intent://')
-          + '#Intent;scheme=https;package=com.android.chrome;'
-          + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
-        setTimeout(() => { location.href = intentUrl; }, 300);
-      }
+    // Android LINE browser: redirect to Chrome (Android passkeys don't cross WebView)
+    if (isLineBrowser() && !isIOS()) {
+      document.getElementById('ls-line-ios-hint').style.display     = 'none';
+      document.getElementById('ls-line-android-hint').style.display = 'inline';
+      document.getElementById('ls-open-browser-btn').style.display  = 'none';
+      document.getElementById('ls-line-browser').style.display      = 'block';
+      const url = location.href;
+      const intentUrl = url.replace(/^https:\/\//, 'intent://')
+        + '#Intent;scheme=https;package=com.android.chrome;'
+        + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+      setTimeout(() => { location.href = intentUrl; }, 300);
       return;
     }
 
@@ -972,7 +962,6 @@ function renderCars(cars) {
       return;
     }
 
-    // Pre-fill code and name from LINE bot deeplink
     if (urlCode) {
       document.getElementById('reg-code').value = urlCode.toUpperCase();
       onCodeInput();
@@ -980,32 +969,63 @@ function renderCars(cars) {
 
     const keys = getPasskeys();
     if (keys.length > 0) {
+      // This browser has stored credentials — show Face ID button
       document.getElementById('ls-faceid').style.display = 'flex';
+    } else if (isLineBrowser() && isIOS()) {
+      // iOS LINE browser with empty localStorage: the passkey may exist in iOS Keychain
+      // from a prior Safari registration. Show Face ID — iOS will find it.
+      document.getElementById('ls-faceid').style.display = 'flex';
+      // Swap the secondary link to a "first time?" hint
+      const sub = document.querySelector('#ls-faceid .login-sub');
+      if (sub) sub.textContent = 'ยืนยันตัวตนด้วย Face ID';
+      const reg = document.querySelector('#ls-faceid .wa-btn-secondary');
+      if (reg) { reg.textContent = 'ยังไม่ได้ลงทะเบียน? กด Safari ก่อน'; reg.onclick = showLineRegisterHint; }
     } else {
+      // Fresh device, no passkeys anywhere — show registration form
       document.getElementById('ls-register').style.display = 'flex';
     }
   }
 
+  function showLineRegisterHint() {
+    document.getElementById('ls-faceid').style.display   = 'none';
+    document.getElementById('ls-line-ios-hint').style.display = 'inline';
+    document.getElementById('ls-open-browser-btn').textContent = '🔓 เปิดใน Safari เพื่อลงทะเบียน';
+    document.getElementById('ls-line-browser').style.display  = 'block';
+  }
+
   // ── Returning user: Face ID login ─────────────────────────
-  // navigator.credentials.get() triggers the platform authenticator.
-  // If it resolves, the OS has already verified the biometric — we trust it.
   async function loginWithPasskey() {
     const keys = getPasskeys();
     const btn  = document.querySelector('#ls-faceid .faceid-login-btn');
     btn.textContent = '⏳ กำลังยืนยัน…';
     btn.disabled = true;
     try {
-      await navigator.credentials.get({
+      // If keys is empty (LINE browser, registered via Safari), use allowCredentials:[]
+      // so iOS Keychain presents any saved passkey for this RP automatically.
+      const allowCredentials = keys.length > 0
+        ? keys.map(k => ({ type: 'public-key', id: b64ToBuf(k.credentialId) }))
+        : [];
+
+      const assertion = await navigator.credentials.get({
         publicKey: {
           challenge: crypto.getRandomValues(new Uint8Array(32)),
           timeout: 60000,
           userVerification: 'required',
-          allowCredentials: keys.map(k => ({
-            type: 'public-key',
-            id: b64ToBuf(k.credentialId),
-          })),
+          allowCredentials,
         },
       });
+
+      // First login from LINE browser: save credential ID so next time is instant
+      if (keys.length === 0 && assertion) {
+        savePasskeys([{
+          name: 'LINE User',
+          credentialId: bufToB64(assertion.rawId),
+          device: 'LINE Browser (iOS)',
+          registeredAt: new Date().toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
+          lineUserId: _lineUserId || '',
+        }]);
+      }
+
       enterApp();
     } catch (err) {
       btn.textContent = '🔐 เข้าสู่ระบบด้วย Face ID';
