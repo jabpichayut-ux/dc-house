@@ -1,14 +1,7 @@
-const SHEET_ID   = '1CMSqYFS352rIKXW0x0ZeEbtNjiBB1sOvMMI9linioLg';
-const API_KEY    = 'AIzaSyD8AvaVO0uYS_pDNBmQx5DYLaB0j8dIZo0';
+const { readRange } = require('./_auth');
+
 const SECRET     = 'dc-house-2026';
 const LINE_TOKEN = '7TEnqDtU6W9k1N17pCgjAHX8uhSuR9IN9finzj4aa1LctoS3DBiVvr/S/yjwgwQ1wrfKIMfLcL0KtyujVVxaNbXkr0ZLcwtEr30Af4QJ1WTnrUyG4Pyo22Dn+CpLp4LjZ1rxcJIE0JciHa8J74iWngdB04t89/1O/w1cDnyilFU=';
-
-async function readRange(range) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
-  const r = await fetch(url);
-  const d = await r.json();
-  return d.values || [];
-}
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtmuGIo4fC39uG4uslI26utMh0Fc0F_teaoJrwVY_hRnG2w8tCi0nMPhDGzk3bueyLyw/exec';
 
