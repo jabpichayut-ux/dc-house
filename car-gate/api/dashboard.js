@@ -9,6 +9,19 @@ async function readRange(range) {
   return d.values || [];
 }
 
+// Parse "DD/MM/YYYY" (Buddhist Era) + "HH:MM" → Unix ms for correct chronological sort
+function parseThaiTs(date, time) {
+  const dp = (date || '').split('/');
+  if (dp.length < 3) return 0;
+  const day  = parseInt(dp[0]);
+  const mon  = parseInt(dp[1]) - 1;
+  const year = parseInt(dp[2]) - 543; // Buddhist Era → CE
+  const tp   = (time || '').match(/(\d{1,2})[:.ː](\d{2})/);
+  const hr   = tp ? parseInt(tp[1]) : 0;
+  const mn   = tp ? parseInt(tp[2]) : 0;
+  return new Date(year, mon, day, hr, mn).getTime();
+}
+
 function thaiDateOffsetDays(offset) {
   const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
   d.setDate(d.getDate() + offset);
@@ -26,8 +39,8 @@ module.exports = async function handler(req, res) {
   try {
     const [carPark, membersLog, guestLog, driverFreq] = await Promise.all([
       readRange('Car Park!A1:D34'),
-      readRange('Members Log!A1:F1001'),
-      readRange('Guest Log!A1:F501'),
+      readRange('Members Log!A:F'),
+      readRange('Guest Log!A:F'),
       readRange('Driver Freq!A:C'),
     ]);
 
@@ -111,11 +124,7 @@ module.exports = async function handler(req, res) {
       name: r[3] || 'แขก', plate: r[2], guestOf: r[4] || '', direction: r[5] || '',
     }));
     const recent = [...recentM, ...recentG]
-      .sort((a, b) => {
-        const sa = a.date + a.time;
-        const sb = b.date + b.time;
-        return sa > sb ? -1 : sa < sb ? 1 : 0;
-      })
+      .sort((a, b) => parseThaiTs(b.date, b.time) - parseThaiTs(a.date, a.time))
       .slice(0, 15);
 
     // 7-day trend
