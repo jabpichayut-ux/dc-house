@@ -778,6 +778,10 @@ function renderCars(cars) {
     const errEl = document.getElementById('reg-error');
     errEl.style.display = 'none';
 
+    if (!_lineUserId) {
+      errEl.textContent = 'กรุณาเปิดลิงก์จาก LINE ค่ะ / Please open via LINE';
+      errEl.style.display = 'block'; return;
+    }
     if (!INVITE_CODES[code]) {
       errEl.textContent = 'รหัสเชิญไม่ถูกต้อง / Invalid invite code';
       errEl.style.display = 'block'; return;
