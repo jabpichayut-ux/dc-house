@@ -531,11 +531,33 @@
     <div class="login-error" id="reg-error" style="text-align:center"></div>
   </div>
 
-  <!-- State C: WebAuthn not supported -->
+  <!-- State C: WebAuthn not supported (generic) -->
   <div id="ls-unsupported" style="display:none;text-align:center;padding:0 24px">
     <div class="login-sub" style="color:var(--red-text)">
       กรุณาใช้ Safari (iPhone) หรือ Chrome เวอร์ชั่นใหม่<br>
       <small style="color:var(--muted)">Face ID / WebAuthn is required</small>
+    </div>
+  </div>
+
+  <!-- State D: Opened inside LINE app → must open in Safari/Chrome -->
+  <div id="ls-line-browser" style="display:none;text-align:center;padding:0 28px;max-width:320px">
+    <div style="font-size:36px;margin-bottom:10px;">🌐</div>
+    <div style="font-size:15px;font-weight:700;color:var(--charcoal);margin-bottom:8px;">
+      เปิดในเบราว์เซอร์ก่อนนะคะ
+    </div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">
+      Face ID ไม่รองรับใน LINE Browser<br>
+      <span id="ls-line-ios" style="display:none;">กด <strong>···</strong> มุมขวาบน → <strong>เปิดใน Safari</strong></span>
+      <span id="ls-line-android" style="display:none;">กด <strong>⋮</strong> มุมขวาบน → <strong>เปิดใน Chrome</strong></span>
+    </div>
+    <button onclick="copyInviteUrl()" style="
+      background:var(--gold);color:#fff;border:none;border-radius:40px;
+      padding:11px 28px;font-family:'Prompt',sans-serif;font-size:14px;
+      font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;">
+      📋 คัดลอกลิงก์เพื่อเปิดใน Safari
+    </button>
+    <div id="ls-copy-msg" style="font-size:12px;color:var(--green-text);display:none;">
+      ✅ คัดลอกแล้ว! วางในช่องที่อยู่ของ Safari
     </div>
   </div>
 </div>
@@ -863,6 +885,24 @@ function renderCars(cars) {
   // LINE user ID passed via deeplink (?lid=...) — used to auto-register for courier
   let _lineUserId = '';
 
+  function isLineBrowser() {
+    return /\bLine\//i.test(navigator.userAgent);
+  }
+
+  function copyInviteUrl() {
+    const url = location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      document.getElementById('ls-copy-msg').style.display = 'block';
+    }).catch(() => {
+      // Fallback for older iOS
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      document.getElementById('ls-copy-msg').style.display = 'block';
+    });
+  }
+
   // Auto-fill name when a valid code is typed/pasted
   function onCodeInput() {
     const code = document.getElementById('reg-code').value.trim().toUpperCase();
@@ -873,15 +913,26 @@ function renderCars(cars) {
 
   // ── Login screen init: decide which state to show ─────────
   function initAuth() {
+    // Read URL params first (needed even for LINE browser state)
+    const params = new URLSearchParams(location.search);
+    const urlCode = params.get('code');
+    _lineUserId   = params.get('lid') || '';
+
+    // LINE in-app browser can't do WebAuthn — ask user to open in Safari/Chrome
+    if (isLineBrowser()) {
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      document.getElementById('ls-line-ios').style.display     = isIOS ? 'inline' : 'none';
+      document.getElementById('ls-line-android').style.display = isIOS ? 'none' : 'inline';
+      document.getElementById('ls-line-browser').style.display = 'block';
+      return;
+    }
+
     if (!waSupported()) {
       document.getElementById('ls-unsupported').style.display = 'block';
       return;
     }
 
-    // Pre-fill code, name, and LINE user ID from URL params (set by LINE bot deeplink)
-    const params = new URLSearchParams(location.search);
-    const urlCode = params.get('code');
-    _lineUserId   = params.get('lid') || '';
+    // Pre-fill code and name from LINE bot deeplink
     if (urlCode) {
       document.getElementById('reg-code').value = urlCode.toUpperCase();
       onCodeInput();
