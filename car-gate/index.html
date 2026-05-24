@@ -399,6 +399,93 @@
     }
     .send-btn:hover { background: var(--gold-dark); }
  
+    /* ─── Login Screen ──────────────────────────────────── */
+    #login-screen {
+      position: fixed; inset: 0;
+      background: var(--warm-white);
+      z-index: 9999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px;
+    }
+    .login-logo   { height: 56px; object-fit: contain; margin-bottom: 6px; }
+    .login-title  { font-size: 20px; font-weight: 700; color: var(--charcoal); letter-spacing: .04em; }
+    .login-sub    { font-size: 13px; color: var(--muted); margin-top: -6px; }
+    .login-input  {
+      width: 220px; text-align: center;
+      font-size: 28px; letter-spacing: .22em;
+      padding: 13px; border: 1.5px solid var(--divider);
+      border-radius: var(--radius); font-family: 'Prompt', sans-serif;
+      background: #fff; transition: border-color .15s;
+    }
+    .login-input:focus { outline: none; border-color: var(--gold); }
+    .login-btn {
+      background: var(--gold); color: #fff; border: none;
+      border-radius: 40px; padding: 12px 40px;
+      font-family: 'Prompt', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(201,168,76,.35);
+      transition: all .18s;
+    }
+    .login-btn:active { transform: scale(.96); background: var(--gold-dark); }
+    .faceid-login-btn {
+      background: transparent; border: 1.5px solid var(--gold);
+      color: var(--gold-dark); border-radius: 40px; padding: 11px 34px;
+      font-family: 'Prompt', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .18s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .faceid-login-btn:active { background: var(--gold); color: #fff; }
+    .login-error { color: var(--red-text); font-size: 13px; display: none; }
+    .login-divider {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--muted); font-size: 12px; width: 220px;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--divider);
+    }
+
+    /* ─── Face ID header button ──────────────────────────── */
+    .faceid-header-btn {
+      background: transparent; border: 1px solid var(--divider);
+      color: var(--muted); border-radius: 20px; padding: 5px 13px;
+      font-family: 'Prompt', sans-serif; font-size: 12px;
+      cursor: pointer; transition: all .15s; display: none;
+    }
+    .faceid-header-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+
+    /* ─── WebAuthn Register Modal ────────────────────────── */
+    #wa-modal { display: none; }
+    #wa-modal.open { display: flex; }
+    .wa-box {
+      background: var(--warm-white); border-radius: 16px;
+      padding: 30px 26px; width: 100%; max-width: 340px;
+      display: flex; flex-direction: column; gap: 13px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.2);
+      animation: slideUp .22s ease;
+    }
+    .wa-title { font-size: 18px; font-weight: 700; color: var(--charcoal); text-align: center; }
+    .wa-sub   { font-size: 12px; color: var(--muted); text-align: center; margin-top: -6px; }
+    .wa-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+    .wa-input {
+      width: 100%; padding: 10px 12px;
+      border: 1.5px solid var(--divider); border-radius: var(--radius);
+      font-family: 'Prompt', sans-serif; font-size: 14px; background: #fff;
+    }
+    .wa-input:focus { outline: none; border-color: var(--gold); }
+    .wa-btn-primary {
+      background: var(--gold); color: #fff; border: none;
+      border-radius: 40px; padding: 12px;
+      font-family: 'Prompt', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(201,168,76,.3);
+    }
+    .wa-btn-secondary {
+      background: transparent; color: var(--muted); border: none;
+      font-family: 'Prompt', sans-serif; font-size: 13px;
+      cursor: pointer; text-align: center;
+    }
+    .wa-passkeys { font-size: 11px; color: var(--muted); background: var(--cream);
+      border-radius: 8px; padding: 8px 12px; }
+
     /* ─── Responsive ─────────────────────────────────────── */
     @media (max-width: 540px) {
       header { padding: 0 16px; height: 64px; }
@@ -414,7 +501,42 @@
   </style>
 </head>
 <body>
- 
+
+<!-- ── LOGIN SCREEN ──────────────────────────────────────── -->
+<div id="login-screen">
+  <img src="logo.png" class="login-logo" alt="DC House"
+       onerror="this.src='/car-gate/logo.png';this.onerror=function(){this.style.display='none'}">
+  <div class="login-title">DC House</div>
+  <div class="login-sub">กรุณายืนยันตัวตนเพื่อเข้าใช้งาน</div>
+  <!-- Face ID — shown when passkeys are registered -->
+  <button class="faceid-login-btn" id="faceid-login-btn" onclick="loginWithPasskey()" style="display:none">
+    🔐 เข้าสู่ระบบด้วย Face ID
+  </button>
+  <div class="login-divider" id="login-divider" style="display:none">หรือ / or</div>
+  <!-- PIN fallback -->
+  <input class="login-input" id="pin-input" type="password"
+         inputmode="numeric" maxlength="9" placeholder="•••••••••"
+         onkeydown="if(event.key==='Enter')checkPin()">
+  <button class="login-btn" onclick="checkPin()">เข้าสู่ระบบ</button>
+  <div class="login-error" id="pin-error">รหัสไม่ถูกต้อง กรุณาลองใหม่</div>
+</div>
+
+<!-- ── WEBAUTHN REGISTER MODAL ────────────────────────────── -->
+<div id="wa-modal" class="modal-overlay">
+  <div class="wa-box">
+    <div class="wa-title">🔐 เปิดใช้งาน Face ID</div>
+    <div class="wa-sub">Enable Face ID / Passkey on this device</div>
+    <div class="wa-label">รหัสเชิญ / Invite Code</div>
+    <input id="wa-code" class="wa-input" type="text" placeholder="DC-XXXX"
+           autocomplete="off" autocapitalize="characters">
+    <div class="wa-label">ชื่อของคุณ / Your Name</div>
+    <input id="wa-name" class="wa-input" type="text" placeholder="เช่น คุณแม่, น้อง A">
+    <div class="wa-passkeys" id="wa-passkeys-list"></div>
+    <button class="wa-btn-primary" onclick="doRegister()">ลงทะเบียน Face ID บนอุปกรณ์นี้</button>
+    <button class="wa-btn-secondary" onclick="closeWaModal()">ยกเลิก / Cancel</button>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════
      HEADER
 ═══════════════════════════════════════ -->
@@ -434,6 +556,9 @@
   />
  
   <div class="header-right">
+    <button class="faceid-header-btn" id="faceid-header-btn" onclick="openWaModal()">
+      🔐 เปิดใช้งาน Face ID
+    </button>
     <div class="live-badge">
       <div class="live-dot"></div>
       Live
@@ -630,9 +755,197 @@ function renderCars(cars) {
     closeModal();
   }
  
+  /* ════════════════════════════════════════════════════════
+     WEBAUTHN / PASSKEY
+     All biometric verification is handled by the browser/OS.
+     We store only the credential ID (not the private key).
+  ════════════════════════════════════════════════════════ */
+
+  const ADMIN_PIN  = '999999999';
+  const WA_STORE   = 'dc-passkeys-v1';
+
+  // Invite codes — admin can see/change these in source
+  const INVITE_CODES = {
+    'DC-FAMI-A': true, 'DC-FAMI-B': true,
+    'DC-FAMI-C': true, 'DC-FAMI-D': true,
+  };
+
+  // ── ArrayBuffer ↔ base64url helpers ──────────────────────
+  function bufToB64(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+  function b64ToBuf(b64) {
+    const s = atob(b64.replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from(s, c => c.charCodeAt(0)).buffer;
+  }
+
+  // ── LocalStorage helpers ──────────────────────────────────
+  function getPasskeys() {
+    try { return JSON.parse(localStorage.getItem(WA_STORE) || '[]'); }
+    catch { return []; }
+  }
+  function savePasskeys(arr) {
+    localStorage.setItem(WA_STORE, JSON.stringify(arr));
+  }
+
+  // ── Check browser support ─────────────────────────────────
+  function waSupported() {
+    return !!(window.PublicKeyCredential &&
+              navigator.credentials &&
+              navigator.credentials.create);
+  }
+
+  // ── Enter main app after successful auth ──────────────────
+  function enterApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('faceid-header-btn').style.display = 'block';
+    fetchData();
+    setInterval(fetchData, REFRESH_INTERVAL);
+  }
+
+  // ── PIN login ─────────────────────────────────────────────
+  function checkPin() {
+    const val = document.getElementById('pin-input').value;
+    if (val === ADMIN_PIN) {
+      enterApp();
+    } else {
+      document.getElementById('pin-error').style.display = 'block';
+      document.getElementById('pin-input').value = '';
+    }
+  }
+
+  // ── Face ID login ─────────────────────────────────────────
+  // Step 1: call navigator.credentials.get() with stored credential IDs
+  // Step 2: browser triggers biometric — if it resolves, auth succeeded
+  // Step 3: we don't verify the signature server-side (prototype), but the
+  //         platform authenticator has already verified the user's identity
+  async function loginWithPasskey() {
+    if (!waSupported()) {
+      alert('อุปกรณ์นี้ไม่รองรับ Face ID / Passkey');
+      return;
+    }
+    const passkeys = getPasskeys();
+    try {
+      await navigator.credentials.get({
+        publicKey: {
+          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          timeout: 60000,
+          userVerification: 'required',
+          // allowCredentials limits auth to our registered keys on this device
+          allowCredentials: passkeys.map(p => ({
+            type: 'public-key',
+            id: b64ToBuf(p.credentialId),
+          })),
+        },
+      });
+      // Resolved without error = browser confirmed biometrics ✓
+      enterApp();
+    } catch (err) {
+      if (err.name !== 'NotAllowedError') {
+        alert('ยืนยันตัวตนไม่สำเร็จ: ' + err.message);
+      }
+    }
+  }
+
+  // ── Registration modal ────────────────────────────────────
+  function openWaModal() {
+    refreshPasskeyList();
+    document.getElementById('wa-code').value = '';
+    document.getElementById('wa-name').value = '';
+    document.getElementById('wa-modal').classList.add('open');
+  }
+  function closeWaModal() {
+    document.getElementById('wa-modal').classList.remove('open');
+  }
+  function refreshPasskeyList() {
+    const keys = getPasskeys();
+    const el   = document.getElementById('wa-passkeys-list');
+    el.textContent = keys.length
+      ? 'ลงทะเบียนแล้ว: ' + keys.map(k => k.name).join(', ')
+      : 'ยังไม่มี Face ID ลงทะเบียนบนอุปกรณ์นี้';
+  }
+
+  // ── Register a new passkey ────────────────────────────────
+  // Step 1: verify invite code  Step 2: call navigator.credentials.create()
+  // Step 3: store credential ID in localStorage
+  async function doRegister() {
+    if (!waSupported()) {
+      alert('อุปกรณ์นี้ไม่รองรับ Face ID / Passkey');
+      return;
+    }
+    const code = document.getElementById('wa-code').value.trim().toUpperCase();
+    const name = document.getElementById('wa-name').value.trim();
+    if (!INVITE_CODES[code]) {
+      alert('รหัสเชิญไม่ถูกต้อง / Invalid invite code');
+      return;
+    }
+    if (!name) {
+      alert('กรุณาใส่ชื่อ / Please enter your name');
+      return;
+    }
+    try {
+      // Create a new passkey — browser prompts for Face ID / Touch ID / PIN
+      const credential = await navigator.credentials.create({
+        publicKey: {
+          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          rp: { name: 'DC House', id: location.hostname },
+          user: {
+            id: crypto.getRandomValues(new Uint8Array(16)),
+            name: name,
+            displayName: name,
+          },
+          // Support both ECDSA (iOS/Android) and RSA (Windows Hello)
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 },   // ES256
+            { type: 'public-key', alg: -257 },  // RS256
+          ],
+          authenticatorSelection: {
+            userVerification: 'required',
+            residentKey: 'preferred',
+          },
+          timeout: 60000,
+        },
+      });
+      // Save credential ID (the private key never leaves the device)
+      const passkeys = getPasskeys();
+      passkeys.push({
+        name,
+        credentialId: bufToB64(credential.rawId),
+        device: /iPhone|iPad/.test(navigator.userAgent) ? 'iPhone/iPad'
+               : /Android/.test(navigator.userAgent) ? 'Android'
+               : /Mac/.test(navigator.userAgent) ? 'Mac'
+               : 'Windows/Other',
+        registeredAt: new Date().toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
+      });
+      savePasskeys(passkeys);
+      closeWaModal();
+      alert(`✅ เปิดใช้งาน Face ID สำหรับ "${name}" แล้วค่ะ`);
+    } catch (err) {
+      if (err.name !== 'NotAllowedError') {
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+      }
+    }
+  }
+
+  // ── Init auth ─────────────────────────────────────────────
+  (function initAuth() {
+    const passkeys = getPasskeys();
+    const supported = waSupported();
+    // Show Face ID button only if supported and keys exist
+    if (supported && passkeys.length > 0) {
+      document.getElementById('faceid-login-btn').style.display = 'flex';
+      document.getElementById('login-divider').style.display    = 'flex';
+    }
+    // Hide Face ID login button entirely if WebAuthn not supported
+    if (!supported) {
+      document.getElementById('faceid-login-btn').style.display = 'none';
+    }
+  })();
+
   /* ─── INIT ────────────────────────────────────────────── */
-  fetchData();
-  setInterval(fetchData, REFRESH_INTERVAL);
+  // fetchData and setInterval are called by enterApp() after auth
+  // (no autoload on page open — page is now auth-gated)
 </script>
  
 </body>

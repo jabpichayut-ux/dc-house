@@ -156,6 +156,7 @@
       gap: 4px 6px;
       overflow: hidden;
       align-content: start;
+      transition: opacity 0.2s ease;
     }
     .crow {
       display: flex;
@@ -297,34 +298,37 @@
     </div>
   </div>
 
-  <!-- Car status — full-width horizontal grid -->
+  <!-- Car status — full-width carousel (10 at a time) -->
   <div class="card">
-    <div class="ch">
-      <span class="ct">สถานะรถ</span>
-      <span class="cten">Car Status</span>
+    <div class="ch" style="display:flex;align-items:center;justify-content:space-between;padding-right:14px">
+      <div>
+        <span class="ct">สถานะรถ</span>
+        <span class="cten">Car Status</span>
+      </div>
+      <span id="carPageLabel" style="font-size:11px;color:var(--t3);font-weight:500"></span>
     </div>
     <div class="cars-grid" id="carsList">
       <div class="empty">กำลังโหลด…</div>
     </div>
   </div>
 
-  <!-- Bottom row: guests + activity -->
+  <!-- Bottom row: activity (left) + guests (right) -->
   <div class="bottom-row">
-    <div class="card">
-      <div class="ch">
-        <span class="ct">แขกประจำ</span>
-        <span class="cten">Frequent Guests</span>
-      </div>
-      <div class="glist" id="guestsList">
-        <div class="empty">กำลังโหลด…</div>
-      </div>
-    </div>
     <div class="card">
       <div class="ch">
         <span class="ct">กิจกรรมล่าสุด</span>
         <span class="cten">Recent Activity</span>
       </div>
       <div class="alist" id="activityList">
+        <div class="empty">กำลังโหลด…</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <span class="ct">แขกประจำ</span>
+        <span class="cten">Frequent Guests</span>
+      </div>
+      <div class="glist" id="guestsList">
         <div class="empty">กำลังโหลด…</div>
       </div>
     </div>
@@ -337,6 +341,9 @@ const SECRET = 'dc-house-2026';
 const API    = '/api/dashboard';
 
 let peakChart, trendChart;
+let allCars = [];
+let carPage  = 0;
+const CARS_PER_PAGE = 10;
 
 document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('th-TH', {
   timeZone: 'Asia/Bangkok', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -372,20 +379,45 @@ function render(d) {
   renderActivity(d.recent);
 }
 
-// ── Cars ────────────────────────────────────
+// ── Cars carousel (10 per page, 10 s rotation) ──
 function renderCars(cars) {
-  const el = document.getElementById('carsList');
-  if (!cars.length) { el.innerHTML = '<div class="empty">ไม่มีข้อมูลรถ</div>'; return; }
-  el.innerHTML = cars.map(c => `
-    <div class="crow">
-      <div class="cname">${h(c.name)}</div>
-      <div class="cplate">${h(c.plate) || '—'}</div>
-      <div class="sbadge ${c.status === 'in' ? 'in' : 'out'}">
-        ${c.status === 'in' ? 'อยู่' : 'ออก'}
-      </div>
-    </div>
-  `).join('');
+  allCars = cars;
+  showCarPage(carPage); // refresh current page with new data
 }
+
+function showCarPage(page) {
+  const total = allCars.length;
+  if (!total) return;
+  const pages = Math.ceil(total / CARS_PER_PAGE);
+  page = ((page % pages) + pages) % pages;
+  carPage = page;
+
+  const el    = document.getElementById('carsList');
+  const label = document.getElementById('carPageLabel');
+  if (label) label.textContent = `${page + 1} / ${pages}`;
+
+  const slice = allCars.slice(page * CARS_PER_PAGE, (page + 1) * CARS_PER_PAGE);
+
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.innerHTML = slice.map(c => `
+      <div class="crow">
+        <div class="cname">${h(c.name)}</div>
+        <div class="cplate">${h(c.plate) || '—'}</div>
+        <div class="sbadge ${c.status === 'in' ? 'in' : 'out'}">
+          ${c.status === 'in' ? 'อยู่' : 'ออก'}
+        </div>
+      </div>
+    `).join('');
+    el.style.opacity = '1';
+  }, 180);
+}
+
+// Auto-advance every 10 seconds
+setInterval(() => {
+  if (!allCars.length) return;
+  showCarPage(carPage + 1);
+}, 10000);
 
 // ── Peak hours chart ─────────────────────────
 function renderPeak(peakHours) {
