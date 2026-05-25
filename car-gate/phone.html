@@ -3,22 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>DC House — เบอร์ติดต่อ</title>
+  <title>DC House — ติดต่อยาม</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --warm-white: #FAF8F4;
-      --cream:      #F4F0E8;
       --gold:       #C9A84C;
       --gold-dark:  #9E7A2E;
       --charcoal:   #1A1A1A;
-      --ink:        #2C2C2C;
       --muted:      #888880;
       --divider:    #E0D8C8;
       --green-bg:   #EAF5EE;
       --green-text: #2A7A4B;
-      --red-bg:     #FAEAEA;
       --red-text:   #B33030;
       --radius:     12px;
     }
@@ -26,83 +23,73 @@
     html, body {
       font-family: 'Prompt', system-ui, sans-serif;
       background: var(--warm-white);
-      color: var(--ink);
+      color: var(--charcoal);
       min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    /* ─── Login screen ─── */
-    #ls-login {
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 32px 24px;
-      gap: 20px;
+    /* ── Registered: calling screen (flashes briefly) ── */
+    #calling-screen {
+      display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; text-align: center; padding: 40px;
     }
-    #ls-login.hidden { display: none; }
-    .login-logo  { height: 56px; object-fit: contain; margin-bottom: 4px; }
-    .login-title { font-size: 20px; font-weight: 700; color: var(--charcoal); text-align: center; }
-    .login-sub   { font-size: 13px; color: var(--muted); text-align: center; margin-top: -10px; }
-    .login-card  {
-      background: #fff; border-radius: var(--radius); padding: 28px 24px;
-      box-shadow: 0 2px 24px rgba(0,0,0,.06); width: 100%; max-width: 380px;
-      display: flex; flex-direction: column; gap: 14px;
+    #calling-screen.visible { display: flex; }
+    .calling-icon  { font-size: 56px; }
+    .calling-label { font-size: 17px; font-weight: 600; color: var(--charcoal); }
+    .calling-num   { font-size: 26px; font-weight: 700; color: var(--gold-dark); letter-spacing: .06em; font-family: monospace; }
+
+    /* ── Not registered screen ── */
+    #not-registered {
+      display: none;
+      flex-direction: column; align-items: center; gap: 16px;
+      text-align: center; padding: 40px 24px;
     }
-    .field-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    #not-registered.visible { display: flex; }
+    .nr-logo   { height: 52px; object-fit: contain; margin-bottom: 4px; }
+    .nr-title  { font-size: 18px; font-weight: 700; color: var(--charcoal); }
+    .nr-desc   { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 300px; }
+    .nr-hint   { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+    /* Login form (fallback for unregistered users) */
+    .login-card {
+      background: #fff; border-radius: var(--radius); padding: 24px 20px;
+      box-shadow: 0 2px 24px rgba(0,0,0,.06); width: 100%; max-width: 340px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .field-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
     .field-input {
-      width: 100%; padding: 13px 14px; border: 1.5px solid var(--divider);
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--divider);
       border-radius: var(--radius); font-size: 16px; font-family: 'Prompt', sans-serif;
       background: var(--warm-white); transition: border-color .15s;
     }
     .field-input:focus { outline: none; border-color: var(--gold); }
+    .name-hint { font-size: 13px; color: var(--gold-dark); font-weight: 600; min-height: 18px; }
     .login-btn {
-      width: 100%; padding: 14px; background: var(--gold); color: #fff; border: none;
+      width: 100%; padding: 13px; background: var(--gold); color: #fff; border: none;
       border-radius: 40px; font-size: 16px; font-weight: 700; font-family: 'Prompt', sans-serif;
-      cursor: pointer; box-shadow: 0 4px 16px rgba(201,168,76,.35); transition: all .18s; margin-top: 4px;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(201,168,76,.35); transition: all .18s;
     }
     .login-btn:active { transform: scale(0.97); background: var(--gold-dark); }
-    .login-error {
-      font-size: 13px; color: var(--red-text); text-align: center; display: none; padding: 8px 0;
-    }
-    .name-hint { font-size: 14px; color: var(--gold-dark); font-weight: 600; min-height: 20px; }
-
-    /* ─── Contact screen ─── */
-    #ls-contacts {
-      display: none; flex-direction: column; align-items: center;
-      padding: 40px 24px 60px; gap: 20px;
-    }
-    #ls-contacts.visible { display: flex; }
-    .contacts-logo  { height: 48px; object-fit: contain; }
-    .contacts-title { font-size: 18px; font-weight: 700; color: var(--charcoal); }
-    .contacts-sub   { font-size: 13px; color: var(--muted); margin-top: -10px; }
-    .contact-card {
-      background: #fff; border-radius: var(--radius);
-      box-shadow: 0 2px 24px rgba(0,0,0,.06);
-      width: 100%; max-width: 380px;
-      display: flex; align-items: center; gap: 16px;
-      padding: 20px 22px; text-decoration: none; color: inherit;
-      border: 1.5px solid var(--divider); transition: border-color .15s;
-    }
-    .contact-card:active { border-color: var(--gold); background: #FFFDF7; }
-    .contact-icon {
-      width: 48px; height: 48px; border-radius: 50%; background: var(--green-bg);
-      display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
-    }
-    .contact-name  { font-size: 15px; font-weight: 600; color: var(--charcoal); }
-    .contact-num   { font-size: 20px; font-weight: 700; color: var(--gold-dark); letter-spacing: .04em; font-family: monospace; margin-top: 2px; }
-    .contact-tap   { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .logout-btn {
-      margin-top: 16px; font-size: 13px; color: var(--muted); background: none; border: none;
-      cursor: pointer; font-family: 'Prompt', sans-serif; text-decoration: underline;
-    }
+    .login-error { font-size: 13px; color: var(--red-text); text-align: center; display: none; }
   </style>
 </head>
 <body>
 
-<!-- ── LOGIN SCREEN ── -->
-<div id="ls-login">
-  <img class="login-logo" src="/logo.png" alt="DC House"
+<!-- Registered: briefly shown while tel: link opens -->
+<div id="calling-screen">
+  <div class="calling-icon">📞</div>
+  <div class="calling-label" id="calling-label">กำลังโทรหา…</div>
+  <div class="calling-num"  id="calling-num"></div>
+</div>
+
+<!-- Not registered -->
+<div id="not-registered">
+  <img class="nr-logo" src="/logo.png" alt="DC House"
        onerror="this.src='/car-gate/logo.png';this.onerror=function(){this.style.display='none'}">
-  <div class="login-title">DC House</div>
-  <div class="login-sub">กรุณาลงทะเบียนเพื่อดูเบอร์ติดต่อ</div>
+  <div class="nr-title">DC House — ติดต่อยาม</div>
+  <div class="nr-desc">กรุณาลงทะเบียนด้วยรหัสเชิญก่อนใช้งานค่ะ</div>
+
   <div class="login-card">
     <div>
       <div class="field-label">รหัสเชิญ (Invite Code)</div>
@@ -115,107 +102,66 @@
       <input class="field-input" id="reg-name" type="text" placeholder="คุณ..." />
     </div>
     <div class="login-error" id="login-error"></div>
-    <button class="login-btn" onclick="loginWithCode()">เข้าสู่ระบบ</button>
+    <button class="login-btn" onclick="loginWithCode()">ลงทะเบียนและโทร</button>
   </div>
-</div>
-
-<!-- ── CONTACTS SCREEN ── -->
-<div id="ls-contacts">
-  <img class="contacts-logo" src="/logo.png" alt="DC House"
-       onerror="this.src='/car-gate/logo.png';this.onerror=function(){this.style.display='none'}">
-  <div class="contacts-title">เบอร์ติดต่อ</div>
-  <div class="contacts-sub" id="contacts-greeting"></div>
-
-  <a class="contact-card" href="tel:0802337042">
-    <div class="contact-icon">📞</div>
-    <div>
-      <div class="contact-name">เบอร์ติดต่อ 1</div>
-      <div class="contact-num">080-233-7042</div>
-      <div class="contact-tap">แตะเพื่อโทร</div>
-    </div>
-  </a>
-
-  <a class="contact-card" href="tel:0864264159">
-    <div class="contact-icon">📞</div>
-    <div>
-      <div class="contact-name">เบอร์ติดต่อ 2</div>
-      <div class="contact-num">086-426-4159</div>
-      <div class="contact-tap">แตะเพื่อโทร</div>
-    </div>
-  </a>
-
-  <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+  <div class="nr-hint">หลังลงทะเบียนแล้ว ครั้งถัดไปจะโทรได้ทันทีค่ะ</div>
 </div>
 
 <script>
-  const SESSION_KEY  = 'dc-session-v1';
-  const PROXY_URL    = '/api/cars';
-  const SECRET_KEY   = 'dc-house-2026';
+  const SESSION_KEY = 'dc-session-v1';
+  const PROXY_URL   = '/api/cars';
+  const SECRET_KEY  = 'dc-house-2026';
+
+  const GUARDS = {
+    morning: { label: 'ยามเช้า',  num: '080-233-7042', tel: 'tel:0802337042' },
+    night:   { label: 'ยามกลางคืน', num: '086-426-4159', tel: 'tel:0864264159' },
+  };
 
   const INVITE_CODES = {
-    'DCH-DAM26': 'คุณดำรงค์',
-    'DCH-KIT26': 'คุณกิตติ',
-    'DCH-NAM26': 'คุณน้ำผึ้ง',
-    'DCH-CHA26': 'คุณชรินทร์',
-    'DCH-NIP26': 'คุณนิพนธ์',
-    'DCH-BEN26': 'คุณเบญจมาศ',
-    'DCH-NIT26': 'คุณนิทัศน์',
-    'DCH-SUR26': 'คุณสุรีย์พร',
-    'DCH-NIR26': 'คุณนิรันดร์',
-    'DCH-SIP26': 'คุณศิริพร',
-    'DCH-THE26': 'คุณธีรพล',
-    'DCH-NTH26': 'คุณนิติพัทญ์',
-    'DCH-SAY26': 'คุณสญาค์มณท์',
-    'DCH-SPE26': 'คุณศิริเพ็ญ',
-    'DCH-FLK26': 'คุณณัชชา ฟลุ๊ค',
-    'DCH-BEL26': 'คุณศรัณย์ญา เบล',
-    'DCH-FUN26': 'คุณณัฐธิดา ฝัน',
-    'DCH-BOT26': 'คุณญาณินท์ โบ๊ท',
-    'DCH-FAR26': 'คุณณัฐฐินี เเฟร์',
-    'DCH-BEM26': 'คุณติณณภพ บีม',
-    'DCH-JOB26': 'คุณจิรายุ จ๊อบ',
-    'DCH-BAM26': 'คุณนิชกานต์ เเบม',
-    'DCH-JAB26': 'คุณพิชญุตม์ เเจ๊บบี้',
-    'DCH-JEF26': 'คุณชานน เจฟ',
-    'DCH-NEY26': 'คุณชาลิสา เนย',
-    'DCH-JR026': 'คุณศิววงศ์ เจอาร์',
-    'DCH-MUK26': 'คุณภูษณิศา มุก',
-    'DCH-GRC26': 'คุณพัทธ์ธีญา เกรซ',
-    'DCH-NOY26': 'คุณพริสา นอยนอย',
-    'DCH-JT226': 'คุณณภัทร์ เจทู',
-    'DCH-LIS26': 'คุณเมญ์ลิสษา ลิสา',
-    'DCH-MAX26': 'คุณสุวพัฎช์ เเมกซ์',
-    'DCH-TAN26': 'คุณธัญยธรณ์ ธัญญา',
-    'DCH-MRK26': 'คุณชินพัฒศ์ มาร์ค',
-    'DCH-DAN26': 'คุณแดนนธีรรุ์ แดนนี่',
-    'DCH-WAW26': 'คุณกุณฑิกา วาวา',
-    'DCH-PIT26': 'คุณพชร พีท',
-    'DCH-NTP26': 'คุณณัฐพงศ์ ณัฐ',
-    'DCH-MTW26': 'คุณแมธธิว แมธ',
-    'DCH-AEM26': 'คุณบุณยวีร์ แอ๋ม',
+    'DCH-DAM26': 'คุณดำรงค์',      'DCH-KIT26': 'คุณกิตติ',
+    'DCH-NAM26': 'คุณน้ำผึ้ง',     'DCH-CHA26': 'คุณชรินทร์',
+    'DCH-NIP26': 'คุณนิพนธ์',      'DCH-BEN26': 'คุณเบญจมาศ',
+    'DCH-NIT26': 'คุณนิทัศน์',     'DCH-SUR26': 'คุณสุรีย์พร',
+    'DCH-NIR26': 'คุณนิรันดร์',    'DCH-SIP26': 'คุณศิริพร',
+    'DCH-THE26': 'คุณธีรพล',       'DCH-NTH26': 'คุณนิติพัทญ์',
+    'DCH-SAY26': 'คุณสญาค์มณท์',  'DCH-SPE26': 'คุณศิริเพ็ญ',
+    'DCH-FLK26': 'คุณณัชชา ฟลุ๊ค','DCH-BEL26': 'คุณศรัณย์ญา เบล',
+    'DCH-FUN26': 'คุณณัฐธิดา ฝัน','DCH-BOT26': 'คุณญาณินท์ โบ๊ท',
+    'DCH-FAR26': 'คุณณัฐฐินี เเฟร์','DCH-BEM26': 'คุณติณณภพ บีม',
+    'DCH-JOB26': 'คุณจิรายุ จ๊อบ','DCH-BAM26': 'คุณนิชกานต์ เเบม',
+    'DCH-JAB26': 'คุณพิชญุตม์ เเจ๊บบี้','DCH-JEF26': 'คุณชานน เจฟ',
+    'DCH-NEY26': 'คุณชาลิสา เนย', 'DCH-JR026': 'คุณศิววงศ์ เจอาร์',
+    'DCH-MUK26': 'คุณภูษณิศา มุก','DCH-GRC26': 'คุณพัทธ์ธีญา เกรซ',
+    'DCH-NOY26': 'คุณพริสา นอยนอย','DCH-JT226': 'คุณณภัทร์ เจทู',
+    'DCH-LIS26': 'คุณเมญ์ลิสษา ลิสา','DCH-MAX26': 'คุณสุวพัฎช์ เเมกซ์',
+    'DCH-TAN26': 'คุณธัญยธรณ์ ธัญญา','DCH-MRK26': 'คุณชินพัฒศ์ มาร์ค',
+    'DCH-DAN26': 'คุณแดนนธีรรุ์ แดนนี่','DCH-WAW26': 'คุณกุณฑิกา วาวา',
+    'DCH-PIT26': 'คุณพชร พีท',    'DCH-NTP26': 'คุณณัฐพงศ์ ณัฐ',
+    'DCH-MTW26': 'คุณแมธธิว แมธ', 'DCH-AEM26': 'คุณบุณยวีร์ แอ๋ม',
   };
 
   let _lineUserId = '';
+  let _guard = null;
 
   function getSession() {
     try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch { return null; }
   }
-  function saveSession(data) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  function saveSession(data) { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); }
+
+  function callGuard(guard) {
+    document.getElementById('calling-label').textContent = 'กำลังโทรหา' + guard.label + '…';
+    document.getElementById('calling-num').textContent = guard.num;
+    document.getElementById('calling-screen').classList.add('visible');
+    window.location.href = guard.tel;
   }
-  function showContacts(session) {
-    document.getElementById('ls-login').classList.add('hidden');
-    document.getElementById('ls-contacts').classList.add('visible');
-    document.getElementById('contacts-greeting').textContent = 'ยินดีต้อนรับ ' + session.name;
-  }
-  function logout() {
-    localStorage.removeItem(SESSION_KEY);
-    location.reload();
+
+  function showNotRegistered() {
+    document.getElementById('not-registered').classList.add('visible');
   }
 
   function onCodeInput() {
-    const code  = document.getElementById('reg-code').value.trim().toUpperCase();
-    const hint  = document.getElementById('name-hint');
+    const code = document.getElementById('reg-code').value.trim().toUpperCase();
+    const hint = document.getElementById('name-hint');
     const nameRow = document.getElementById('name-row');
     const mapped = INVITE_CODES[code];
     if (mapped) {
@@ -229,54 +175,42 @@
   }
 
   function loginWithCode() {
-    const code = document.getElementById('reg-code').value.trim().toUpperCase();
-    const name = document.getElementById('reg-name').value.trim();
+    const code  = document.getElementById('reg-code').value.trim().toUpperCase();
+    const name  = document.getElementById('reg-name').value.trim();
     const errEl = document.getElementById('login-error');
     errEl.style.display = 'none';
 
-    if (!_lineUserId) {
-      errEl.textContent = 'กรุณาเปิดลิงก์จาก LINE ค่ะ';
-      errEl.style.display = 'block'; return;
-    }
     if (!INVITE_CODES[code]) {
-      errEl.textContent = 'รหัสเชิญไม่ถูกต้อง';
+      errEl.textContent = 'รหัสเชิญไม่ถูกต้องค่ะ';
       errEl.style.display = 'block'; return;
     }
     if (!name) {
-      errEl.textContent = 'กรุณากรอกชื่อ';
+      errEl.textContent = 'กรุณากรอกชื่อค่ะ';
       errEl.style.display = 'block'; return;
     }
     const session = { name, code, lineUserId: _lineUserId, loginAt: Date.now() };
     saveSession(session);
-    const lid = encodeURIComponent(_lineUserId);
+    const lid   = encodeURIComponent(_lineUserId);
     const mName = encodeURIComponent(name);
-    fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember&memberName=${mName}&lineUserId=${lid}`)
+    fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember&memberName=${mName}${lid ? '&lineUserId=' + lid : ''}`)
       .catch(() => {});
-    showContacts(session);
+    if (_guard) callGuard(_guard);
   }
 
   function init() {
     const params = new URLSearchParams(location.search);
     _lineUserId  = params.get('lid') || '';
-    const urlCode = params.get('code');
-    if (urlCode) {
-      document.getElementById('reg-code').value = urlCode.toUpperCase();
-      onCodeInput();
-    }
+    const guardKey = params.get('guard') || '';
+    _guard = GUARDS[guardKey] || null;
+
     const session = getSession();
     if (session && session.name) {
-      if (_lineUserId && !session.lineUserId) {
-        const updated = { ...session, lineUserId: _lineUserId };
-        saveSession(updated);
-        const lid = encodeURIComponent(_lineUserId);
-        const mName = encodeURIComponent(session.name);
-        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=registerMember&memberName=${mName}&lineUserId=${lid}`)
-          .catch(() => {});
-      }
-      showContacts(session);
+      if (_guard) { callGuard(_guard); return; }
+      // No guard param — shouldn't happen from rich menu, but show fallback
+      showNotRegistered();
       return;
     }
-    document.getElementById('ls-login').classList.remove('hidden');
+    showNotRegistered();
   }
 
   document.getElementById('reg-code').addEventListener('keydown', e => {
