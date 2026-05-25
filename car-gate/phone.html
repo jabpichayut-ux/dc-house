@@ -155,7 +155,7 @@
     document.getElementById('calling-screen').classList.add('visible');
     // Open dialer, then return to LINE so user doesn't have to close the browser manually
     window.location.href = guard.tel;
-    setTimeout(() => { window.location.href = 'line://'; }, 1500);
+    setTimeout(() => { window.location.href = 'line://'; }, 40000);
   }
 
   function showNotRegistered() {
