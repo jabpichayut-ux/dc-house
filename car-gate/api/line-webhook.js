@@ -2,8 +2,9 @@ const crypto = require('crypto');
 
 const CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || '';
 const CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
+const APP_URL = 'https://dc-house.vercel.app/index';
+const TRIGGER = 'บ้านดำรงค์ชัย';
 
-// Registration is closed — links must be shared directly by admin
 const MEMBERS = [
   { name: 'คุณดำรงค์',              code: 'DCH-DAM26' },
   { name: 'คุณกิตติ',               code: 'DCH-KIT26' },
@@ -47,6 +48,12 @@ const MEMBERS = [
   { name: 'คุณบุณยวีร์ แอ๋ม',      code: 'DCH-AEM26' },
 ];
 
+// Build lookup list text (sent when trigger word received)
+const MEMBER_LIST = '🏠 บ้านดำรงค์ชัย — รหัสเชิญ\n\n'
+  + 'พิมพ์หมายเลขของคุณ:\n'
+  + MEMBERS.map((m, i) => `${i + 1}. ${m.name}`).join('\n')
+  + '\n\n(ตอบกลับด้วยตัวเลข เช่น "3" สำหรับคุณน้ำผึ้ง)';
+
 async function getRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -63,6 +70,20 @@ function verifySignature(rawBody, signature) {
   return hash === signature;
 }
 
+async function replyMessage(replyToken, text) {
+  await fetch('https://api.line.me/v2/bot/message/reply', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+    },
+    body: JSON.stringify({
+      replyToken,
+      messages: [{ type: 'text', text }],
+    }),
+  });
+}
+
 const handler = async function (req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -77,7 +98,41 @@ const handler = async function (req, res) {
   try { body = JSON.parse(rawBody.toString()); }
   catch { return res.status(400).json({ error: 'Invalid JSON' }); }
 
-  // Registration closed — webhook accepts events for LINE platform health checks only
+  for (const event of (body.events || [])) {
+    if (event.type !== 'message' || event.message.type !== 'text') continue;
+    const text = (event.message.text || '').trim();
+    const replyToken = event.replyToken;
+
+    // Trigger word → send numbered member list
+    if (text === TRIGGER) {
+      await replyMessage(replyToken, MEMBER_LIST);
+      continue;
+    }
+
+    // Number 1–40 → send that member's code + deeplink (lid = LINE user ID)
+    const lineUserId = event.source && event.source.userId ? event.source.userId : '';
+    const num = parseInt(text, 10);
+    if (!isNaN(num) && num >= 1 && num <= MEMBERS.length && String(num) === text) {
+      const m = MEMBERS[num - 1];
+      const link = `${APP_URL}?code=${m.code}&lid=${encodeURIComponent(lineUserId)}`;
+      await replyMessage(replyToken,
+        `🏠 DC House\nรหัสเชิญของ${m.name}:\n📌 ${m.code}\n\nกดลิงก์เพื่อลงทะเบียน:\n${link}\n\n✨ ชื่อและรหัสจะถูกกรอกให้อัตโนมัติ\n🔔 ระบบแจ้งพัสดุจะถูกเปิดใช้งานอัตโนมัติ`
+      );
+      continue;
+    }
+
+    // Name match (partial) → send their code + deeplink
+    const match = MEMBERS.find(m =>
+      text.includes(m.name) || m.name.includes(text.replace(/^คุณ/, ''))
+    );
+    if (match) {
+      const lineUserIdM = event.source && event.source.userId ? event.source.userId : '';
+      const link = `${APP_URL}?code=${match.code}&lid=${encodeURIComponent(lineUserIdM)}`;
+      await replyMessage(replyToken,
+        `🏠 DC House\nรหัสเชิญของ${match.name}:\n📌 ${match.code}\n\nกดลิงก์เพื่อลงทะเบียน:\n${link}\n\n✨ ชื่อและรหัสจะถูกกรอกให้อัตโนมัติ\n🔔 ระบบแจ้งพัสดุจะถูกเปิดใช้งานอัตโนมัติ`
+      );
+    }
+  }
 
   res.status(200).json({ ok: true });
 };
