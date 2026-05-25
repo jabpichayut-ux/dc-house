@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DC House — Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -26,6 +26,31 @@
       --font:    'Sarabun', system-ui, sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── PIN screen ─────────────────────────── */
+    #pin-screen {
+      position: fixed; inset: 0;
+      background: #FAF8F4;
+      z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    }
+    #pin-screen.hidden { display: none; }
+    .pin-logo  { height: 52px; object-fit: contain; margin-bottom: 8px; }
+    .pin-title { font-size: 18px; font-weight: 700; font-family: 'Prompt', sans-serif; color: #1A1A1A; }
+    .pin-sub   { font-size: 13px; color: #888880; font-family: 'Prompt', sans-serif; margin-top: -8px; }
+    .pin-input {
+      width: 220px; text-align: center; font-size: 28px; letter-spacing: 0.25em;
+      padding: 14px; border: 1.5px solid #E0D8C8; border-radius: 12px;
+      font-family: 'Prompt', sans-serif; background: #fff; transition: border-color 0.15s;
+    }
+    .pin-input:focus { outline: none; border-color: #C9A84C; }
+    .pin-btn {
+      background: #C9A84C; color: #fff; border: none; border-radius: 40px;
+      padding: 13px 40px; font-family: 'Prompt', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(201,168,76,.35); transition: all 0.18s;
+    }
+    .pin-btn:active { transform: scale(0.96); background: #9E7A2E; }
+    .pin-error-msg { color: #B33030; font-size: 13px; font-family: 'Prompt', sans-serif; display: none; }
 
     html, body {
       height: 100%;
@@ -218,33 +243,48 @@
 
     .empty { padding: 16px; text-align: center; color: var(--t3); font-size: 12px; }
 
-    /* ── +2px font overrides (was +10px, reduced by 8px to fit TV) ─── */
-    .brand-name          { font-size: 19px; }
-    .brand-sub           { font-size: 13px; }
-    .date-lbl            { font-size: 15px; }
-    .status-pill         { font-size: 13px; }
-    .sico                { font-size: 22px; }
-    .sval                { font-size: 32px; }
-    .slth                { font-size: 14px; }
-    .slen                { font-size: 12px; }
-    .ct                  { font-size: 15px; }
-    .cten                { font-size: 12px; }
-    .cname               { font-size: 14px; }
-    .cplate              { font-size: 13px; }
-    .sbadge              { font-size: 12px; }
-    #carPageLabel        { font-size: 13px !important; }
-    .gname               { font-size: 15px; }
-    .gsub                { font-size: 12px; }
-    .gcnt                { font-size: 16px; }
-    .gcnt-u              { font-size: 12px; }
-    .aname               { font-size: 15px; }
-    .asub                { font-size: 12px; }
-    .adir                { font-size: 13px; }
-    .atime               { font-size: 12px; }
-    .empty               { font-size: 14px; }
+    /* ── -2px net font overrides (original +2px, now -2px to fit TV) ─── */
+    .brand-name          { font-size: 15px; }
+    .brand-sub           { font-size:  9px; }
+    .date-lbl            { font-size: 11px; }
+    .status-pill         { font-size:  9px; }
+    .sico                { font-size: 18px; }
+    .sval                { font-size: 28px; }
+    .slth                { font-size: 10px; }
+    .slen                { font-size:  8px; }
+    .ct                  { font-size: 11px; }
+    .cten                { font-size:  8px; }
+    .cname               { font-size: 10px; }
+    .cplate              { font-size:  9px; }
+    .sbadge              { font-size:  8px; }
+    #carPageLabel        { font-size:  9px !important; }
+    .gname               { font-size: 11px; }
+    .gsub                { font-size:  8px; }
+    .gcnt                { font-size: 12px; }
+    .gcnt-u              { font-size:  8px; }
+    .aname               { font-size: 11px; }
+    .asub                { font-size:  8px; }
+    .adir                { font-size:  9px; }
+    .atime               { font-size:  8px; }
+    .empty               { font-size: 10px; }
   </style>
 </head>
 <body>
+
+<!-- ── PIN SCREEN ──────────────────────────── -->
+<div id="pin-screen">
+  <img class="pin-logo" src="/logo.png" alt="DC House"
+       onerror="this.src='/car-gate/logo.png';this.onerror=function(){this.style.display='none'}">
+  <div class="pin-title">แดชบอร์ด · DC House</div>
+  <div class="pin-sub">กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</div>
+  <input class="pin-input" id="pin-input" type="password"
+         inputmode="numeric" maxlength="9" placeholder="•••••••••" />
+  <button class="pin-btn" onclick="checkPin()">เข้าสู่ระบบ</button>
+  <div class="pin-error-msg" id="pin-error">รหัสไม่ถูกต้อง กรุณาลองใหม่</div>
+</div>
+
+<!-- ── MAIN APP ────────────────────────────── -->
+<div id="main-app" style="display:none;height:100vh;overflow:hidden;">
 
 <!-- ── HEADER ──────────────────────────────── -->
 <header class="header">
@@ -359,9 +399,37 @@
     </div>
   </div>
 
-</div>
+</div><!-- /.page -->
+</div><!-- /#main-app -->
 
 <script>
+const DASH_PIN = '2026';
+const DASH_AUTH_KEY = 'dc-dash-auth';
+
+function checkPin() {
+  const val = document.getElementById('pin-input').value;
+  if (val === DASH_PIN) {
+    localStorage.setItem(DASH_AUTH_KEY, '1');
+    document.getElementById('pin-screen').classList.add('hidden');
+    document.getElementById('main-app').style.display = 'block';
+    load();
+    setInterval(load, 10000);
+  } else {
+    document.getElementById('pin-error').style.display = 'block';
+    document.getElementById('pin-input').value = '';
+  }
+}
+
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPin();
+});
+
+// Skip PIN if already authenticated (TV always-on)
+if (localStorage.getItem(DASH_AUTH_KEY)) {
+  document.getElementById('pin-screen').classList.add('hidden');
+  document.getElementById('main-app').style.display = 'block';
+}
+
 const SECRET = 'dc-house-2026';
 const API    = '/api/dashboard';
 
@@ -570,8 +638,11 @@ function h(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-load();
-setInterval(load, 10000);
+// Auto-start if already authenticated (TV always-on path)
+if (localStorage.getItem(DASH_AUTH_KEY)) {
+  load();
+  setInterval(load, 10000);
+}
 </script>
 </body>
 </html>
