@@ -119,7 +119,7 @@ module.exports = async function handler(req, res) {
         row: i + 1  // actual 1-based sheet row — used by guard.html for status updates
       })
       .filter(Boolean);
-    res.setHeader('Cache-Control', 's-maxage=8');
+    res.setHeader('Cache-Control', 's-maxage=5');
     return res.json({ cars, updated: new Date().toISOString() });
 
   } catch(err) {
