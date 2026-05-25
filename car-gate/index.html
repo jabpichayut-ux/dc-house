@@ -701,6 +701,7 @@ function renderCars(cars) {
     catch { return null; }
   }
   function saveSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+  function clearSession()  { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem('dc-valid'); }
 
   // Per-person invite codes — value is the pre-filled display name
   const INVITE_CODES = {
@@ -807,7 +808,7 @@ function renderCars(cars) {
   }
 
   // ── Init ─────────────────────────────────────────────────
-  function initAuth() {
+  async function initAuth() {
     const params  = new URLSearchParams(location.search);
     _lineUserId   = params.get('lid') || '';
     const urlCode = params.get('code');
@@ -827,6 +828,40 @@ function renderCars(cars) {
           + `&memberName=${encodeURIComponent(session.name)}&lineUserId=${encodeURIComponent(_lineUserId)}`)
           .catch(() => {});
       }
+
+      // Must have a LINE ID — no LINE ID means not properly registered
+      if (!session.lineUserId) {
+        clearSession();
+        document.getElementById('ls-register').style.display = 'flex';
+        return;
+      }
+
+      // Check sessionStorage cache (5 min) before hitting the API
+      try {
+        const cached = JSON.parse(sessionStorage.getItem('dc-valid') || 'null');
+        if (cached && Date.now() - cached.ts < 5 * 60 * 1000 && cached.uid === session.lineUserId) {
+          if (cached.ok) { enterApp(); return; }
+          clearSession();
+          document.getElementById('ls-register').style.display = 'flex';
+          return;
+        }
+      } catch {}
+
+      // Validate LINE user ID is still in the Members sheet
+      try {
+        const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=getMembers`);
+        const data = await res.json();
+        const valid = !!(data.members && data.members.some(m => m.userId === session.lineUserId));
+        sessionStorage.setItem('dc-valid', JSON.stringify({ ts: Date.now(), uid: session.lineUserId, ok: valid }));
+        if (!valid) {
+          clearSession();
+          document.getElementById('ls-register').style.display = 'flex';
+          return;
+        }
+      } catch {
+        // Network error — fail open so the app still works offline
+      }
+
       enterApp();
       return;
     }

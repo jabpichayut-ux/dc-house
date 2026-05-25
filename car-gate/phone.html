@@ -147,6 +147,7 @@
     try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch { return null; }
   }
   function saveSession(data) { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); }
+  function clearSession()    { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem('dc-valid'); }
 
   function callGuard(guard) {
     document.getElementById('calling-label').textContent = 'กำลังโทรหา' + guard.label + '…';
@@ -197,18 +198,35 @@
     if (_guard) callGuard(_guard);
   }
 
-  function init() {
+  async function init() {
     const params = new URLSearchParams(location.search);
     _lineUserId  = params.get('lid') || '';
     const guardKey = params.get('guard') || '';
     _guard = GUARDS[guardKey] || null;
 
     const session = getSession();
-    if (session && session.name) {
+    if (session && session.name && session.lineUserId) {
+      // Check sessionStorage cache (5 min) before hitting the API
+      try {
+        const cached = JSON.parse(sessionStorage.getItem('dc-valid') || 'null');
+        if (cached && Date.now() - cached.ts < 5 * 60 * 1000 && cached.uid === session.lineUserId) {
+          if (cached.ok) { if (_guard) callGuard(_guard); else showNotRegistered(); return; }
+          clearSession(); showNotRegistered(); return;
+        }
+      } catch {}
+
+      // Validate LINE user ID against Members sheet
+      try {
+        const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=getMembers`);
+        const data = await res.json();
+        const valid = !!(data.members && data.members.some(m => m.userId === session.lineUserId));
+        sessionStorage.setItem('dc-valid', JSON.stringify({ ts: Date.now(), uid: session.lineUserId, ok: valid }));
+        if (!valid) { clearSession(); showNotRegistered(); return; }
+      } catch {
+        // Network error — fail open
+      }
+
       if (_guard) { callGuard(_guard); return; }
-      // No guard param — shouldn't happen from rich menu, but show fallback
-      showNotRegistered();
-      return;
     }
     showNotRegistered();
   }
