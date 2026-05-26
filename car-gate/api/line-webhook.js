@@ -1,10 +1,32 @@
 const crypto = require('crypto');
+const { readRange } = require('./_auth');
 
 const CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || '';
 const CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
 const CHEF_GROUP_ID = process.env.CHEF_GROUP_ID || '';
 const APP_URL = 'https://dc-house.vercel.app/index';
 const TRIGGER = 'บ้านดำรงค์ชัย';
+
+const SECRET = 'dc-house-2026';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtmuGIo4fC39uG4uslI26utMh0Fc0F_teaoJrwVY_hRnG2w8tCi0nMPhDGzk3bueyLyw/exec';
+
+async function appendToSheet(sheet, values) {
+  const params = new URLSearchParams({
+    key: SECRET,
+    action: 'appendRow',
+    sheet,
+    values: JSON.stringify(values),
+  });
+  await fetch(`${APPS_SCRIPT_URL}?${params}`);
+}
+
+function thaiTime() {
+  return new Date().toLocaleTimeString('th-TH', {
+    timeZone: 'Asia/Bangkok',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 // In-memory order queue: ordererUserId → { orderText, step }
 // Note: cleared on cold start (acceptable for family use)
@@ -187,10 +209,23 @@ const handler = async function (req, res) {
       orderSession.step = 'pending_chef';
       orderSession.orderText = text;
       orderSessions.set(lineUserId, orderSession);
+
+      // Look up member name from Members sheet
+      let memberName = '';
+      try {
+        const members = await readRange('Members!A:B');
+        const row = members.find(r => r[1] === lineUserId);
+        if (row) memberName = row[0];
+      } catch { /* fall back to empty name */ }
+
+      // Write order to Food Orders sheet
+      const orderId = String(Date.now());
+      const time    = thaiTime();
+      try {
+        await appendToSheet('Food Orders', [orderId, memberName, lineUserId, text, time]);
+      } catch { /* fail silently */ }
+
       await replyMessage(replyToken, `✅ รับออเดอร์แล้วค่ะ!\nเมนู: ${text}\n\nรอสักครู่นะคะ 🍳`);
-      if (CHEF_GROUP_ID) {
-        await pushMessages(CHEF_GROUP_ID, [{ type: 'text', text: `📋 ออเดอร์ใหม่!\nเมนู: ${text}` }]);
-      }
       continue;
     }
 

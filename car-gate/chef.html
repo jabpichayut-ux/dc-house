@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DC House — ครัว</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --warm-white:   #FAF8F4;
+      --cream:        #F4F0E8;
+      --gold:         #C9A84C;
+      --gold-light:   #E2C97E;
+      --gold-dark:    #9E7A2E;
+      --charcoal:     #1A1A1A;
+      --ink:          #2C2C2C;
+      --muted:        #888880;
+      --divider:      #E0D8C8;
+      --green-bg:     #EAF5EE;
+      --green-text:   #2A7A4B;
+      --green-border: #B8DEC6;
+      --red-bg:       #FAEAEA;
+      --red-text:     #B33030;
+      --red-border:   #E8B8B8;
+      --card-shadow:  0 2px 12px rgba(0,0,0,0.06);
+      --radius:       10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Prompt', sans-serif;
+      background: var(--warm-white);
+      color: var(--ink);
+      height: 100vh;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── PIN Screen ── */
+    #pin-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--warm-white);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .pin-logo {
+      height: 52px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+
+    .pin-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+
+    .pin-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: -8px;
+    }
+
+    .pin-input {
+      width: 220px;
+      text-align: center;
+      font-size: 28px;
+      letter-spacing: 0.25em;
+      padding: 14px;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      font-family: 'Prompt', sans-serif;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .pin-input:focus { outline: none; border-color: var(--gold); }
+
+    .pin-btn {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      padding: 13px 40px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(201,168,76,0.35);
+      transition: all 0.18s;
+    }
+    .pin-btn:active { transform: scale(0.96); background: var(--gold-dark); }
+
+    .pin-error {
+      color: var(--red-text);
+      font-size: 13px;
+      display: none;
+    }
+
+    /* ── App Layout ── */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 56px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--divider);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4CAF50;
+      animation: pulse 2s infinite;
+      display: inline-block;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
+      70%  { box-shadow: 0 0 0 6px rgba(76,175,80,0); }
+      100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
+    }
+
+    /* ── Tab Bar ── */
+    .tab-bar {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid var(--divider);
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      border: none;
+      background: none;
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--gold-dark);
+      border-bottom-color: var(--gold);
+      background: #FFFDF7;
+    }
+
+    /* ── Tab Content ── */
+    .tab-content {
+      flex: 1;
+      overflow: hidden;
+      display: none;
+    }
+    .tab-content.active { display: flex; flex-direction: column; }
+
+    /* ── Scroll wrapper ── */
+    .scroll-wrap {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px 80px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Order Cards ── */
+    .queue-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .queue-loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .order-card {
+      background: #fff;
+      border-left: 4px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--card-shadow);
+      animation: slideIn 0.25s ease;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .order-card.removing {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .order-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 4px;
+    }
+
+    .order-menu {
+      font-size: 17px;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .order-time {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-complete-photo {
+      flex: 1;
+      height: 44px;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-complete-photo:active { background: var(--gold-dark); transform: scale(0.97); }
+
+    .btn-complete-nophoto {
+      flex: 1;
+      height: 44px;
+      background: var(--cream);
+      color: var(--charcoal);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius);
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-complete-nophoto:active { background: var(--divider); transform: scale(0.97); }
+
+    /* ── Kitchen Status Tab ── */
+    .status-badge {
+      text-align: center;
+      padding: 28px 20px 20px;
+    }
+
+    .status-emoji {
+      font-size: 52px;
+      margin-bottom: 12px;
+    }
+
+    .status-text-large {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .status-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .kitchen-hours-info {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-action-btn {
+      flex: 1;
+      padding: 12px 6px;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      font-family: 'Prompt', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #fff;
+      color: var(--charcoal);
+      transition: all 0.18s;
+      text-align: center;
+    }
+    .toggle-action-btn:active { transform: scale(0.96); }
+    .toggle-action-btn.open-btn  { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .toggle-action-btn.auto-btn  { background: var(--cream);    color: var(--charcoal);   border-color: var(--divider); }
+    .toggle-action-btn.close-btn { background: var(--red-bg);   color: var(--red-text);   border-color: var(--red-border); }
+
+    .msg-input {
+      width: 100%;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 0.15s;
+      resize: none;
+      height: 80px;
+      margin-bottom: 8px;
+    }
+    .msg-input:focus { outline: none; border-color: var(--gold); }
+
+    .msg-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* ── Absence Tab ── */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 0.15s;
+      margin-bottom: 16px;
+    }
+    .form-input:focus { outline: none; border-color: var(--gold); }
+
+    .form-textarea {
+      width: 100%;
+      border: 1.5px solid var(--divider);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+      transition: border-color 0.15s;
+      resize: none;
+      height: 100px;
+      margin-bottom: 20px;
+    }
+    .form-textarea:focus { outline: none; border-color: var(--gold); }
+
+    .big-gold-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(201,168,76,0.35);
+      transition: all 0.18s;
+    }
+    .big-gold-btn:active { transform: scale(0.98); background: var(--gold-dark); }
+    .big-gold-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--charcoal);
+      color: #fff;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 40px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      z-index: 9000;
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Hidden file input ── */
+    #photo-input { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ══ PIN SCREEN ══ -->
+<div id="pin-screen">
+  <img src="logo.png" class="pin-logo" alt="DC House"
+       onerror="this.src='/car-gate/logo.png';this.onerror=function(){this.style.display='none'}">
+  <div class="pin-title">🍳 ระบบครัว · DC House</div>
+  <div class="pin-subtitle">กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</div>
+  <input
+    class="pin-input"
+    id="pin-input"
+    type="password"
+    inputmode="numeric"
+    maxlength="9"
+    placeholder="•••••••••"
+  />
+  <button class="pin-btn" onclick="checkPin()">เข้าสู่ระบบ</button>
+  <div class="pin-error" id="pin-error">รหัสไม่ถูกต้อง กรุณาลองใหม่</div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div class="app" id="main-app" style="display:none;">
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">🍳 DC House — ครัว</div>
+    <div class="header-right">
+      <div class="live-dot"></div>
+      <span id="refresh-ts">—</span>
+    </div>
+  </header>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-queue-btn" onclick="switchTab('queue')">📋 คิว</button>
+    <button class="tab-btn" id="tab-status-btn" onclick="switchTab('status')">🔄 สถานะครัว</button>
+    <button class="tab-btn" id="tab-absence-btn" onclick="switchTab('absence')">📅 ป้าลา</button>
+  </div>
+
+  <!-- Tab 1: Order Queue -->
+  <div class="tab-content active" id="tab-queue">
+    <div class="scroll-wrap" id="queue-wrap">
+      <div class="queue-loading" id="queue-loading">กำลังโหลด…</div>
+      <div id="queue-list" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Kitchen Status -->
+  <div class="tab-content" id="tab-status">
+    <div class="scroll-wrap">
+
+      <div class="status-badge">
+        <div class="status-emoji" id="status-emoji">⏳</div>
+        <div class="status-text-large" id="status-text">กำลังโหลด…</div>
+        <div class="status-sub" id="status-sub"></div>
+      </div>
+
+      <div class="kitchen-hours-info">
+        🕑 เวลาเปิดครัว: จันทร์–เสาร์ 11:00–14:00 และ 17:00–20:00
+      </div>
+
+      <div class="msg-label">ข้อความพิเศษ (เช่น เมนูพิเศษวันนี้)</div>
+      <textarea class="msg-input" id="status-message" placeholder="เช่น วันนี้มีส้มตำพิเศษค่ะ"></textarea>
+
+      <div class="toggle-row">
+        <button class="toggle-action-btn open-btn" onclick="setStatus('open')">✅ เปิด (manual)</button>
+        <button class="toggle-action-btn auto-btn" onclick="setStatus('auto')">🤖 อัตโนมัติ</button>
+        <button class="toggle-action-btn close-btn" onclick="setStatus('closed')">🔴 ปิด (manual)</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab 3: Absence -->
+  <div class="tab-content" id="tab-absence">
+    <div class="scroll-wrap">
+
+      <div class="section-title">📅 แจ้งลา</div>
+
+      <div class="form-label">วันที่ลา</div>
+      <input class="form-input" type="date" id="absence-date" />
+
+      <div class="form-label">ข้อความแจ้งสมาชิก</div>
+      <textarea class="form-textarea" id="absence-message"
+        placeholder="เช่น ป้าลาวันพฤหัส 29 พ.ค. กลับมาวันศุกร์นะคะ"></textarea>
+
+      <button class="big-gold-btn" id="absence-btn" onclick="notifyAbsence()">📣 แจ้งสมาชิกทุกคน</button>
+
+    </div>
+  </div>
+
+</div><!-- end main-app -->
+
+<div class="toast" id="toast"></div>
+<input type="file" id="photo-input" accept="image/*" capture="environment" />
+
+<script>
+  /* ── CONFIG ── */
+  const CHEF_URL   = '/api/chef';
+  const SECRET_KEY = 'dc-house-2026';
+  const CORRECT_PIN = '999999999';
+  const AUTH_KEY   = 'dc-chef-auth';
+
+  /* ── PIN ── */
+  function checkPin() {
+    const val = document.getElementById('pin-input').value;
+    if (val === CORRECT_PIN) {
+      localStorage.setItem(AUTH_KEY, '1');
+      document.getElementById('pin-screen').style.display = 'none';
+      document.getElementById('main-app').style.display = 'flex';
+      initApp();
+    } else {
+      document.getElementById('pin-error').style.display = 'block';
+      document.getElementById('pin-input').value = '';
+    }
+  }
+
+  document.getElementById('pin-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPin();
+  });
+
+  /* ── TABS ── */
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(`tab-${tab}-btn`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+  }
+
+  /* ── QUEUE ── */
+  async function fetchQueue() {
+    try {
+      const res  = await fetch(`${CHEF_URL}?key=${SECRET_KEY}&action=getQueue&t=${Date.now()}`);
+      const data = await res.json();
+      if (!data.success) throw new Error('failed');
+      renderQueue(data.orders || []);
+      updateTimestamp();
+    } catch {
+      // silently fail — keep existing display
+    }
+  }
+
+  function renderQueue(orders) {
+    const loading = document.getElementById('queue-loading');
+    const list    = document.getElementById('queue-list');
+
+    loading.style.display = 'none';
+    list.style.display    = 'block';
+
+    if (!orders.length) {
+      list.innerHTML = '<div class="queue-empty">ไม่มีออเดอร์ขณะนี้ ✨</div>';
+      return;
+    }
+
+    list.innerHTML = orders.map(o => `
+      <div class="order-card" id="card-${escapeHTML(o.id)}">
+        <div class="order-name">${escapeHTML(o.name)}</div>
+        <div class="order-menu">${escapeHTML(o.menu)}</div>
+        <div class="order-time">⏰ ${escapeHTML(o.time)}</div>
+        <div class="order-actions">
+          <button class="btn-complete-photo" onclick="completeWithPhoto('${escapeHTML(o.id)}','${escapeHTML(o.userId)}','${escapeHTML(o.menu)}')">
+            📷 เสร็จ + รูป
+          </button>
+          <button class="btn-complete-nophoto" onclick="completeNoPhoto('${escapeHTML(o.id)}','${escapeHTML(o.userId)}','${escapeHTML(o.menu)}')">
+            ✅ เสร็จ (ไม่มีรูป)
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Complete order with photo
+  let _pendingComplete = null;
+
+  function completeWithPhoto(orderId, userId, menu) {
+    _pendingComplete = { orderId, userId, menu };
+    document.getElementById('photo-input').click();
+  }
+
+  document.getElementById('photo-input').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file || !_pendingComplete) return;
+    const { orderId, userId, menu } = _pendingComplete;
+    _pendingComplete = null;
+    this.value = '';
+
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      const base64 = ev.target.result.split(',')[1];
+      await doComplete(orderId, userId, menu, base64);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  async function completeNoPhoto(orderId, userId, menu) {
+    await doComplete(orderId, userId, menu, null);
+  }
+
+  async function doComplete(orderId, userId, menu, imageData) {
+    const card = document.getElementById(`card-${orderId}`);
+    if (card) {
+      card.classList.add('removing');
+      setTimeout(() => { if (card.parentNode) card.parentNode.removeChild(card); checkQueueEmpty(); }, 300);
+    }
+
+    try {
+      const body = { orderId, userId, menu };
+      if (imageData) body.imageData = imageData;
+      const res  = await fetch(`${CHEF_URL}?key=${SECRET_KEY}&action=completeOrder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ ออเดอร์เสร็จแล้วค่ะ!');
+      } else {
+        showToast('⚠️ บันทึกไม่สำเร็จ');
+      }
+    } catch {
+      showToast('⚠️ เกิดข้อผิดพลาด');
+    }
+  }
+
+  function checkQueueEmpty() {
+    const list = document.getElementById('queue-list');
+    const cards = list.querySelectorAll('.order-card:not(.removing)');
+    if (!cards.length) {
+      list.innerHTML = '<div class="queue-empty">ไม่มีออเดอร์ขณะนี้ ✨</div>';
+    }
+  }
+
+  /* ── KITCHEN STATUS ── */
+  async function fetchKitchenStatus() {
+    try {
+      const res  = await fetch(`${CHEF_URL}?key=${SECRET_KEY}&action=getKitchenStatus&t=${Date.now()}`);
+      const data = await res.json();
+      if (!data.success) throw new Error('failed');
+      renderKitchenStatus(data);
+    } catch {
+      document.getElementById('status-text').textContent = 'โหลดไม่ได้';
+      document.getElementById('status-emoji').textContent = '⚠️';
+    }
+  }
+
+  function renderKitchenStatus(data) {
+    const isOpen = data.status === 'open';
+    document.getElementById('status-emoji').textContent = isOpen ? '✅' : '🔴';
+    document.getElementById('status-text').textContent  = isOpen ? 'เปิดครัว' : 'ปิดครัว';
+
+    let sub = '';
+    if (data.overridden) sub += 'Manual override · ';
+    else sub += 'อัตโนมัติ · ';
+    if (data.message) sub += data.message;
+    document.getElementById('status-sub').textContent = sub;
+  }
+
+  async function setStatus(mode) {
+    const message = document.getElementById('status-message').value.trim();
+    let status, expiresHours;
+
+    if (mode === 'auto') {
+      // Set status based on auto open, with no expiry override (expiresHours=0)
+      status = 'auto';
+      expiresHours = 0;
+      // For auto mode, we just set a row with status=auto and 0 expiry so it expires immediately
+      // Actually "auto" isn't a valid status value — we clear override by setting expiresHours=0
+      // We'll set status=open or closed based on auto and expiresHours=0 meaning it expires right away
+      // Simpler: just append a row that will immediately expire
+      try {
+        await fetch(`${CHEF_URL}?key=${SECRET_KEY}&action=setKitchenStatus&status=open&message=&expiresHours=0`);
+        showToast('🤖 ตั้งเป็นอัตโนมัติแล้วค่ะ');
+        await fetchKitchenStatus();
+      } catch {
+        showToast('⚠️ บันทึกไม่สำเร็จ');
+      }
+      return;
+    }
+
+    status = mode;
+    expiresHours = 12;
+
+    try {
+      const params = new URLSearchParams({
+        key: SECRET_KEY,
+        action: 'setKitchenStatus',
+        status,
+        message: message || '',
+        expiresHours: String(expiresHours),
+      });
+      const res  = await fetch(`${CHEF_URL}?${params}`);
+      const data = await res.json();
+      if (data.success) {
+        showToast(status === 'open' ? '✅ เปิดครัวแล้วค่ะ!' : '🔴 ปิดครัวแล้วค่ะ');
+        await fetchKitchenStatus();
+      } else {
+        showToast('⚠️ บันทึกไม่สำเร็จ');
+      }
+    } catch {
+      showToast('⚠️ เกิดข้อผิดพลาด');
+    }
+  }
+
+  /* ── ABSENCE ── */
+  function setDefaultDate() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const yyyy = d.getFullYear();
+    const mm   = String(d.getMonth() + 1).padStart(2, '0');
+    const dd   = String(d.getDate()).padStart(2, '0');
+    document.getElementById('absence-date').value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  async function notifyAbsence() {
+    const date    = document.getElementById('absence-date').value;
+    const message = document.getElementById('absence-message').value.trim();
+    const btn     = document.getElementById('absence-btn');
+
+    btn.disabled = true;
+    btn.textContent = 'กำลังส่ง…';
+
+    try {
+      const params = new URLSearchParams({ key: SECRET_KEY, action: 'notifyAbsence' });
+      if (date)    params.set('date', date);
+      if (message) params.set('message', message);
+
+      const res  = await fetch(`${CHEF_URL}?${params}`);
+      const data = await res.json();
+      if (data.success) {
+        showToast(`📣 แจ้งสมาชิกแล้ว ${data.notified} คน`);
+        document.getElementById('absence-message').value = '';
+        setDefaultDate();
+      } else {
+        showToast('⚠️ ส่งไม่สำเร็จ');
+      }
+    } catch {
+      showToast('⚠️ เกิดข้อผิดพลาด');
+    }
+
+    btn.disabled = false;
+    btn.textContent = '📣 แจ้งสมาชิกทุกคน';
+  }
+
+  /* ── HELPERS ── */
+  function updateTimestamp() {
+    const now = new Date();
+    document.getElementById('refresh-ts').textContent =
+      now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  function escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /* ── INIT ── */
+  function initApp() {
+    setDefaultDate();
+    fetchQueue();
+    fetchKitchenStatus();
+    updateTimestamp();
+
+    // Queue: refresh every 10s
+    setInterval(fetchQueue, 10 * 1000);
+    // Kitchen status: refresh every 30s
+    setInterval(fetchKitchenStatus, 30 * 1000);
+  }
+
+  // Check stored auth
+  if (localStorage.getItem(AUTH_KEY) === '1') {
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    initApp();
+  }
+</script>
+</body>
+</html>
