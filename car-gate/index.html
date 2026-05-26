@@ -668,7 +668,7 @@
     <div class="kitchen-emoji" id="kitchen-emoji">🍳</div>
     <div class="kitchen-info">
       <div class="kitchen-status-text" id="kitchen-status-text">กำลังโหลด…</div>
-      <div class="kitchen-hours-text" id="kitchen-hours-text">11:00–14:00 · 17:00–20:00</div>
+      <div class="kitchen-hours-text" id="kitchen-hours-text">วันจันทร์ - วันเสาร์<br>11:00 - 14:00 น.<br>17:00 - 20:00 น.</div>
     </div>
     <button class="kitchen-order-btn" id="kitchen-order-btn" onclick="openOrderModal()" style="display:none;">
       🍳 สั่งอาหาร
@@ -1061,8 +1061,8 @@ function renderCars(cars) {
 
       const isOpen = data.status === 'open';
       emoji.textContent = isOpen ? '🍳' : '🔴';
-      text.textContent  = isOpen ? 'เปิดครัว' : 'ปิดครัว';
-      hours.textContent = data.message || '11:00–14:00 · 17:00–20:00';
+      text.textContent  = isOpen ? 'เปิดครัว' : 'ครัวปิด';
+      hours.innerHTML   = data.message || 'วันจันทร์ - วันเสาร์<br>11:00 - 14:00 น.<br>17:00 - 20:00 น.';
 
       // Show order button only if kitchen is open AND user is logged in
       const session = getSession();

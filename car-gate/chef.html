@@ -253,6 +253,17 @@
       line-height: 1.4;
     }
 
+    .order-notes {
+      font-size: 13px;
+      color: #6B4F00;
+      background: #FFF8E1;
+      border-left: 3px solid var(--gold);
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
     .order-time {
       font-size: 12px;
       color: var(--muted);
@@ -615,10 +626,15 @@
       return;
     }
 
-    list.innerHTML = orders.map(o => `
+    list.innerHTML = orders.map(o => {
+      const notesHtml = (o.notes && o.notes.length)
+        ? `<div class="order-notes">📝 ${o.notes.map(n => escapeHTML(n)).join('<br>📝 ')}</div>`
+        : '';
+      return `
       <div class="order-card" id="card-${escapeHTML(o.id)}">
         <div class="order-name">${escapeHTML(o.name)}</div>
         <div class="order-menu">${escapeHTML(o.menu)}</div>
+        ${notesHtml}
         <div class="order-time">⏰ ${escapeHTML(o.time)}</div>
         <div class="order-actions">
           <button class="btn-complete-photo" onclick="completeWithPhoto('${escapeHTML(o.id)}','${escapeHTML(o.userId)}','${escapeHTML(o.menu)}')">
@@ -628,7 +644,8 @@
             ✅ เสร็จ (ไม่มีรูป)
           </button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   // Complete order with photo

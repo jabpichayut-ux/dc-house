@@ -1,7 +1,7 @@
 const { readRange } = require('./_auth');
 
 const SECRET       = 'dc-house-2026';
-const LINE_TOKEN   = '7TEnqDtU6W9k1N17pCgjAHX8uhSuR9IN9finzj4aa1LctoS3DBiVvr/S/yjwgwQ1wrfKIMfLcL0KtyujVVxaNbXkr0ZLcwtEr30Af4QJ1WTnrUyG4Pyo22Dn+CpLp4LjZ1rxcJIE0JciHa8J74iWngdB04t89/1o/w1cDnyilFU=';
+const LINE_TOKEN   = '7TEnqDtU6W9k1N17pCgjAHX8uhSuR9IN9finzj4aa1LctoS3DBiVvr/S/yjwgwQ1wrfKIMfLcL0KtyujVVxaNbXkr0ZLcwtEr30Af4QJ1WTnrUyG4Pyo22Dn+CpLp4LjZ1rxcJIE0JciHa8J74iWngdB04t89/1O/w1cDnyilFU=';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtmuGIo4fC39uG4uslI26utMh0Fc0F_teaoJrwVY_hRnG2w8tCi0nMPhDGzk3bueyLyw/exec';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -107,13 +107,23 @@ module.exports = async function handler(req, res) {
 
     // ── getQueue (GET) ───────────────────────────────────────────────────────
     if (action === 'getQueue') {
-      const [orders, done] = await Promise.all([
+      const [orders, done, notesRows] = await Promise.all([
         readRange('Food Orders!A:E'),
-        readRange('Food Orders Done!A:B'),
+        readRange('Food Orders Done!A:C'),
+        readRange('Food Order Notes!A:C').catch(() => []),
       ]);
 
       // Collect orderIds in the Done sheet (column B = index 1)
       const doneIds = new Set(done.map(r => r[1]).filter(Boolean));
+
+      // Build notes map: orderId → [note strings]
+      const notesMap = {};
+      for (const r of notesRows) {
+        const id = r[0];
+        if (!id) continue;
+        if (!notesMap[id]) notesMap[id] = [];
+        notesMap[id].push(r[1] || '');
+      }
 
       const pending = orders
         .filter(r => r[0] && !doneIds.has(r[0])) // has orderId and not done
@@ -123,6 +133,7 @@ module.exports = async function handler(req, res) {
           userId: r[2] || '',
           menu:   r[3] || '',
           time:   r[4] || '',
+          notes:  notesMap[r[0]] || [],
         }));
 
       return res.json({ success: true, orders: pending });

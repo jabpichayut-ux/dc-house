@@ -203,13 +203,35 @@ const handler = async function (req, res) {
       continue;
     }
 
-    // ── Food ordering: user sends order text ──
     const orderSession = orderSessions.get(lineUserId);
-    if (orderSession && orderSession.step === 'awaiting_order') {
-      orderSession.step = 'pending_chef';
-      orderSession.orderText = text;
-      orderSessions.set(lineUserId, orderSession);
 
+    // ── 5-minute edit window: cancel or add note ──
+    if (orderSession && orderSession.step === 'editable') {
+      const isExpired = Date.now() > orderSession.expiresAt;
+
+      if (isExpired) {
+        // Window closed — treat as a new message, fall through
+        orderSessions.delete(lineUserId);
+      } else if (text === 'ยกเลิก') {
+        // Cancel the order
+        try {
+          await appendToSheet('Food Orders Done', [new Date().toISOString(), orderSession.orderId, 'cancelled']);
+        } catch { /* fail silently */ }
+        orderSessions.delete(lineUserId);
+        await replyMessage(replyToken, `❌ ยกเลิกออเดอร์แล้วค่ะ\nเมนู: ${orderSession.orderText}`);
+        continue;
+      } else {
+        // Append note
+        try {
+          await appendToSheet('Food Order Notes', [orderSession.orderId, text, thaiTime()]);
+        } catch { /* fail silently */ }
+        await replyMessage(replyToken, `📝 รับโน้ตแล้วค่ะ: ${text}\n\n(พิมพ์ "ยกเลิก" เพื่อยกเลิกออเดอร์)`);
+        continue;
+      }
+    }
+
+    // ── Food ordering: user sends order text ──
+    if (orderSession && orderSession.step === 'awaiting_order') {
       // Look up member name from Members sheet
       let memberName = '';
       try {
@@ -221,11 +243,14 @@ const handler = async function (req, res) {
       // Write order to Food Orders sheet
       const orderId = String(Date.now());
       const time    = thaiTime();
+      const expiresAt = Date.now() + 5 * 60 * 1000;
       try {
         await appendToSheet('Food Orders', [orderId, memberName, lineUserId, text, time]);
       } catch { /* fail silently */ }
 
-      await replyMessage(replyToken, `✅ รับออเดอร์แล้วค่ะ!\nเมนู: ${text}\n\nรอสักครู่นะคะ 🍳`);
+      orderSessions.set(lineUserId, { step: 'editable', orderId, orderText: text, expiresAt });
+
+      await replyMessage(replyToken, `✅ รับออเดอร์แล้วค่ะ!\nเมนู: ${text}\n\nรอสักครู่นะคะ 🍳\n\n📝 มี 5 นาที ถ้าต้องการเพิ่มโน้ต หรือพิมพ์ "ยกเลิก" เพื่อยกเลิกออเดอร์ค่ะ`);
       continue;
     }
 
