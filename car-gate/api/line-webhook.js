@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN || '';
 const CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || '';
-const CHEF_USER_ID = process.env.CHEF_LINE_USER_ID || '';
+const CHEF_GROUP_ID = process.env.CHEF_GROUP_ID || '';
 const APP_URL = 'https://dc-house.vercel.app/index';
 const TRIGGER = 'บ้านดำรงค์ชัย';
 
@@ -135,12 +135,22 @@ const handler = async function (req, res) {
   catch { return res.status(400).json({ error: 'Invalid JSON' }); }
 
   for (const event of (body.events || [])) {
-    if (event.type !== 'message') continue;
     const replyToken = event.replyToken;
-    const lineUserId = event.source?.userId || '';
+    const src = event.source || {};
+    const lineUserId = src.userId || '';
+    const groupId    = src.groupId || '';
 
-    // ── Image from chef → push food-ready to orderer(s) ──
-    if (event.message.type === 'image' && CHEF_USER_ID && lineUserId === CHEF_USER_ID) {
+    // ── Bot added to group → reply with groupId for env var setup ──
+    if (event.type === 'join' && src.type === 'group') {
+      await replyMessage(replyToken,
+        `✅ DC House bot เข้ากลุ่มแล้วค่ะ!\n\nGroup ID:\n${groupId}\n\nกรุณาตั้งค่า CHEF_GROUP_ID=${groupId} ใน Vercel แล้ว redeploy ด้วยนะคะ`);
+      continue;
+    }
+
+    if (event.type !== 'message') continue;
+
+    // ── Image from chef's group → push food-ready only to orderer(s) ──
+    if (event.message.type === 'image' && CHEF_GROUP_ID && groupId === CHEF_GROUP_ID) {
       const pending = [...orderSessions.entries()].filter(([, s]) => s.step === 'pending_chef');
       if (pending.length > 0) {
         try {
@@ -152,11 +162,14 @@ const handler = async function (req, res) {
             await pushMessages(ordererUserId, msgs);
             orderSessions.delete(ordererUserId);
           }
-          await replyMessage(replyToken, `✅ ส่งรูปอาหารถึงผู้สั่งแล้วค่ะ (${pending.length} คน)`);
+          await replyMessage(replyToken, `✅ ส่งรูปอาหารถึงผู้สั่งแล้วค่ะ (${pending.length} คน) 🍱`);
         } catch { /* fail silently */ }
       }
       continue;
     }
+
+    // Ignore all other group messages (don't respond in group to avoid noise)
+    if (src.type === 'group' || src.type === 'room') continue;
 
     if (event.message.type !== 'text') continue;
     const text = (event.message.text || '').trim();
@@ -175,8 +188,8 @@ const handler = async function (req, res) {
       orderSession.orderText = text;
       orderSessions.set(lineUserId, orderSession);
       await replyMessage(replyToken, `✅ รับออเดอร์แล้วค่ะ!\nเมนู: ${text}\n\nรอสักครู่นะคะ 🍳`);
-      if (CHEF_USER_ID) {
-        await pushMessages(CHEF_USER_ID, [{ type: 'text', text: `📋 ออเดอร์ใหม่!\nเมนู: ${text}` }]);
+      if (CHEF_GROUP_ID) {
+        await pushMessages(CHEF_GROUP_ID, [{ type: 'text', text: `📋 ออเดอร์ใหม่!\nเมนู: ${text}` }]);
       }
       continue;
     }
