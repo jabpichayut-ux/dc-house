@@ -408,61 +408,30 @@
       margin-bottom: 12px;
     }
 
-    .search-box {
-      width: 100%;
-      border: 1.5px solid var(--divider);
-      border-radius: var(--radius);
-      padding: 11px 16px;
-      font-family: 'Prompt', sans-serif;
-      font-size: 14px;
-      background: #fff;
-      color: var(--ink);
-      margin-bottom: 12px;
-      transition: border-color 0.15s;
-    }
-    .search-box:focus { outline: none; border-color: var(--gold); }
-
-    .member-list {
-      background: #fff;
-      border-radius: var(--radius);
-      border: 1px solid var(--divider);
-      overflow: hidden;
-      box-shadow: var(--card-shadow);
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
       margin-bottom: 20px;
-      max-height: 260px;
-      overflow-y: auto;
     }
 
-    .member-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 13px 16px;
-      border-bottom: 1px solid var(--divider);
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .member-item:last-child { border-bottom: none; }
-    .member-item:active { background: var(--cream); }
-    .member-item.selected { background: #FBF6E8; border-left: 3px solid var(--gold); }
-
-    .member-name {
+    .member-grid-btn {
+      background: #fff;
+      border: 1.5px solid var(--divider);
+      border-radius: 10px;
+      padding: 12px 8px;
+      font-family: 'Prompt', sans-serif;
       font-size: 14px;
       font-weight: 600;
       color: var(--charcoal);
-    }
-
-    .member-check {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      border: 1.5px solid var(--divider);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
+      cursor: pointer;
       transition: all 0.15s;
+      text-align: center;
+      line-height: 1.3;
     }
-    .member-item.selected .member-check { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .member-grid-btn:active { background: var(--cream); transform: scale(0.96); }
+    .member-grid-btn.selected { border-color: var(--gold); background: #FBF6E8; color: var(--gold-dark); }
+    .member-grid-btn.no-line { opacity: 0.55; }
 
     .quantity-section {
       background: #fff;
@@ -558,6 +527,33 @@
       margin-bottom: 14px;
       display: none;
     }
+
+    .photo-section { margin-bottom: 14px; }
+    .camera-btn {
+      width: 100%;
+      background: var(--cream);
+      border: 1.5px dashed var(--divider);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .camera-btn:active { background: var(--divider); }
+    .photo-preview {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--green-border);
+      display: none;
+      margin-top: 8px;
+    }
+    .photo-preview.show { display: block; }
 
     /* ── Toast ── */
     .toast {
@@ -902,9 +898,8 @@
     #tab-courier .step-num       { font-size: 21px; width:28px; height:28px; }
     #tab-courier .loading-row,
     #tab-guest   .loading-row    { font-size: 23px; }
-    .search-box                  { font-size: 24px; }
-    .member-name                 { font-size: 24px; }
-    .member-check                { font-size: 22px; }
+    .member-grid-btn             { font-size: 22px; }
+    .camera-btn                  { font-size: 22px; }
     .selected-name-display       { font-size: 23px; }
     .selected-name-display strong{ font-size: 25px; }
     .quantity-label              { font-size: 23px; }
@@ -1030,9 +1025,8 @@
         <div class="warning-card" id="warning-card">
           ⚠️ ยังไม่มีสมาชิกลงทะเบียน — ให้สมาชิกเพิ่ม LINE OA และพิมพ์ชื่อก่อนค่ะ
         </div>
-        <input class="search-box" id="search-box" type="text" placeholder="🔍 ค้นหาชื่อ..." oninput="filterMembers()" />
-        <div class="member-list" id="member-list">
-          <div class="loading-row">กำลังโหลด…</div>
+        <div class="member-grid" id="member-grid">
+          <div class="loading-row" style="grid-column:1/-1;">กำลังโหลด…</div>
         </div>
       </div>
 
@@ -1048,6 +1042,13 @@
             <button class="qty-btn" onclick="changeQty(1)">+</button>
           </div>
         </div>
+        <div class="photo-section">
+          <button class="camera-btn" onclick="document.getElementById('camera-input').click()">
+            <span id="camera-btn-label">📷 ถ่ายรูปพัสดุ (ไม่บังคับ)</span>
+          </button>
+          <img class="photo-preview" id="photo-preview" alt="" />
+        </div>
+        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelected(event)" />
         <button class="submit-btn" id="submit-btn" onclick="sendNotification()">
           📨 ส่งแจ้งเตือนไปที่ LINE
         </button>
@@ -1628,6 +1629,12 @@
       // Log to sheet
       fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(plate)}&guestName=${encodeURIComponent(name||'ไม่ระบุ')}&guestOf=${encodeURIComponent(guestOf)}&status=in&reason=${encodeURIComponent(purpose)}&t=${Date.now()}`);
 
+      // Notify member via LINE
+      const memberObj = allMembers.find(m => m.name === guestOf && m.userId);
+      if (memberObj) {
+        fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=notifyGuest&userId=${encodeURIComponent(memberObj.userId)}&guestName=${encodeURIComponent(name||'ไม่ระบุชื่อ')}&plate=${encodeURIComponent(plate)}&purpose=${encodeURIComponent(purpose)}&t=${Date.now()}`);
+      }
+
       // Reset form
       document.getElementById('guest-plate-input').value = '';
       document.getElementById('guest-name-input').value = '';
@@ -1650,35 +1657,24 @@
       renderMembers(allMembers);
       if (!allMembers.length) document.getElementById('warning-card').style.display = 'block';
     } catch {
-      document.getElementById('member-list').innerHTML = `<div class="loading-row">⚠️ โหลดไม่ได้</div>`;
+      document.getElementById('member-grid').innerHTML = `<div class="loading-row" style="grid-column:1/-1;">⚠️ โหลดไม่ได้</div>`;
     }
   }
 
   function renderMembers(members) {
-    const list = document.getElementById('member-list');
-    if (!members.length) { list.innerHTML = '<div class="loading-row">ไม่พบสมาชิก</div>'; return; }
-    list.innerHTML = members.map((m, i) => `
-      <div class="member-item" id="member-${i}" onclick="selectMember(${i})">
-        <div class="member-name">${escapeHTML(m.name)}${m.userId ? '' : ' <span style="font-size:10px;color:#aaa">(ไม่มี LINE)</span>'}</div>
-        <div class="member-check" id="check-${i}">✓</div>
-      </div>`).join('');
-  }
-
-  function filterMembers() {
-    const q = document.getElementById('search-box').value.toLowerCase();
-    renderMembers(allMembers.filter(m => m.name.toLowerCase().includes(q)));
-  }
-
-  function getCurrentMembers() {
-    const q = document.getElementById('search-box').value.toLowerCase();
-    return q ? allMembers.filter(m => m.name.toLowerCase().includes(q)) : allMembers;
+    const grid = document.getElementById('member-grid');
+    if (!members.length) { grid.innerHTML = '<div class="loading-row" style="grid-column:1/-1;">ไม่พบสมาชิก</div>'; return; }
+    grid.innerHTML = members.map((m, i) => {
+      const noLine = !m.userId ? ' no-line' : '';
+      return `<button class="member-grid-btn${noLine}" id="member-${i}" onclick="selectMember(${i})">${escapeHTML(m.name)}</button>`;
+    }).join('');
   }
 
   function selectMember(index) {
-    const members = getCurrentMembers();
-    selectedMember = members[index];
-    document.querySelectorAll('.member-item').forEach(el => el.classList.remove('selected'));
-    document.getElementById(`member-${index}`).classList.add('selected');
+    selectedMember = allMembers[index];
+    document.querySelectorAll('.member-grid-btn').forEach(el => el.classList.remove('selected'));
+    const btn = document.getElementById(`member-${index}`);
+    if (btn) btn.classList.add('selected');
     setTimeout(() => {
       document.getElementById('selected-display').textContent = selectedMember.name;
       document.getElementById('section-quantity').style.display = 'block';
@@ -1694,6 +1690,31 @@
     document.getElementById('qty-display').textContent = quantity;
   }
 
+  let photoUrl = null;
+
+  function onPhotoSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async e => {
+      const dataUrl = e.target.result;
+      document.getElementById('photo-preview').src = dataUrl;
+      document.getElementById('photo-preview').classList.add('show');
+      document.getElementById('camera-btn-label').textContent = '📷 เปลี่ยนรูป ✓';
+      try {
+        const pureBase64 = dataUrl.split(',')[1];
+        const res = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=uploadImage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageData: pureBase64 })
+        });
+        const data = await res.json();
+        if (data.success) photoUrl = data.url;
+      } catch { photoUrl = null; }
+    };
+    reader.readAsDataURL(file);
+  }
+
   async function sendNotification() {
     if (!selectedMember) { showToast('กรุณาเลือกชื่อก่อนค่ะ'); return; }
     if (!selectedMember.userId) {
@@ -1704,7 +1725,8 @@
     btn.disabled = true;
     btn.textContent = 'กำลังส่ง…';
     try {
-      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=notify&userId=${encodeURIComponent(selectedMember.userId)}&name=${encodeURIComponent(selectedMember.name)}&quantity=${quantity}&t=${Date.now()}`);
+      const photoParam = photoUrl ? `&imageUrl=${encodeURIComponent(photoUrl)}` : '';
+      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=notify&userId=${encodeURIComponent(selectedMember.userId)}&name=${encodeURIComponent(selectedMember.name)}&quantity=${quantity}${photoParam}&t=${Date.now()}`);
       const data = await res.json();
       if (data.success) {
         document.getElementById('success-desc').textContent =
@@ -1726,12 +1748,14 @@
   }
 
   function resetCourier() {
-    selectedMember = null; quantity = 1;
+    selectedMember = null; quantity = 1; photoUrl = null;
     document.getElementById('success-card').classList.remove('show');
     document.getElementById('section-member').style.display = 'block';
     document.getElementById('section-quantity').style.display = 'none';
-    document.getElementById('search-box').value = '';
     document.getElementById('qty-display').textContent = '1';
+    document.getElementById('camera-input').value = '';
+    document.getElementById('photo-preview').classList.remove('show');
+    document.getElementById('camera-btn-label').textContent = '📷 ถ่ายรูปพัสดุ (ไม่บังคับ)';
     ['step1','step2','step3'].forEach((id, i) => {
       const el = document.getElementById(id);
       el.classList.remove('active', 'done');
