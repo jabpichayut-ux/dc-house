@@ -301,7 +301,7 @@
     .car-info { flex: 1; min-width: 0; }
 
     .car-name {
-      font-size: 19px;
+      font-size: 35px;
       font-weight: 600;
       color: var(--charcoal);
       white-space: nowrap;
@@ -310,7 +310,7 @@
     }
 
     .car-plate {
-      font-size: 20px;
+      font-size: 35px;
       color: var(--muted);
       letter-spacing: 0.06em;
       margin-top: 1px;
@@ -1178,6 +1178,7 @@
   const REFRESH_INTERVAL = 10 * 1000;
   const CACHE_KEY        = 'dc_guard_cars_v1';
   const FREQ_KEY         = 'dc_driver_freq_v1';
+  const COURIER_FREQ_KEY = 'dc_courier_freq_v1';
 
   const GROUPS = [
     { id: 'col-1', start: 0,  end: 15 },
@@ -1661,12 +1662,25 @@
     }
   }
 
+  function getCourierFreq() {
+    try { return JSON.parse(localStorage.getItem(COURIER_FREQ_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function incrementCourierFreq(name) {
+    const freq = getCourierFreq();
+    freq[name] = (freq[name] || 0) + 1;
+    try { localStorage.setItem(COURIER_FREQ_KEY, JSON.stringify(freq)); } catch {}
+  }
+
   function renderMembers(members) {
     const grid = document.getElementById('member-grid');
     if (!members.length) { grid.innerHTML = '<div class="loading-row" style="grid-column:1/-1;">ไม่พบสมาชิก</div>'; return; }
-    grid.innerHTML = members.map((m, i) => {
+    const freq = getCourierFreq();
+    const sorted = [...members].sort((a, b) => (freq[b.name] || 0) - (freq[a.name] || 0));
+    grid.innerHTML = sorted.map((m, i) => {
       const noLine = !m.userId ? ' no-line' : '';
-      return `<button class="member-grid-btn${noLine}" id="member-${i}" onclick="selectMember(${i})">${escapeHTML(m.name)}</button>`;
+      const origIdx = allMembers.indexOf(m);
+      return `<button class="member-grid-btn${noLine}" id="member-${origIdx}" onclick="selectMember(${origIdx})">${escapeHTML(m.name)}</button>`;
     }).join('');
   }
 
@@ -1729,6 +1743,7 @@
       const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=notify&userId=${encodeURIComponent(selectedMember.userId)}&name=${encodeURIComponent(selectedMember.name)}&quantity=${quantity}${photoParam}&t=${Date.now()}`);
       const data = await res.json();
       if (data.success) {
+        incrementCourierFreq(selectedMember.name);
         document.getElementById('success-desc').textContent =
           `ส่งแจ้งเตือนถึง คุณ${selectedMember.name} แล้วค่ะ\nพัสดุ ${quantity} ชิ้น`;
         document.getElementById('success-card').classList.add('show');
