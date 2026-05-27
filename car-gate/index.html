@@ -429,139 +429,6 @@
     .login-btn:active { transform: scale(.96); background: var(--gold-dark); }
     .login-error { color: var(--red-text); font-size: 13px; display: none; }
 
-    /* ─── Kitchen Card ──────────────────────────────────── */
-    #kitchen-card {
-      display: none;
-      background: #fff;
-      border: 1px solid var(--divider);
-      border-radius: var(--radius);
-      padding: 18px 22px;
-      margin-bottom: 24px;
-      box-shadow: var(--card-shadow);
-      align-items: center;
-      gap: 16px;
-    }
-
-    .kitchen-emoji {
-      font-size: 28px;
-      flex-shrink: 0;
-    }
-
-    .kitchen-info {
-      flex: 1;
-    }
-
-    .kitchen-status-text {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--charcoal);
-    }
-
-    .kitchen-hours-text {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .kitchen-order-btn {
-      background: var(--gold);
-      color: #fff;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 18px;
-      font-family: 'Prompt', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: all 0.18s;
-    }
-    .kitchen-order-btn:hover { background: var(--gold-dark); }
-    .kitchen-order-btn:active { transform: scale(0.96); }
-
-    /* ─── Order Modal ────────────────────────────────────── */
-    #order-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(10,10,10,0.55);
-      backdrop-filter: blur(4px);
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    #order-modal.open { display: flex; }
-
-    .order-modal-box {
-      background: var(--warm-white);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 440px;
-      padding: 32px 28px 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      position: relative;
-      animation: slideUp 0.25s ease;
-    }
-
-    .order-modal-close {
-      position: absolute; top: 14px; right: 16px;
-      background: none; border: none; cursor: pointer;
-      font-size: 22px; color: var(--muted); line-height: 1;
-    }
-
-    .order-modal-title {
-      font-size: 22px; font-weight: 600;
-      color: var(--charcoal); margin-bottom: 4px;
-    }
-
-    .order-modal-sub {
-      font-size: 13px; color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    .order-textarea {
-      width: 100%;
-      border: 1px solid var(--divider);
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-family: 'Prompt', sans-serif;
-      font-size: 15px;
-      resize: none;
-      height: 100px;
-      background: #fff;
-      color: var(--ink);
-      margin-bottom: 16px;
-      transition: border-color 0.15s;
-    }
-    .order-textarea:focus { outline: none; border-color: var(--gold); }
-
-    .order-submit-btn {
-      width: 100%;
-      background: var(--gold);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 14px;
-      font-family: 'Prompt', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .order-submit-btn:hover { background: var(--gold-dark); }
-    .order-submit-btn:disabled { opacity: 0.5; pointer-events: none; }
-
-    .order-success {
-      display: none;
-      text-align: center;
-      padding: 20px 0 8px;
-    }
-    .order-success.show { display: block; }
-    .order-success-icon { font-size: 48px; margin-bottom: 10px; }
-    .order-success-title { font-size: 18px; font-weight: 700; color: var(--green-text); margin-bottom: 6px; }
-    .order-success-desc  { font-size: 14px; color: var(--green-text); opacity: 0.8; }
-
     /* ─── Responsive ─────────────────────────────────────── */
     @media (max-width: 540px) {
       header { padding: 0 16px; height: 64px; }
@@ -663,17 +530,7 @@
     </div>
   </div>
  
-  <!-- Kitchen Status Card -->
-  <div id="kitchen-card">
-    <div class="kitchen-emoji" id="kitchen-emoji">🍳</div>
-    <div class="kitchen-info">
-      <div class="kitchen-status-text" id="kitchen-status-text">กำลังโหลด…</div>
-      <div class="kitchen-hours-text" id="kitchen-hours-text">วันจันทร์ - วันเสาร์<br>11:00 - 14:00 น.<br>17:00 - 20:00 น.</div>
-    </div>
-    <button class="kitchen-order-btn" id="kitchen-order-btn" onclick="openOrderModal()" style="display:none;">
-      🍳 สั่งอาหาร
-    </button>
-  </div>
+
 
   <!-- Car List -->
   <div class="section-header">
@@ -701,30 +558,6 @@
 </footer>
  
  
-<!-- ═══════════════════════════════════════
-     ORDER MODAL
-═══════════════════════════════════════ -->
-<div id="order-modal" onclick="handleOrderOverlayClick(event)">
-  <div class="order-modal-box">
-    <button class="order-modal-close" onclick="closeOrderModal()">✕</button>
-
-    <div id="order-form-section">
-      <div class="order-modal-title">🍳 สั่งอาหาร</div>
-      <div class="order-modal-sub">DC House Kitchen</div>
-      <textarea class="order-textarea" id="order-menu"
-        placeholder="พิมพ์เมนูที่ต้องการค่ะ เช่น ข้าวผัดหมู ไม่ใส่ผัก"></textarea>
-      <button class="order-submit-btn" id="order-submit-btn" onclick="placeOrder()">
-        ✅ สั่งอาหาร
-      </button>
-    </div>
-
-    <div class="order-success" id="order-success">
-      <div class="order-success-icon">🍳✅</div>
-      <div class="order-success-title">รับออเดอร์แล้วค่ะ!</div>
-      <div class="order-success-desc" id="order-success-desc">รอสักครู่นะคะ</div>
-    </div>
-  </div>
-</div>
 
 
 <!-- ═══════════════════════════════════════
@@ -944,11 +777,9 @@ function renderCars(cars) {
     }
 
     fetchData();
-    fetchKitchenStatus();
     _refreshTimer = setInterval(() => {
       fetchData();
     }, REFRESH_INTERVAL);
-    setInterval(fetchKitchenStatus, 60 * 1000);
   }
 
   // ── First-time login with invite code ────────────────────
@@ -1042,102 +873,6 @@ function renderCars(cars) {
     }
 
     document.getElementById('ls-register').style.display = 'flex';
-  }
-
-  /* ─── KITCHEN STATUS ─────────────────────────────────── */
-  const CHEF_URL = '/api/chef';
-
-  async function fetchKitchenStatus() {
-    try {
-      const res  = await fetch(`${CHEF_URL}?key=${SECRET_KEY}&action=getKitchenStatus&t=${Date.now()}`);
-      const data = await res.json();
-      if (!data.success) return;
-
-      const card    = document.getElementById('kitchen-card');
-      const emoji   = document.getElementById('kitchen-emoji');
-      const text    = document.getElementById('kitchen-status-text');
-      const hours   = document.getElementById('kitchen-hours-text');
-      const orderBtn = document.getElementById('kitchen-order-btn');
-
-      const isOpen = data.status === 'open';
-      emoji.textContent = isOpen ? '🍳' : '🔴';
-      text.textContent  = isOpen ? 'เปิดครัว' : 'ครัวปิด';
-      hours.innerHTML   = data.message || 'วันจันทร์ - วันเสาร์<br>11:00 - 14:00 น.<br>17:00 - 20:00 น.';
-
-      // Show order button only if kitchen is open AND user is logged in
-      const session = getSession();
-      if (isOpen && session && session.lineUserId) {
-        orderBtn.style.display = 'inline-block';
-      } else {
-        orderBtn.style.display = 'none';
-      }
-
-      card.style.display = 'flex';
-    } catch {
-      // Network error — hide card
-    }
-  }
-
-  /* ─── ORDER MODAL ─────────────────────────────────────── */
-  function openOrderModal() {
-    document.getElementById('order-menu').value = '';
-    document.getElementById('order-success').classList.remove('show');
-    document.getElementById('order-form-section').style.display = 'block';
-    document.getElementById('order-submit-btn').disabled = false;
-    document.getElementById('order-submit-btn').textContent = '✅ สั่งอาหาร';
-    document.getElementById('order-modal').classList.add('open');
-    setTimeout(() => document.getElementById('order-menu').focus(), 200);
-  }
-
-  function closeOrderModal() {
-    document.getElementById('order-modal').classList.remove('open');
-  }
-
-  function handleOrderOverlayClick(e) {
-    if (e.target === document.getElementById('order-modal')) closeOrderModal();
-  }
-
-  async function placeOrder() {
-    const session = getSession();
-    if (!session || !session.lineUserId) {
-      alert('กรุณาลงทะเบียนก่อนค่ะ');
-      return;
-    }
-
-    const menu = document.getElementById('order-menu').value.trim();
-    if (!menu) {
-      alert('กรุณาพิมพ์เมนูที่ต้องการค่ะ');
-      return;
-    }
-
-    const btn = document.getElementById('order-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'กำลังส่ง…';
-
-    try {
-      const params = new URLSearchParams({
-        key:    SECRET_KEY,
-        action: 'placeOrder',
-        name:   session.name   || '',
-        userId: session.lineUserId || '',
-        menu,
-      });
-      const res  = await fetch(`${CHEF_URL}?${params}`);
-      const data = await res.json();
-
-      if (data.success) {
-        document.getElementById('order-form-section').style.display = 'none';
-        document.getElementById('order-success-desc').textContent = `เมนู: ${menu}\nรอสักครู่นะคะ 🍳`;
-        document.getElementById('order-success').classList.add('show');
-        setTimeout(() => closeOrderModal(), 2000);
-      } else {
-        throw new Error('failed');
-      }
-    } catch {
-      btn.disabled = false;
-      btn.textContent = '✅ สั่งอาหาร';
-      alert('⚠️ ส่งออเดอร์ไม่สำเร็จ กรุณาลองใหม่ค่ะ');
-    }
   }
 
   /* ─── INIT ────────────────────────────────────────────── */
