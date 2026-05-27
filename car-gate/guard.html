@@ -1259,7 +1259,7 @@
           <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}"
                onclick="openDriverPopup(${globalIndex})">
             <div class="car-name">${escapeHTML(car.name)}</div>
-            <div class="car-plate">${escapeHTML(car.plate).replace(' ', '<br>')}</div>
+            <div class="car-plate">${(p => { const parts = p.split(' '); return parts.length > 1 ? parts.slice(0,-1).map(escapeHTML).join('') + '<br>' + escapeHTML(parts[parts.length-1]) : escapeHTML(p); })(car.plate)}</div>
           </div>`;
       }).join('');
 
