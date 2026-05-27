@@ -291,15 +291,8 @@
     .car-card.is-in  { background: #4CAF50; }
     .car-card.is-out { background: #EF5350; }
 
-    .car-photo {
-      width: 100%;
-      height: 22px;
-      object-fit: contain;
-      border-radius: 3px;
-    }
-
     .car-name {
-      font-size: 8px;
+      font-size: 13px;
       font-weight: 600;
       color: #fff;
       white-space: nowrap;
@@ -309,11 +302,11 @@
     }
 
     .car-plate {
-      font-size: 10px;
+      font-size: 35px;
       font-weight: 700;
       color: #fff;
       letter-spacing: 0.02em;
-      line-height: 1.2;
+      line-height: 1.1;
       word-break: break-all;
     }
 
@@ -1266,9 +1259,6 @@
         return `
           <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}"
                onclick="openDriverPopup(${globalIndex})">
-            <img class="car-photo"
-              src="${escapeHTML(car.photo || '')}"
-              onerror="this.style.display='none'"/>
             <div class="car-name">${escapeHTML(car.name)}</div>
             <div class="car-plate">${escapeHTML(car.plate)}</div>
           </div>`;
