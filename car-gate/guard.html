@@ -305,8 +305,8 @@
       font-weight: 700;
       color: #fff;
       letter-spacing: 0.02em;
-      line-height: 1.1;
-      word-break: break-all;
+      line-height: 1.15;
+      text-align: center;
     }
 
     @keyframes flashGreen {
@@ -1259,7 +1259,7 @@
           <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}"
                onclick="openDriverPopup(${globalIndex})">
             <div class="car-name">${escapeHTML(car.name)}</div>
-            <div class="car-plate">${escapeHTML(car.plate)}</div>
+            <div class="car-plate">${escapeHTML(car.plate).replace(' ', '<br>')}</div>
           </div>`;
       }).join('');
 
