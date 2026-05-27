@@ -229,98 +229,76 @@
     .tab-content.active { display: flex; flex-direction: column; }
 
     /* ════════════════════════════
-       TAB 1 — CAR IN/OUT
+       TAB 1 — CAR IN/OUT (grid)
     ════════════════════════════ */
-    .columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .column {
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid var(--divider);
-      overflow: hidden;
-    }
-    .column:last-child { border-right: none; }
-
-    .column-header {
-      background: var(--cream);
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--divider);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .column-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--charcoal);
-    }
-
-    .column-count {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .column-body {
+    .cars-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      padding: 8px 8px 16px;
+    }
+
+    .car-group { margin-bottom: 14px; }
+
+    .car-group-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 6px 2px 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
     }
 
     .car-card {
       background: #fff;
       border-radius: var(--radius);
-      border: 1.5px solid var(--divider);
-      padding: 10px 12px;
+      border: 2px solid var(--divider);
+      padding: 8px 5px 6px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 3px;
       box-shadow: var(--card-shadow);
+      text-align: center;
     }
 
-    .car-card.is-in  { border-color: var(--green-border); }
-    .car-card.is-out { border-color: var(--red-border); }
+    .car-card.is-in  { border-color: var(--green-border); background: #F5FBF7; }
+    .car-card.is-out { border-color: var(--red-border);   background: #FDF6F6; }
 
     .car-photo {
-      width: 52px;
-      height: 36px;
+      width: 100%;
+      max-width: 70px;
+      height: 42px;
       object-fit: contain;
-      border-radius: 6px;
-      flex-shrink: 0;
+      border-radius: 5px;
     }
 
-    .car-info { flex: 1; min-width: 0; }
-
     .car-name {
-      font-size: 35px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--charcoal);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      width: 100%;
     }
 
     .car-plate {
-      font-size: 45px;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-      margin-top: 1px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--charcoal);
+      letter-spacing: 0.05em;
     }
 
     .toggle-btn {
-      flex-shrink: 0;
-      width: 58px;
-      height: 32px;
-      border-radius: 20px;
+      margin-top: 4px;
+      width: 100%;
+      height: 28px;
+      border-radius: 8px;
       border: none;
       font-family: 'Prompt', sans-serif;
       font-size: 12px;
@@ -339,11 +317,11 @@
 
     @keyframes flashGreen {
       0%   { background: #B8DEC6; }
-      100% { background: #fff; }
+      100% { background: #F5FBF7; }
     }
     @keyframes flashRed {
       0%   { background: #E8B8B8; }
-      100% { background: #fff; }
+      100% { background: #FDF6F6; }
     }
     .car-card.flash-in  { animation: flashGreen 0.5s ease; }
     .car-card.flash-out { animation: flashRed   0.5s ease; }
@@ -976,27 +954,18 @@
 
   <!-- Tab 1: Cars -->
   <div class="tab-content active" id="tab-cars">
-    <div class="columns">
-      <div class="column">
-        <div class="column-header">
-          <div class="column-title">🚌 รถสาธารณะ</div>
-          <div class="column-count">16 คัน</div>
-        </div>
-        <div class="column-body" id="col-1"></div>
+    <div class="cars-scroll">
+      <div class="car-group">
+        <div class="car-group-label">🚌 รถสาธารณะ</div>
+        <div class="car-grid" id="col-1"></div>
       </div>
-      <div class="column">
-        <div class="column-header">
-          <div class="column-title">🚗 รถ Generation 2</div>
-          <div class="column-count">8 คัน</div>
-        </div>
-        <div class="column-body" id="col-2"></div>
+      <div class="car-group">
+        <div class="car-group-label">🚗 รถ Generation 2</div>
+        <div class="car-grid" id="col-2"></div>
       </div>
-      <div class="column">
-        <div class="column-header">
-          <div class="column-title">🚙 รถ Generation 3</div>
-          <div class="column-count">10 คัน</div>
-        </div>
-        <div class="column-body" id="col-3"></div>
+      <div class="car-group">
+        <div class="car-group-label">🚙 รถ Generation 3</div>
+        <div class="car-grid" id="col-3"></div>
       </div>
     </div>
   </div>
@@ -1283,20 +1252,16 @@
 
       const html = slice.map((car, li) => {
         const globalIndex = g.start + li;
-        const isIn  = car.status === 'in';
-        const color = isIn ? '#2A7A4B' : '#B33030';
+        const isIn = car.status === 'in';
         if (isIn) totalIn++; else totalOut++;
 
         return `
           <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}">
             <img class="car-photo"
               src="${escapeHTML(car.photo || '')}"
-              onerror="this.style.display='none'"
-              style="border:2px solid ${color};"/>
-            <div class="car-info">
-              <div class="car-name">${escapeHTML(car.name)}</div>
-              <div class="car-plate">${escapeHTML(car.plate)}</div>
-            </div>
+              onerror="this.style.display='none'"/>
+            <div class="car-name">${escapeHTML(car.name)}</div>
+            <div class="car-plate">${escapeHTML(car.plate)}</div>
             <button class="toggle-btn ${isIn ? 'in' : 'out'}"
               id="btn-${globalIndex}"
               onclick="openDriverPopup(${globalIndex})">
@@ -1535,15 +1500,12 @@
   }
 
   function applyToggleUI(index, status, card, btn) {
-    const isIn  = status === 'in';
-    const color = isIn ? '#2A7A4B' : '#B33030';
+    const isIn = status === 'in';
     btn.classList.remove('loading', 'in', 'out');
     btn.classList.add(isIn ? 'in' : 'out');
     btn.textContent = isIn ? 'อยู่' : 'ไม่อยู่';
     card.classList.remove('is-in', 'is-out');
     card.classList.add(isIn ? 'is-in' : 'is-out');
-    const photo = card.querySelector('.car-photo');
-    if (photo) photo.style.border = `2px solid ${color}`;
     card.classList.add(isIn ? 'flash-in' : 'flash-out');
     setTimeout(() => card.classList.remove('flash-in', 'flash-out'), 600);
   }
