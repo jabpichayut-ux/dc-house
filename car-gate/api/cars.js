@@ -134,11 +134,13 @@ module.exports = async function handler(req, res) {
       const msg = `📦 DC House — พัสดุมาถึงแล้วค่ะ!\n\nเรียน คุณ${name}\nพัสดุของคุณมาถึงแล้ว จำนวน ${quantity} ชิ้น\n\nกรุณามารับที่ห้องยามได้เลยค่ะ 🏠`;
       const messages = [{ type: 'text', text: msg }];
       if (imageUrl) messages.push({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
-      await fetch('https://api.line.me/v2/bot/message/push', {
+      const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + LINE_TOKEN },
         body: JSON.stringify({ to: userId, messages })
       });
+      const lineData = await lineRes.json();
+      if (!lineRes.ok) return res.status(502).json({ success: false, lineStatus: lineRes.status, lineError: lineData });
       return res.json({ success: true });
     }
 
@@ -146,11 +148,13 @@ module.exports = async function handler(req, res) {
       const { userId, guestName, plate, purpose } = req.query;
       const purposeText = purpose ? `\nวัตถุประสงค์: ${purpose}` : '';
       const msg = `🏠 DC House — แขกมาแล้วค่ะ!\n\nชื่อแขก: ${guestName || 'ไม่ระบุชื่อ'}\nทะเบียน: ${plate}${purposeText}\n\nแขกรออยู่ที่ห้องยามค่ะ`;
-      await fetch('https://api.line.me/v2/bot/message/push', {
+      const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + LINE_TOKEN },
         body: JSON.stringify({ to: userId, messages: [{ type: 'text', text: msg }] })
       });
+      const lineData = await lineRes.json();
+      if (!lineRes.ok) return res.status(502).json({ success: false, lineStatus: lineRes.status, lineError: lineData });
       return res.json({ success: true });
     }
 
