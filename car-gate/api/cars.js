@@ -158,7 +158,7 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true });
     }
 
-    const data = await readRange('Car Park!A1:D34');
+    const data = await readRange('Car Park!A1:D50');
     const cars = data
       .map((r, i) => (!r[0] || /^(ชื่อ|name)/i.test(r[0])) ? null : {
         name: r[0], plate: r[1]||'', status: String(r[2]||'').toLowerCase().trim(), photo: r[3]||'',
