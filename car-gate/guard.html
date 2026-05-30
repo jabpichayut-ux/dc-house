@@ -327,6 +327,206 @@
       font-size: 13px;
     }
 
+    /* ════════════════════════════
+       TAB 2 — COURIER
+    ════════════════════════════ */
+    .courier-wrap {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px 80px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .step-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--divider);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step.active .step-num { background: var(--gold); color: #fff; }
+    .step.active { color: var(--charcoal); }
+    .step.done .step-num { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+
+    .step-line { flex: 1; height: 1px; background: var(--divider); }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 12px;
+    }
+
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .member-grid-btn {
+      background: #fff;
+      border: 1.5px solid var(--divider);
+      border-radius: 10px;
+      padding: 12px 8px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--charcoal);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .member-grid-btn:active { background: var(--cream); transform: scale(0.96); }
+    .member-grid-btn.selected { border-color: var(--gold); background: #FBF6E8; color: var(--gold-dark); }
+    .member-grid-btn.no-line { opacity: 0.55; }
+
+    .quantity-section {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--divider);
+      padding: 18px 20px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+    }
+
+    .selected-name-display {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .selected-name-display strong { color: var(--gold-dark); font-size: 15px; }
+
+    .quantity-label { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 10px; }
+
+    .quantity-controls { display: flex; align-items: center; gap: 16px; }
+
+    .qty-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--divider);
+      background: #fff;
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--charcoal);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .qty-btn:active { background: var(--cream); transform: scale(0.93); }
+
+    .qty-display { font-size: 34px; font-weight: 700; color: var(--charcoal); min-width: 50px; text-align: center; }
+    .qty-unit { font-size: 13px; color: var(--muted); }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 15px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      box-shadow: 0 4px 16px rgba(201,168,76,0.35);
+    }
+    .submit-btn:active { transform: scale(0.98); background: var(--gold-dark); }
+    .submit-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+    .success-card {
+      display: none;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .success-card.show { display: block; }
+    .success-icon { font-size: 44px; margin-bottom: 10px; }
+    .success-title { font-size: 17px; font-weight: 700; color: var(--green-text); margin-bottom: 6px; }
+    .success-desc { font-size: 13px; color: var(--green-text); opacity: 0.8; line-height: 1.6; }
+
+    .btn-reset {
+      margin-top: 14px;
+      background: #fff;
+      color: var(--green-text);
+      border: 1px solid var(--green-border);
+      border-radius: 40px;
+      padding: 10px 24px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .warning-card {
+      background: #FFF8E8;
+      border: 1px solid #E8D8A0;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--gold-dark);
+      line-height: 1.6;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .photo-section { margin-bottom: 14px; }
+    .camera-btn {
+      width: 100%;
+      background: var(--cream);
+      border: 1.5px dashed var(--divider);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: 'Prompt', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .camera-btn:active { background: var(--divider); }
+    .photo-preview {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--green-border);
+      display: none;
+      margin-top: 8px;
+    }
+    .photo-preview.show { display: block; }
+
     /* ── Toast ── */
     .toast {
       position: fixed;
@@ -657,13 +857,31 @@
     .returning-toggle.in  { background: var(--green-bg); color: var(--green-text); border: 1.5px solid var(--green-border); }
     .returning-toggle.out { background: var(--red-bg);   color: var(--red-text);   border: 1.5px solid var(--red-border); }
 
+    #camera-input { display: none; }
+
     @keyframes slideUp {
       from { opacity:0; transform:translateY(30px); }
       to   { opacity:1; transform:translateY(0); }
     }
-    /* ── Guest tab — +10px fonts ─────────────── */
+    /* ── Courier & Guest tabs — +10px fonts ─────────────── */
+    #tab-courier .section-title,
     #tab-guest   .section-title  { font-size: 25px; }
+    #tab-courier .step           { font-size: 22px; }
+    #tab-courier .step-num       { font-size: 21px; width:28px; height:28px; }
+    #tab-courier .loading-row,
     #tab-guest   .loading-row    { font-size: 23px; }
+    .member-grid-btn             { font-size: 22px; }
+    .camera-btn                  { font-size: 22px; }
+    .selected-name-display       { font-size: 23px; }
+    .selected-name-display strong{ font-size: 25px; }
+    .quantity-label              { font-size: 23px; }
+    .qty-display                 { font-size: 44px; }
+    .qty-unit                    { font-size: 23px; }
+    .submit-btn                  { font-size: 25px; }
+    .success-title               { font-size: 27px; }
+    .success-desc                { font-size: 23px; }
+    .btn-reset                   { font-size: 23px; }
+    .warning-card                { font-size: 23px; }
     .scan-label                  { font-size: 24px; }
     .scan-sublabel               { font-size: 22px; }
     .plate-result-label          { font-size: 21px; }
@@ -720,6 +938,9 @@
     <button class="tab-btn active" id="tab-cars-btn" onclick="switchTab('cars')">
       🚗 รถเข้า-ออก
     </button>
+    <button class="tab-btn" id="tab-courier-btn" onclick="switchTab('courier')">
+      📦 แจ้งพัสดุ
+    </button>
     <button class="tab-btn" id="tab-guest-btn" onclick="switchTab('guest')">
       🧑‍🤝‍🧑 แขก
     </button>
@@ -749,7 +970,63 @@
     </div>
   </div>
 
-  <!-- Tab 2: Guests -->
+  <!-- Tab 2: Courier -->
+  <div class="tab-content" id="tab-courier">
+    <div class="courier-wrap">
+
+      <div class="steps">
+        <div class="step active" id="step1"><div class="step-num">1</div>เลือกชื่อ</div>
+        <div class="step-line"></div>
+        <div class="step" id="step2"><div class="step-num">2</div>จำนวน</div>
+        <div class="step-line"></div>
+        <div class="step" id="step3"><div class="step-num">3</div>ส่งแจ้งเตือน</div>
+      </div>
+
+      <div class="success-card" id="success-card">
+        <div class="success-icon">📦✅</div>
+        <div class="success-title">ส่งแจ้งเตือนแล้ว!</div>
+        <div class="success-desc" id="success-desc">—</div>
+        <button class="btn-reset" onclick="resetCourier()">+ แจ้งพัสดุรายการใหม่</button>
+      </div>
+
+      <div id="section-member">
+        <div class="section-title">1. เลือกชื่อผู้รับพัสดุ</div>
+        <div class="warning-card" id="warning-card">
+          ⚠️ ยังไม่มีสมาชิกลงทะเบียน — ให้สมาชิกเพิ่ม LINE OA และพิมพ์ชื่อก่อนค่ะ
+        </div>
+        <div class="member-grid" id="member-grid">
+          <div class="loading-row" style="grid-column:1/-1;">กำลังโหลด…</div>
+        </div>
+      </div>
+
+      <div id="section-quantity" style="display:none;">
+        <div class="section-title">2. จำนวนพัสดุ</div>
+        <div class="quantity-section">
+          <div class="selected-name-display">ผู้รับ: <strong id="selected-display">—</strong></div>
+          <div class="quantity-label">จำนวนชิ้น</div>
+          <div class="quantity-controls">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <div class="qty-display" id="qty-display">1</div>
+            <div class="qty-unit">ชิ้น</div>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <div class="photo-section">
+          <button class="camera-btn" onclick="document.getElementById('camera-input').click()">
+            <span id="camera-btn-label">📷 ถ่ายรูปพัสดุ (ไม่บังคับ)</span>
+          </button>
+          <img class="photo-preview" id="photo-preview" alt="" />
+        </div>
+        <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelected(event)" />
+        <button class="submit-btn" id="submit-btn" onclick="sendNotification()">
+          📨 ส่งแจ้งเตือนไปที่ LINE
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab 3: Guests -->
   <div class="tab-content" id="tab-guest">
     <div class="guest-wrap">
 
@@ -872,6 +1149,7 @@
   const REFRESH_INTERVAL = 10 * 1000;
   const CACHE_KEY        = 'dc_guard_cars_v1';
   const FREQ_KEY         = 'dc_driver_freq_v1';
+  const COURIER_FREQ_KEY = 'dc_courier_freq_v1';
 
   const GROUPS = [
     { id: 'col-1', start: 0,  end: 15 },
@@ -896,6 +1174,8 @@
 
   let carsData       = [];
   let allMembers     = [];
+  let selectedMember = null;
+  let quantity       = 1;
 
   // Driver popup state
   let pendingIndex   = null;
@@ -1335,12 +1615,139 @@
     switchTab('guest');
   }
 
+  /* ════════════════════
+     COURIER
+  ════════════════════ */
   async function fetchMembers() {
     try {
       const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=getMembers&t=${Date.now()}`);
       const data = await res.json();
       allMembers = data.members || [];
-    } catch { allMembers = []; }
+      renderMembers(allMembers);
+      if (!allMembers.length) document.getElementById('warning-card').style.display = 'block';
+    } catch {
+      document.getElementById('member-grid').innerHTML = `<div class="loading-row" style="grid-column:1/-1;">⚠️ โหลดไม่ได้</div>`;
+    }
+  }
+
+  function getCourierFreq() {
+    try { return JSON.parse(localStorage.getItem(COURIER_FREQ_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function incrementCourierFreq(name) {
+    const freq = getCourierFreq();
+    freq[name] = (freq[name] || 0) + 1;
+    try { localStorage.setItem(COURIER_FREQ_KEY, JSON.stringify(freq)); } catch {}
+  }
+
+  function renderMembers(members) {
+    const grid = document.getElementById('member-grid');
+    if (!members.length) { grid.innerHTML = '<div class="loading-row" style="grid-column:1/-1;">ไม่พบสมาชิก</div>'; return; }
+    const freq = getCourierFreq();
+    const sorted = [...members].sort((a, b) => (freq[b.name] || 0) - (freq[a.name] || 0));
+    grid.innerHTML = sorted.map((m, i) => {
+      const noLine = !m.userId ? ' no-line' : '';
+      const origIdx = allMembers.indexOf(m);
+      return `<button class="member-grid-btn${noLine}" id="member-${origIdx}" onclick="selectMember(${origIdx})">${escapeHTML(m.name)}</button>`;
+    }).join('');
+  }
+
+  function selectMember(index) {
+    selectedMember = allMembers[index];
+    document.querySelectorAll('.member-grid-btn').forEach(el => el.classList.remove('selected'));
+    const btn = document.getElementById(`member-${index}`);
+    if (btn) btn.classList.add('selected');
+    setTimeout(() => {
+      document.getElementById('selected-display').textContent = selectedMember.name;
+      document.getElementById('section-quantity').style.display = 'block';
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step1').classList.add('done');
+      document.getElementById('step1').querySelector('.step-num').textContent = '✓';
+      document.getElementById('step2').classList.add('active');
+    }, 150);
+  }
+
+  function changeQty(delta) {
+    quantity = Math.max(1, Math.min(99, quantity + delta));
+    document.getElementById('qty-display').textContent = quantity;
+  }
+
+  let photoUrl = null;
+
+  function onPhotoSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async e => {
+      const dataUrl = e.target.result;
+      document.getElementById('photo-preview').src = dataUrl;
+      document.getElementById('photo-preview').classList.add('show');
+      document.getElementById('camera-btn-label').textContent = '📷 เปลี่ยนรูป ✓';
+      try {
+        const pureBase64 = dataUrl.split(',')[1];
+        const res = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=uploadImage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageData: pureBase64 })
+        });
+        const data = await res.json();
+        if (data.success) photoUrl = data.url;
+      } catch { photoUrl = null; }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function sendNotification() {
+    if (!selectedMember) { showToast('กรุณาเลือกชื่อก่อนค่ะ'); return; }
+    if (!selectedMember.userId) {
+      showToast(`⚠️ ${selectedMember.name} ยังไม่มี LINE ID — ไม่สามารถส่งแจ้งเตือนได้ค่ะ`);
+      return;
+    }
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังส่ง…';
+    try {
+      const photoParam = photoUrl ? `&imageUrl=${encodeURIComponent(photoUrl)}` : '';
+      const res  = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=notify&userId=${encodeURIComponent(selectedMember.userId)}&name=${encodeURIComponent(selectedMember.name)}&quantity=${quantity}${photoParam}&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.success) {
+        incrementCourierFreq(selectedMember.name);
+        document.getElementById('success-desc').textContent =
+          `ส่งแจ้งเตือนถึง คุณ${selectedMember.name} แล้วค่ะ\nพัสดุ ${quantity} ชิ้น`;
+        document.getElementById('success-card').classList.add('show');
+        document.getElementById('section-member').style.display = 'none';
+        document.getElementById('section-quantity').style.display = 'none';
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step2').classList.add('done');
+        document.getElementById('step2').querySelector('.step-num').textContent = '✓';
+        document.getElementById('step3').classList.add('active');
+        document.getElementById('step3').querySelector('.step-num').textContent = '✓';
+      } else { throw new Error('ส่งไม่สำเร็จ'); }
+    } catch {
+      showToast('⚠️ ส่งไม่สำเร็จ กรุณาลองใหม่');
+      btn.disabled = false;
+      btn.textContent = '📨 ส่งแจ้งเตือนไปที่ LINE';
+    }
+  }
+
+  function resetCourier() {
+    selectedMember = null; quantity = 1; photoUrl = null;
+    document.getElementById('success-card').classList.remove('show');
+    document.getElementById('section-member').style.display = 'block';
+    document.getElementById('section-quantity').style.display = 'none';
+    document.getElementById('qty-display').textContent = '1';
+    document.getElementById('camera-input').value = '';
+    document.getElementById('photo-preview').classList.remove('show');
+    document.getElementById('camera-btn-label').textContent = '📷 ถ่ายรูปพัสดุ (ไม่บังคับ)';
+    ['step1','step2','step3'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.classList.remove('active', 'done');
+      el.querySelector('.step-num').textContent = i + 1;
+    });
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').textContent = '📨 ส่งแจ้งเตือนไปที่ LINE';
+    renderMembers(allMembers);
   }
 
   /* ── TOAST ── */
