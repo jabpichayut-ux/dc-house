@@ -1142,8 +1142,6 @@
   /* ── CONFIG ── */
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtmuGIo4fC39uG4uslI26utMh0Fc0F_teaoJrwVY_hRnG2w8tCi0nMPhDGzk3bueyLyw/exec';
   const PROXY_URL = '/api/cars';
-
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
   const SECRET_KEY       = 'dc-house-2026';
   const CORRECT_PIN      = '999999999';
   const REFRESH_INTERVAL = 10 * 1000;
@@ -1472,28 +1470,13 @@
 
     // API calls in background
     try {
-      // 1. Sleep 1–5 s before writing so concurrent calls don't race
-      await sleep(1000 + Math.random() * 4000);
+      // 1. Update status
+      await fetch(`${APPS_SCRIPT_URL}?key=${SECRET_KEY}&action=update&row=${car.row}&status=${newStatus}&t=${Date.now()}`);
 
-      // 2. Update status — route through Vercel proxy so we get a real success/fail body
-      //    Retry once after another 2 s if the first attempt fails
-      let updateOk = false;
-      for (let attempt = 0; attempt < 2; attempt++) {
-        if (attempt > 0) await sleep(2000);
-        try {
-          const r = await fetch(
-            `${PROXY_URL}?key=${SECRET_KEY}&action=update&row=${car.row}&status=${newStatus}&t=${Date.now()}`
-          );
-          const d = await r.json().catch(() => ({}));
-          if (r.ok && d.success) { updateOk = true; break; }
-        } catch (_) {}
-      }
-      if (!updateOk) throw new Error('Update failed');
-
-      // 3. Log to Member Log
+      // 2. Log to Member Log
       fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logMember&carName=${encodeURIComponent(car.name)}&plate=${encodeURIComponent(car.plate)}&driver=${encodeURIComponent(driver)}&status=${newStatus}&carIndex=${index}&reason=${encodeURIComponent(reason)}&t=${Date.now()}`);
 
-      // 4. If guest, also log to Guest Log
+      // 3. If guest, also log to Guest Log
       if (guestOf) {
         fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=logGuest&plate=${encodeURIComponent(car.plate)}&guestName=${encodeURIComponent('แขก')}&guestOf=${encodeURIComponent(guestOf)}&status=${newStatus}&reason=${encodeURIComponent(reason)}&t=${Date.now()}`);
       }
@@ -1504,7 +1487,7 @@
       carsData[index].status = newStatus === 'in' ? 'out' : 'in';
       applyToggleUI(index, carsData[index].status, card);
       updateCounters();
-      showToast('⚠️ อัพเดตไม่สำเร็จ — ลองอีกครั้ง');
+      showToast('⚠️ อัพเดตไม่สำเร็จ');
     }
   }
 
