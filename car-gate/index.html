@@ -614,8 +614,8 @@ function renderCars(cars) {
 
         return `
           <div class="car-item">
-            ${car.photo ? `<img src="${escapeHTML(car.photo)}" onerror="this.style.display='none'" loading="lazy" decoding="async"
-              style="width:56px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0;border:2px solid ${color};"/>` : ''}
+            <img src="${escapeHTML(car.photo || '')}" onerror="this.style.display='none'"
+              style="width:56px;height:40px;object-fit:contain;border-radius:6px;flex-shrink:0;border:2px solid ${color};"/>
             <div class="car-info">
               <div class="car-name">${escapeHTML(car.name)}</div>
               <div class="car-plate">${escapeHTML(car.plate)}</div>
