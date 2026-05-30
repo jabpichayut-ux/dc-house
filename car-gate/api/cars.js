@@ -72,7 +72,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'logMember') {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       const reason = req.query.reason || '';
       await appendRange('Members Log', [thaiDate(), thaiTime(), carName, plate, driver, status === 'in' ? 'เข้า' : 'ออก', reason]);
       try {
