@@ -1,4 +1,5 @@
 const { readRange } = require('./_auth');
+const sb = require('./_supabase');
 
 const SECRET     = 'dc-house-2026';
 const LINE_TOKEN = '7TEnqDtU6W9k1N17pCgjAHX8uhSuR9IN9finzj4aa1LctoS3DBiVvr/S/yjwgwQ1wrfKIMfLcL0KtyujVVxaNbXkr0ZLcwtEr30Af4QJ1WTnrUyG4Pyo22Dn+CpLp4LjZ1rxcJIE0JciHa8J74iWngdB04t89/1O/w1cDnyilFU=';
@@ -66,8 +67,12 @@ module.exports = async function handler(req, res) {
 
   try {
     if (action === 'update') {
-      const result = await writeRange(`Car Park!C${row}`, [[status]]);
-      if (result && result.error) throw new Error(result.error.message);
+      if (sb.isConfigured()) {
+        await sb.update('cars', `row_num=eq.${parseInt(row, 10)}`, { status });
+      } else {
+        const result = await writeRange(`Car Park!C${row}`, [[status]]);
+        if (result && result.error) throw new Error(result.error.message);
+      }
       return res.json({ success: true });
     }
 
@@ -158,11 +163,18 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true });
     }
 
+    if (sb.isConfigured()) {
+      const rows = await sb.select('cars', 'order=row_num.asc');
+      const cars = rows.map(r => ({ name: r.name, plate: r.plate, status: r.status, photo: r.photo, row: r.row_num }));
+      res.setHeader('Cache-Control', 's-maxage=5');
+      return res.json({ cars, updated: new Date().toISOString() });
+    }
+
     const data = await readRange('Car Park!A1:D50');
     const cars = data
       .map((r, i) => (!r[0] || /^(ชื่อ|name)/i.test(r[0])) ? null : {
         name: r[0], plate: r[1]||'', status: String(r[2]||'').toLowerCase().trim(), photo: r[3]||'',
-        row: i + 1  // actual 1-based sheet row — used by guard.html for status updates
+        row: i + 1
       })
       .filter(Boolean);
     res.setHeader('Cache-Control', 's-maxage=5');
