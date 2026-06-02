@@ -67,11 +67,11 @@ module.exports = async function handler(req, res) {
 
   try {
     if (action === 'update') {
+      // Primary: Google Sheets
+      await writeRange(`Car Park!C${row}`, [[status]]);
+      // Secondary: keep Supabase in sync (non-blocking)
       if (sb.isConfigured()) {
-        await sb.update('cars', `row_num=eq.${parseInt(row, 10)}`, { status });
-      } else {
-        const result = await writeRange(`Car Park!C${row}`, [[status]]);
-        if (result && result.error) throw new Error(result.error.message);
+        sb.update('cars', `row_num=eq.${parseInt(row, 10)}`, { status }).catch(() => {});
       }
       return res.json({ success: true });
     }
@@ -163,13 +163,7 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true });
     }
 
-    if (sb.isConfigured()) {
-      const rows = await sb.select('cars', 'order=row_num.asc');
-      const cars = rows.map(r => ({ name: r.name, plate: r.plate, status: r.status, photo: r.photo, row: r.row_num }));
-      res.setHeader('Cache-Control', 's-maxage=5');
-      return res.json({ cars, updated: new Date().toISOString() });
-    }
-
+    // Primary: Google Sheets (always reflects latest data incl. new cars)
     const data = await readRange('Car Park!A1:D50');
     const cars = data
       .map((r, i) => (!r[0] || /^(ชื่อ|name)/i.test(r[0])) ? null : {
