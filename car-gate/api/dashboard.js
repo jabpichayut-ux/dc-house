@@ -27,7 +27,7 @@ function thaiDateOffsetDays(offset) {
 
 async function buildPayload() {
   const [carPark, membersLog, guestLog, driverFreq] = await Promise.all([
-    readRange('Car Park!A1:D34'),
+    readRange('Car Park!A1:D37'),
     readRange('Members Log!A:F'),
     readRange('Guest Log!A:F'),
     readRange('Driver Freq!A:C'),
