@@ -1656,6 +1656,7 @@
   }
 
   let photoUrl = null;
+  let photoUploading = false;
 
   function onPhotoSelected(event) {
     const file = event.target.files[0];
@@ -1665,7 +1666,9 @@
       const dataUrl = e.target.result;
       document.getElementById('photo-preview').src = dataUrl;
       document.getElementById('photo-preview').classList.add('show');
-      document.getElementById('camera-btn-label').textContent = '📷 เปลี่ยนรูป ✓';
+      document.getElementById('camera-btn-label').textContent = '⏳ กำลังอัปโหลด…';
+      photoUploading = true;
+      photoUrl = null;
       try {
         const pureBase64 = dataUrl.split(',')[1];
         const res = await fetch(`${PROXY_URL}?key=${SECRET_KEY}&action=uploadImage`, {
@@ -1674,8 +1677,18 @@
           body: JSON.stringify({ imageData: pureBase64 })
         });
         const data = await res.json();
-        if (data.success) photoUrl = data.url;
-      } catch { photoUrl = null; }
+        if (data.success) {
+          photoUrl = data.url;
+          document.getElementById('camera-btn-label').textContent = '✅ อัปโหลดรูปแล้ว — กดเปลี่ยนรูป';
+        } else {
+          throw new Error(data.error || 'upload failed');
+        }
+      } catch {
+        photoUrl = null;
+        document.getElementById('camera-btn-label').textContent = '⚠️ อัปโหลดไม่สำเร็จ — ลองใหม่';
+      } finally {
+        photoUploading = false;
+      }
     };
     reader.readAsDataURL(file);
   }
@@ -1686,6 +1699,7 @@
       showToast(`⚠️ ${selectedMember.name} ยังไม่มี LINE ID — ไม่สามารถส่งแจ้งเตือนได้ค่ะ`);
       return;
     }
+    if (photoUploading) { showToast('⏳ รอรูปอัปโหลดเสร็จก่อนค่ะ'); return; }
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
     btn.textContent = 'กำลังส่ง…';
@@ -1714,7 +1728,7 @@
   }
 
   function resetCourier() {
-    selectedMember = null; quantity = 1; photoUrl = null;
+    selectedMember = null; quantity = 1; photoUrl = null; photoUploading = false;
     document.getElementById('success-card').classList.remove('show');
     document.getElementById('section-member').style.display = 'block';
     document.getElementById('section-quantity').style.display = 'none';
