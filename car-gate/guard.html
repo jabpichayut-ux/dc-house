@@ -1149,9 +1149,9 @@
   const COURIER_FREQ_KEY = 'dc_courier_freq_v1';
 
   const GROUPS = [
-    { id: 'col-1', start: 0,  end: 15 },
-    { id: 'col-2', start: 16, end: 24 },
-    { id: 'col-3', start: 25, end: 48 },
+    { id: 'col-1', minRow: 2,  maxRow: 17 },
+    { id: 'col-2', minRow: 18, maxRow: 26 },
+    { id: 'col-3', minRow: 27, maxRow: 50 },
   ];
 
   const FAMILY = [
@@ -1246,14 +1246,15 @@
     let totalIn = 0, totalOut = 0;
 
     GROUPS.forEach(g => {
-      const slice     = cars.slice(g.start, g.end + 1);
       const container = document.getElementById(g.id);
+      const entries = [];
+      cars.forEach((car, idx) => {
+        if (car.row >= g.minRow && car.row <= g.maxRow) entries.push({ car, idx });
+      });
 
-      const html = slice.map((car, li) => {
-        const globalIndex = g.start + li;
+      const html = entries.map(({ car, idx: globalIndex }) => {
         const isIn = car.status === 'in';
         if (isIn) totalIn++; else totalOut++;
-
         return `
           <div class="car-card ${isIn ? 'is-in' : 'is-out'}" id="card-${globalIndex}"
                onclick="openDriverPopup(${globalIndex})">
