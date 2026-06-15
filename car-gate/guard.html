@@ -223,6 +223,7 @@
     /* ── Tab Content ── */
     .tab-content {
       flex: 1;
+      min-height: 0;
       overflow: hidden;
       display: none;
     }
@@ -235,12 +236,14 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       flex: 1;
+      min-height: 0;
       overflow: hidden;
     }
 
     .column {
       display: flex;
       flex-direction: column;
+      min-height: 0;
       border-right: 1px solid var(--divider);
       overflow: hidden;
     }
@@ -262,6 +265,7 @@
 
     .column-body {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       padding: 4px;
       display: grid;
