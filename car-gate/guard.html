@@ -1191,20 +1191,31 @@
   let guestData       = []; // returning guests
 
   /* ── PIN ── */
+  function unlockApp() {
+    localStorage.setItem('guard_session', Date.now());
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    loadLocalFreq();
+    Promise.all([fetchCars(), fetchMembers()]);
+    buildGuestOfGrid();
+    loadGuestData();
+  }
+
   function checkPin() {
     const input = document.getElementById('pin-input').value;
     if (input === CORRECT_PIN) {
-      document.getElementById('pin-screen').style.display = 'none';
-      document.getElementById('main-app').style.display = 'flex';
-      loadLocalFreq();
-      Promise.all([fetchCars(), fetchMembers()]);
-      buildGuestOfGrid();
-      loadGuestData();
+      unlockApp();
     } else {
       document.getElementById('pin-error').style.display = 'block';
       document.getElementById('pin-input').value = '';
     }
   }
+
+  // Auto-skip PIN if session was unlocked within the last 8 hours
+  (function() {
+    const saved = localStorage.getItem('guard_session');
+    if (saved && Date.now() - parseInt(saved) < 8 * 60 * 60 * 1000) unlockApp();
+  })();
 
   document.getElementById('pin-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') checkPin();
