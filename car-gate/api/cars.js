@@ -136,7 +136,7 @@ module.exports = async function handler(req, res) {
 
     if (action === 'notify') {
       const { userId, name, quantity, imageUrl } = req.query;
-      const msg = `📦 DC House — พัสดุมาถึงแล้วค่ะ!\n\nเรียน คุณ${name}\nพัสดุของคุณมาถึงแล้ว จำนวน ${quantity} ชิ้น\n\nกรุณามารับที่ห้องยามได้เลยค่ะ 🏠`;
+      const msg = `📦 DC House — พัสดุมาถึงแล้วค่ะ!\n\nเรียน ${name}\nพัสดุของคุณมาถึงแล้ว จำนวน ${quantity} ชิ้น\n\nกรุณามารับที่ห้องยามได้เลยค่ะ 🏠`;
       const messages = [{ type: 'text', text: msg }];
       if (imageUrl) messages.push({ type: 'image', originalContentUrl: imageUrl, previewImageUrl: imageUrl });
       const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
