@@ -1313,7 +1313,7 @@
       }
     });
     return Object.entries(counts)
-      .filter(([, count]) => count > 5)
+      .filter(([, count]) => count > 3)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([name]) => name);
