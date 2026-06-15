@@ -1768,6 +1768,9 @@
 
   /* ── AUTO REFRESH CARS ── */
   setInterval(() => { fetchCars(); fetchMembers(); }, REFRESH_INTERVAL);
+
+  /* ── AUTO PAGE RELOAD every 30 min (picks up new deployments) ── */
+  setTimeout(() => location.reload(), 30 * 60 * 1000);
 </script>
 </body>
 </html>
