@@ -1180,6 +1180,7 @@
   let allMembers     = [];
   let selectedMember = null;
   let quantity       = 1;
+  let pollPausedUntil = 0;
 
   // Driver popup state
   let pendingIndex   = null;
@@ -1236,6 +1237,7 @@
      CAR IN/OUT
   ════════════════════ */
   async function fetchCars() {
+    if (Date.now() < pollPausedUntil) return;
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -1472,6 +1474,9 @@
     const newStatus = pendingStatus;
     const car      = carsData[index];
     const card     = document.getElementById(`card-${index}`);
+
+    // Pause polling so the write can settle before next fetch
+    pollPausedUntil = Date.now() + 15000;
 
     // Optimistic UI
     carsData[index].status = newStatus;
